@@ -1,32 +1,41 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { submitContact, type ContactActionState } from "@/actions/contact";
 import { getOrCreateSessionId } from "@/lib/analytics/session";
 
 const initialState: ContactActionState = { status: "idle" };
 
 export function ContactForm() {
-  const [state, formAction, isPending] = useActionState(submitContact, initialState);
-  const [analyticsContext, setAnalyticsContext] = useState({
-    sessionId: "",
-    source: "",
-    userAgent: "",
-  });
+  const [state, formAction, isPending] = useActionState(
+    submitContact,
+    initialState,
+  );
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    setAnalyticsContext({
-      sessionId: getOrCreateSessionId(),
-      source: document.referrer,
-      userAgent: navigator.userAgent,
-    });
+    const form = formRef.current;
+    if (!form) return;
+
+    const setHiddenField = (name: string, value: string) => {
+      const field = form.elements.namedItem(name);
+      if (field instanceof HTMLInputElement) field.value = value;
+    };
+
+    setHiddenField("sessionId", getOrCreateSessionId());
+    setHiddenField("source", document.referrer);
+    setHiddenField("userAgent", navigator.userAgent);
   }, []);
 
   return (
-    <form action={formAction} className="mt-10 max-w-lg space-y-5">
-      <input type="hidden" name="sessionId" value={analyticsContext.sessionId} />
-      <input type="hidden" name="source" value={analyticsContext.source} />
-      <input type="hidden" name="userAgent" value={analyticsContext.userAgent} />
+    <form
+      ref={formRef}
+      action={formAction}
+      className="mt-10 max-w-lg space-y-5"
+    >
+      <input type="hidden" name="sessionId" value="" readOnly />
+      <input type="hidden" name="source" value="" readOnly />
+      <input type="hidden" name="userAgent" value="" readOnly />
 
       <div>
         <label htmlFor="name" className="font-mono text-xs text-ink-muted">
@@ -65,7 +74,10 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="requestType" className="font-mono text-xs text-ink-muted">
+        <label
+          htmlFor="requestType"
+          className="font-mono text-xs text-ink-muted"
+        >
           motivo del contacto
         </label>
         <select
