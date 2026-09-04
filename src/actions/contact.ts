@@ -1,6 +1,9 @@
 "use server";
 
+import { headers } from "next/headers";
 import { contactSchema } from "@/lib/validation/contact";
+import { getDeviceType, normalizeSource } from "@/lib/analytics/context";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export type ContactActionState = {
@@ -39,6 +42,34 @@ export async function submitContact(
     });
 
     if (error) throw error;
+
+    try {
+      const headerStore = await headers();
+      const admin = createAdminClient();
+      const sessionId =
+        String(formData.get("sessionId") ?? "").trim() || crypto.randomUUID();
+      const source = normalizeSource(String(formData.get("source") ?? ""));
+      const userAgent =
+        String(formData.get("userAgent") ?? "") ||
+        headerStore.get("user-agent") ||
+        undefined;
+
+      await admin.from("analytics_events").insert({
+        event_type: "contact_submit",
+        page: "/contacto",
+        project_id: null,
+        session_id: sessionId,
+        source,
+        device_type: getDeviceType(userAgent),
+        country: headerStore.get("x-vercel-ip-country") ?? "desconocido",
+        metadata: {
+          city: headerStore.get("x-vercel-ip-city") ?? "desconocido",
+          requestType: parsed.data.requestType,
+        },
+      });
+    } catch {
+      // La analítica propia es mejor esfuerzo y nunca debe bloquear el contacto.
+    }
 
     // TODO Fase 3: disparar webhook de n8n para notificación por email.
 

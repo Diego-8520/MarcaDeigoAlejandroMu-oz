@@ -2,7 +2,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Section, Tag } from "@/components/ui/section";
 import { ProjectCard } from "@/components/projects/project-card";
-import { projects, services } from "@/lib/data/projects";
+import { services } from "@/lib/data/projects";
+import { getPublishedProjects } from "@/lib/data/projects-queries";
+
+export const dynamic = "force-dynamic";
 
 const CAPABILITIES = [
   "$ construyendo con next.js + typescript",
@@ -11,7 +14,8 @@ const CAPABILITIES = [
   "$ administrando datos en postgresql",
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const projects = await getPublishedProjects();
   const featured = projects.filter((p) => p.featured);
 
   return (

@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { Section, Tag } from "@/components/ui/section";
-import { projects } from "@/lib/data/projects";
+import { getProjectBySlug } from "@/lib/data/projects-queries";
+import { ProjectViewTracker } from "@/components/analytics/project-view-tracker";
 
-export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function ProjectPage({
   params,
@@ -12,12 +12,13 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const project = await getProjectBySlug(slug);
 
   if (!project) notFound();
 
   return (
     <Section className="pt-16 lg:pt-24">
+      <ProjectViewTracker projectId={project.id} />
       <p className="font-mono text-xs text-ink-muted">
         {project.categories.join(" · ")}
       </p>
@@ -34,6 +35,28 @@ export default async function ProjectPage({
         ))}
       </div>
 
+      {project.images && project.images.length > 0 && (
+        <div className="mt-10 grid gap-4 border-t border-line pt-10">
+          {project.images.map((image, index) => (
+            <div
+              key={image.id}
+              className={`relative overflow-hidden border border-line bg-white/40 ${
+                index === 0 ? "aspect-video" : "aspect-video sm:aspect-[4/3]"
+              }`}
+            >
+              <Image
+                src={image.publicUrl}
+                alt={image.altText ?? project.title}
+                fill
+                sizes="(min-width: 768px) 768px, 100vw"
+                priority={index === 0}
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="mt-10 grid gap-8 border-t border-line pt-10 sm:grid-cols-2">
         <div>
           <h2 className="font-display text-base font-semibold text-ink">Problema</h2>
@@ -48,6 +71,15 @@ export default async function ProjectPage({
           </p>
         </div>
       </div>
+
+      {project.results && (
+        <div className="mt-10 border-t border-line pt-10">
+          <h2 className="font-display text-base font-semibold text-ink">Resultados</h2>
+          <p className="mt-2 font-body text-sm leading-relaxed text-ink-muted">
+            {project.results}
+          </p>
+        </div>
+      )}
 
       <div className="mt-10 flex flex-wrap gap-4 border-t border-line pt-10 font-mono text-sm">
         {project.demoUrl && (

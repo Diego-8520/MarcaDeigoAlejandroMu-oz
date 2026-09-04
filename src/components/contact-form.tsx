@@ -1,15 +1,33 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { submitContact, type ContactActionState } from "@/actions/contact";
+import { getOrCreateSessionId } from "@/lib/analytics/session";
 
 const initialState: ContactActionState = { status: "idle" };
 
 export function ContactForm() {
   const [state, formAction, isPending] = useActionState(submitContact, initialState);
+  const [analyticsContext, setAnalyticsContext] = useState({
+    sessionId: "",
+    source: "",
+    userAgent: "",
+  });
+
+  useEffect(() => {
+    setAnalyticsContext({
+      sessionId: getOrCreateSessionId(),
+      source: document.referrer,
+      userAgent: navigator.userAgent,
+    });
+  }, []);
 
   return (
     <form action={formAction} className="mt-10 max-w-lg space-y-5">
+      <input type="hidden" name="sessionId" value={analyticsContext.sessionId} />
+      <input type="hidden" name="source" value={analyticsContext.source} />
+      <input type="hidden" name="userAgent" value={analyticsContext.userAgent} />
+
       <div>
         <label htmlFor="name" className="font-mono text-xs text-ink-muted">
           nombre

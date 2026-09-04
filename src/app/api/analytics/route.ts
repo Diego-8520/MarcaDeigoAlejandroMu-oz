@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getDeviceType, normalizeSource } from "@/lib/analytics/context";
 
 const eventSchema = z.object({
   eventType: z.enum([
@@ -22,6 +23,7 @@ const eventSchema = z.object({
   projectId: z.string().optional(),
   sessionId: z.string(),
   source: z.string().optional(),
+  userAgent: z.string().optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
@@ -33,6 +35,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Evento inválido." }, { status: 400 });
   }
 
+  const country = request.headers.get("x-vercel-ip-country") ?? "desconocido";
+  const city = request.headers.get("x-vercel-ip-city") ?? "desconocido";
+  const userAgent = parsed.data.userAgent ?? request.headers.get("user-agent");
+  const deviceType = getDeviceType(userAgent);
+  const source = normalizeSource(parsed.data.source);
+
   // Usa el cliente admin porque analytics_events se escribe desde visitantes
   // anónimos sin sesión; RLS restringe la LECTURA a usuarios admin.
   const supabase = createAdminClient();
@@ -41,8 +49,13 @@ export async function POST(request: Request) {
     page: parsed.data.page,
     project_id: parsed.data.projectId ?? null,
     session_id: parsed.data.sessionId,
-    source: parsed.data.source ?? null,
-    metadata: parsed.data.metadata ?? {},
+    source,
+    device_type: deviceType,
+    country,
+    metadata: {
+      ...(parsed.data.metadata ?? {}),
+      city,
+    },
   });
 
   if (error) {

@@ -73,6 +73,28 @@ supabase link --project-ref <tu-project-ref>
 supabase db push
 ```
 
+## Storage
+
+Crear manualmente en Supabase Storage el bucket `project-images` con lectura
+publica. La escritura administrativa la hace el servidor con
+`SUPABASE_SERVICE_ROLE_KEY`; no se suben imagenes directamente desde el cliente.
+
+Estructura de paths registrada en `project_images.storage_path`:
+
+```text
+project-images/{project_id}/{uuid}.{ext}
+```
+
+Los archivos fisicos dentro del bucket usan `{project_id}/{uuid}.{ext}`.
+
+## Analitica propia
+
+El sitio registra eventos anonimos en `analytics_events` para entender uso real:
+vistas de pagina, vistas de proyecto, descargas de CV y envios de contacto. No
+usa Google Analytics ni servicios de terceros, no guarda IP completa y no usa
+cookies persistentes. El identificador de sesion se guarda en `sessionStorage`,
+por lo que dura solo la pestana/sesion activa del navegador.
+
 ## Estructura del proyecto
 
 ```

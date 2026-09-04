@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Section } from "@/components/ui/section";
+import { CvDownloadLink } from "@/components/analytics/cv-download-link";
 
 export const metadata: Metadata = {
   title: "CV — Diego Alejandro Muñoz",
@@ -16,12 +17,7 @@ export default function CvPage() {
         {/* TODO: reemplazar con URL real desde Supabase Storage (bucket `cv`) */}
         TODO: subir el PDF del CV desde el dashboard y enlazarlo aquí.
       </p>
-      <a
-        href="#"
-        className="mt-6 inline-flex items-center gap-2 bg-ink px-5 py-2.5 font-mono text-sm text-paper transition-colors hover:bg-signal"
-      >
-        descargar cv (pdf)
-      </a>
+      <CvDownloadLink />
     </Section>
   );
 }
