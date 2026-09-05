@@ -47,7 +47,9 @@ function revalidateProfilePaths() {
   revalidatePath("/dashboard/perfil");
 }
 
-function isMissingTableError(error: { code?: string; message?: string } | null) {
+function isMissingTableError(
+  error: { code?: string; message?: string } | null,
+) {
   if (!error) return false;
 
   return (

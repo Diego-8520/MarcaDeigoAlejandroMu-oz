@@ -55,7 +55,9 @@ const PROFILE_COLUMNS =
   "id,full_name,headline,bio,avatar_url,email,phone,location,website,linkedin_url,github_url,created_at,updated_at";
 const PROFILE_LINK_COLUMNS = "id,label,url,icon,sort_order,created_at";
 
-function isMissingTableError(error: { code?: string; message?: string } | null) {
+function isMissingTableError(
+  error: { code?: string; message?: string } | null,
+) {
   if (!error) return false;
 
   return (
