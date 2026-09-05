@@ -37,12 +37,10 @@ export default function RootLayout({
       lang="es"
       className={`${spaceGrotesk.variable} ${plexMono.variable} ${workSans.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-paper text-ink">{children}</body>
+      <body className="min-h-full bg-paper text-ink">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
-
-  <body className="min-h-full bg-paper text-ink">
-    {children}
-    <Analytics />
-  </body>;
 }
