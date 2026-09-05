@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, IBM_Plex_Mono, Work_Sans } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
     "Construyo productos digitales, soluciones con IA y automatizaciones que resuelven problemas reales.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="es"
@@ -35,4 +40,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-full bg-paper text-ink">{children}</body>
     </html>
   );
+
+  <body className="min-h-full bg-paper text-ink">
+    {children}
+    <Analytics />
+  </body>;
 }

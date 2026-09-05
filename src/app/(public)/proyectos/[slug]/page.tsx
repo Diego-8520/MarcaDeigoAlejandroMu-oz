@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Section, Tag } from "@/components/ui/section";
 import { getProjectBySlug } from "@/lib/data/projects-queries";
+import { getTestimonialsByProject } from "@/lib/data/testimonials-queries";
 import { ProjectViewTracker } from "@/components/analytics/project-view-tracker";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,8 @@ export default async function ProjectPage({
   const project = await getProjectBySlug(slug);
 
   if (!project) notFound();
+
+  const testimonials = await getTestimonialsByProject(project.id);
 
   return (
     <Section className="pt-16 lg:pt-24">
@@ -59,13 +62,17 @@ export default async function ProjectPage({
 
       <div className="mt-10 grid gap-8 border-t border-line pt-10 sm:grid-cols-2">
         <div>
-          <h2 className="font-display text-base font-semibold text-ink">Problema</h2>
+          <h2 className="font-display text-base font-semibold text-ink">
+            Problema
+          </h2>
           <p className="mt-2 font-body text-sm leading-relaxed text-ink-muted">
             {project.problem ?? "Pendiente por documentar."}
           </p>
         </div>
         <div>
-          <h2 className="font-display text-base font-semibold text-ink">Solución</h2>
+          <h2 className="font-display text-base font-semibold text-ink">
+            Solución
+          </h2>
           <p className="mt-2 font-body text-sm leading-relaxed text-ink-muted">
             {project.solution ?? "Pendiente por documentar."}
           </p>
@@ -74,11 +81,45 @@ export default async function ProjectPage({
 
       {project.results && (
         <div className="mt-10 border-t border-line pt-10">
-          <h2 className="font-display text-base font-semibold text-ink">Resultados</h2>
+          <h2 className="font-display text-base font-semibold text-ink">
+            Resultados
+          </h2>
           <p className="mt-2 font-body text-sm leading-relaxed text-ink-muted">
             {project.results}
           </p>
         </div>
+      )}
+
+      {testimonials.length > 0 && (
+        <section className="mt-10 border-t border-line pt-10">
+          <h2 className="font-display text-base font-semibold text-ink">
+            Lo que dicen mis clientes
+          </h2>
+          <div className="mt-5 space-y-4">
+            {testimonials.map((testimonial) => (
+              <figure
+                key={testimonial.id}
+                className="bracket-frame border border-line p-5"
+              >
+                <blockquote className="font-body text-sm leading-relaxed text-ink-muted">
+                  “{testimonial.quote}”
+                </blockquote>
+                <figcaption className="mt-4 font-mono text-xs text-ink">
+                  <span className="font-semibold">
+                    {testimonial.authorName}
+                  </span>
+                  {(testimonial.authorRole || testimonial.authorCompany) && (
+                    <span className="mt-1 block text-ink-muted">
+                      {[testimonial.authorRole, testimonial.authorCompany]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  )}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
       )}
 
       <div className="mt-10 flex flex-wrap gap-4 border-t border-line pt-10 font-mono text-sm">
@@ -88,7 +129,10 @@ export default async function ProjectPage({
           </a>
         )}
         {project.repositoryUrl && (
-          <a href={project.repositoryUrl} className="text-signal hover:underline">
+          <a
+            href={project.repositoryUrl}
+            className="text-signal hover:underline"
+          >
             repositorio →
           </a>
         )}

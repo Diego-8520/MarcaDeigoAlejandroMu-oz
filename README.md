@@ -55,13 +55,13 @@ npm run dev
 
 Ver `.env.example`. Nunca subir `.env.local` al repositorio.
 
-| Variable | Descripcion |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anonima (uso en cliente) |
-| `SUPABASE_SERVICE_ROLE_KEY` | Clave de servicio (solo servidor, bypassa RLS) |
-| `OPENAI_API_KEY` | Fase 3 - AI Profile Assistant |
-| `N8N_WEBHOOK_URL` | Fase 3 - notificaciones de leads |
+| Variable                        | Descripcion                                    |
+| ------------------------------- | ---------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | URL del proyecto Supabase                      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anonima (uso en cliente)                 |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Clave de servicio (solo servidor, bypassa RLS) |
+| `OPENAI_API_KEY`                | Fase 3 - AI Profile Assistant                  |
+| `N8N_WEBHOOK_URL`               | Fase 3 - notificaciones de leads               |
 
 ## Base de datos
 
@@ -86,6 +86,17 @@ project-images/{project_id}/{uuid}.{ext}
 ```
 
 Los archivos fisicos dentro del bucket usan `{project_id}/{uuid}.{ext}`.
+
+Para el avatar del perfil, crear manualmente el bucket `profile-media` en
+Supabase Storage con lectura publica. La escritura queda restringida al
+servidor mediante `SUPABASE_SERVICE_ROLE_KEY`; no se suben archivos
+directamente desde el cliente.
+
+Estructura de paths del avatar:
+
+```text
+profile-media/profile/{uuid}.{ext}
+```
 
 ## Analitica propia
 

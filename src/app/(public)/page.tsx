@@ -4,6 +4,7 @@ import { Section, Tag } from "@/components/ui/section";
 import { ProjectCard } from "@/components/projects/project-card";
 import { services } from "@/lib/data/projects";
 import { getPublishedProjects } from "@/lib/data/projects-queries";
+import { getPublishedTestimonials } from "@/lib/data/testimonials-queries";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,10 @@ const CAPABILITIES = [
 ];
 
 export default async function HomePage() {
-  const projects = await getPublishedProjects();
+  const [projects, testimonials] = await Promise.all([
+    getPublishedProjects(),
+    getPublishedTestimonials(3),
+  ]);
   const featured = projects.filter((p) => p.featured);
 
   return (
@@ -31,8 +35,8 @@ export default async function HomePage() {
         </h1>
         <p className="mt-6 max-w-xl font-body text-base leading-relaxed text-ink-muted">
           Soy Diego Alejandro Muñoz. Diseño y construyo sistemas completos —
-          desde la base de datos hasta la interfaz — con foco en IA aplicada
-          y automatización de procesos.
+          desde la base de datos hasta la interfaz — con foco en IA aplicada y
+          automatización de procesos.
         </p>
 
         <div className="mt-9 flex flex-wrap items-center gap-4">
@@ -111,6 +115,38 @@ export default async function HomePage() {
         </div>
       </Section>
 
+      {testimonials.length > 0 && (
+        <Section className="border-t border-line">
+          <h2 className="font-display text-2xl font-semibold text-ink">
+            Lo que dicen mis clientes
+          </h2>
+          <div className="mt-6 grid gap-6 md:grid-cols-3">
+            {testimonials.map((testimonial) => (
+              <figure
+                key={testimonial.id}
+                className="bracket-frame border border-line p-5"
+              >
+                <blockquote className="font-body text-sm leading-relaxed text-ink-muted">
+                  “{testimonial.quote}”
+                </blockquote>
+                <figcaption className="mt-5 font-mono text-xs text-ink">
+                  <span className="font-semibold">
+                    {testimonial.authorName}
+                  </span>
+                  {(testimonial.authorRole || testimonial.authorCompany) && (
+                    <span className="mt-1 block text-ink-muted">
+                      {[testimonial.authorRole, testimonial.authorCompany]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  )}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </Section>
+      )}
+
       {/* PROCESO — numeración legítima: es una secuencia real */}
       <Section className="border-t border-line">
         <h2 className="font-display text-2xl font-semibold text-ink">
@@ -118,18 +154,34 @@ export default async function HomePage() {
         </h2>
         <ol className="mt-6 space-y-6">
           {[
-            ["Entender el problema", "Antes de escribir código, entiendo qué decisión de negocio o necesidad real hay detrás."],
-            ["Proponer una arquitectura", "Defino stack, modelo de datos y alcance antes de construir."],
-            ["Construir e iterar", "Entrego en incrementos, con revisiones y ambientes de prueba (Vercel Preview)."],
-            ["Desplegar y medir", "Publico en producción y dejo instrumentación para saber si está funcionando."],
+            [
+              "Entender el problema",
+              "Antes de escribir código, entiendo qué decisión de negocio o necesidad real hay detrás.",
+            ],
+            [
+              "Proponer una arquitectura",
+              "Defino stack, modelo de datos y alcance antes de construir.",
+            ],
+            [
+              "Construir e iterar",
+              "Entrego en incrementos, con revisiones y ambientes de prueba (Vercel Preview).",
+            ],
+            [
+              "Desplegar y medir",
+              "Publico en producción y dejo instrumentación para saber si está funcionando.",
+            ],
           ].map(([title, desc], i) => (
             <li key={title} className="flex gap-4">
               <span className="font-mono text-sm text-ink-muted">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <div>
-                <h3 className="font-display text-base font-semibold text-ink">{title}</h3>
-                <p className="mt-1 font-body text-sm leading-relaxed text-ink-muted">{desc}</p>
+                <h3 className="font-display text-base font-semibold text-ink">
+                  {title}
+                </h3>
+                <p className="mt-1 font-body text-sm leading-relaxed text-ink-muted">
+                  {desc}
+                </p>
               </div>
             </li>
           ))}
@@ -143,8 +195,8 @@ export default async function HomePage() {
             ¿Tienes un proyecto en mente?
           </h2>
           <p className="mt-3 max-w-md font-body text-sm leading-relaxed text-ink-muted">
-            Cuéntame qué necesitas y te respondo con una propuesta concreta,
-            no una plantilla genérica.
+            Cuéntame qué necesitas y te respondo con una propuesta concreta, no
+            una plantilla genérica.
           </p>
           <Link
             href="/contacto"
