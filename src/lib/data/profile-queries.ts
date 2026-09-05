@@ -55,6 +55,16 @@ const PROFILE_COLUMNS =
   "id,full_name,headline,bio,avatar_url,email,phone,location,website,linkedin_url,github_url,created_at,updated_at";
 const PROFILE_LINK_COLUMNS = "id,label,url,icon,sort_order,created_at";
 
+function isMissingTableError(error: { code?: string; message?: string } | null) {
+  if (!error) return false;
+
+  return (
+    error.code === "PGRST205" ||
+    error.code === "42P01" ||
+    /could not find the table|does not exist/i.test(error.message ?? "")
+  );
+}
+
 function mapProfile(row: ProfileRow): Profile {
   return {
     id: row.id,
@@ -104,7 +114,11 @@ export async function getProfileLinks(): Promise<ProfileLink[]> {
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTableError(error)) return [];
+    throw error;
+  }
+
   return ((data ?? []) as ProfileLinkRow[]).map(mapProfileLink);
 }
 
@@ -128,6 +142,10 @@ export async function getProfileLinksAdmin(): Promise<ProfileLink[]> {
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    if (isMissingTableError(error)) return [];
+    throw error;
+  }
+
   return ((data ?? []) as ProfileLinkRow[]).map(mapProfileLink);
 }

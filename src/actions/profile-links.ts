@@ -47,6 +47,16 @@ function revalidateProfilePaths() {
   revalidatePath("/dashboard/perfil");
 }
 
+function isMissingTableError(error: { code?: string; message?: string } | null) {
+  if (!error) return false;
+
+  return (
+    error.code === "PGRST205" ||
+    error.code === "42P01" ||
+    /could not find the table|does not exist/i.test(error.message ?? "")
+  );
+}
+
 export async function createProfileLink(
   _prevState: ProfileActionState,
   formData: FormData,
@@ -73,7 +83,16 @@ export async function updateProfileLink(
       .from("profile_links")
       .update(linkPayload(parsed.data))
       .eq("id", id);
-    if (error) throw error;
+    if (error) {
+      if (isMissingTableError(error)) {
+        return {
+          status: "error",
+          message:
+            "La tabla de enlaces sociales no está creada en Supabase. Aplica la migración profile_links.",
+        };
+      }
+      throw error;
+    }
 
     revalidateProfilePaths();
     return { status: "success", message: "Enlace actualizado." };
@@ -104,7 +123,16 @@ async function saveProfileLink(
     const { error } = await createAdminClient()
       .from("profile_links")
       .insert(linkPayload(parsed.data));
-    if (error) throw error;
+    if (error) {
+      if (isMissingTableError(error)) {
+        return {
+          status: "error",
+          message:
+            "La tabla de enlaces sociales no está creada en Supabase. Aplica la migración profile_links.",
+        };
+      }
+      throw error;
+    }
 
     revalidateProfilePaths();
     return { status: "success", message: "Enlace añadido." };
@@ -126,7 +154,16 @@ export async function deleteProfileLink(
       .from("profile_links")
       .delete()
       .eq("id", id);
-    if (error) throw error;
+    if (error) {
+      if (isMissingTableError(error)) {
+        return {
+          status: "error",
+          message:
+            "La tabla de enlaces sociales no está creada en Supabase. Aplica la migración profile_links.",
+        };
+      }
+      throw error;
+    }
 
     revalidateProfilePaths();
     return { status: "success", message: "Enlace eliminado." };
@@ -156,7 +193,16 @@ export async function reorderProfileLinks(
       ),
     );
     const error = results.find((result) => result.error)?.error;
-    if (error) throw error;
+    if (error) {
+      if (isMissingTableError(error)) {
+        return {
+          status: "error",
+          message:
+            "La tabla de enlaces sociales no está creada en Supabase. Aplica la migración profile_links.",
+        };
+      }
+      throw error;
+    }
 
     revalidateProfilePaths();
     return { status: "success", message: "Orden actualizado." };
