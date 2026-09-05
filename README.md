@@ -63,6 +63,32 @@ Ver `.env.example`. Nunca subir `.env.local` al repositorio.
 | `OPENAI_API_KEY`                | Fase 3 - AI Profile Assistant                  |
 | `N8N_WEBHOOK_URL`               | Fase 3 - notificaciones de leads               |
 
+## Login con Google
+
+Google OAuth es una alternativa exclusiva para el login privado del dashboard.
+No aparece en páginas públicas ni se usa para acciones de visitantes.
+
+Para configurarlo:
+
+1. En Supabase, abrir **Authentication → Providers → Google** y habilitar el
+   proveedor.
+2. En Google Cloud Console, crear credenciales OAuth de tipo aplicación web y
+   configurar como **Authorized redirect URI** la callback que muestra Supabase:
+   `https://{project-ref}.supabase.co/auth/v1/callback`.
+3. Copiar el Client ID y Client Secret en la configuración del proveedor Google
+   dentro de Supabase. No se necesitan variables nuevas en Next.js.
+4. En **Authentication → URL Configuration**, permitir también la URL de la
+   aplicación que usa el login, por ejemplo `https://tu-dominio.com/callback`
+   y su equivalente local durante desarrollo.
+5. Revisar **Authentication → Settings → User Signups**. Como este proyecto
+   tiene un único usuario administrador, desactivar el registro de nuevos
+   usuarios si la instancia no necesita altas adicionales y confirmar que la
+   cuenta de Diego ya existe antes de probar el botón.
+
+El flujo vuelve a `/callback`, intercambia el código por una sesión de Supabase
+y redirige al dashboard. El middleware existente protege esa ruta de forma
+independiente del proveedor utilizado.
+
 ## Base de datos
 
 El esquema inicial esta en `supabase/migrations/0001_init.sql`. Aplicarlo con
