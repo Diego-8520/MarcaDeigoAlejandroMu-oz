@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { projectSchema, type ProjectInput } from "@/lib/validation/project";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { setProjectSkills } from "@/actions/skills";
 
 export type ProjectActionState = {
   status: "idle" | "success" | "error";
@@ -30,6 +31,13 @@ function listFromForm(formData: FormData, name: string) {
 function formValue(formData: FormData, name: string) {
   const value = String(formData.get(name) ?? "").trim();
   return value === "" ? undefined : value;
+}
+
+function skillIdsFromForm(formData: FormData) {
+  return formData
+    .getAll("skill_ids")
+    .map((value) => String(value).trim())
+    .filter(Boolean);
 }
 
 function projectFromFormData(formData: FormData) {
@@ -111,7 +119,7 @@ function revalidateProjectPaths() {
 
 export async function createProject(
   _prevState: ProjectActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProjectActionState> {
   try {
     await ensureAuthenticated();
@@ -120,7 +128,8 @@ export async function createProject(
     if (!parsed.success) {
       return {
         status: "error",
-        message: parsed.error.issues[0]?.message ?? "Revisa los datos del formulario.",
+        message:
+          parsed.error.issues[0]?.message ?? "Revisa los datos del formulario.",
       };
     }
 
@@ -128,15 +137,27 @@ export async function createProject(
     await assertUniqueSlug(payload.slug);
 
     const supabase = createAdminClient();
-    const { error } = await supabase.from("projects").insert(payload);
+    const { data: project, error } = await supabase
+      .from("projects")
+      .insert(payload)
+      .select("id")
+      .single();
     if (error) throw error;
+    const skillsResult = await setProjectSkills(
+      project.id,
+      skillIdsFromForm(formData),
+    );
+    if (skillsResult.status === "error") throw new Error(skillsResult.message);
 
     revalidateProjectPaths();
     return { status: "success", message: "Proyecto creado." };
   } catch (error) {
     return {
       status: "error",
-      message: error instanceof Error ? error.message : "No se pudo crear el proyecto.",
+      message:
+        error instanceof Error
+          ? error.message
+          : "No se pudo crear el proyecto.",
     };
   }
 }
@@ -144,7 +165,7 @@ export async function createProject(
 export async function updateProject(
   id: string,
   _prevState: ProjectActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ProjectActionState> {
   try {
     await ensureAuthenticated();
@@ -153,7 +174,8 @@ export async function updateProject(
     if (!parsed.success) {
       return {
         status: "error",
-        message: parsed.error.issues[0]?.message ?? "Revisa los datos del formulario.",
+        message:
+          parsed.error.issues[0]?.message ?? "Revisa los datos del formulario.",
       };
     }
 
@@ -161,15 +183,23 @@ export async function updateProject(
     await assertUniqueSlug(payload.slug, id);
 
     const supabase = createAdminClient();
-    const { error } = await supabase.from("projects").update(payload).eq("id", id);
+    const { error } = await supabase
+      .from("projects")
+      .update(payload)
+      .eq("id", id);
     if (error) throw error;
+    const skillsResult = await setProjectSkills(id, skillIdsFromForm(formData));
+    if (skillsResult.status === "error") throw new Error(skillsResult.message);
 
     revalidateProjectPaths();
     return { status: "success", message: "Proyecto actualizado." };
   } catch (error) {
     return {
       status: "error",
-      message: error instanceof Error ? error.message : "No se pudo actualizar el proyecto.",
+      message:
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar el proyecto.",
     };
   }
 }
@@ -187,7 +217,10 @@ export async function deleteProject(id: string): Promise<ProjectActionState> {
   } catch (error) {
     return {
       status: "error",
-      message: error instanceof Error ? error.message : "No se pudo eliminar el proyecto.",
+      message:
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar el proyecto.",
     };
   }
 }

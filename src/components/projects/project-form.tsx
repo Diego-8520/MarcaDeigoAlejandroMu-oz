@@ -6,13 +6,16 @@ import { useActionState, useState, useTransition } from "react";
 import { importImageFromUrl } from "@/actions/project-images";
 import type { ProjectActionState } from "@/actions/projects";
 import type { Project } from "@/types/project";
+import type { Skill } from "@/lib/data/skills-queries";
 
 type ProjectFormProps = {
   action: (
     prevState: ProjectActionState,
-    formData: FormData
+    formData: FormData,
   ) => Promise<ProjectActionState>;
   project?: Project;
+  skills?: Skill[];
+  selectedSkillIds?: string[];
   submitLabel: string;
 };
 
@@ -65,7 +68,7 @@ function isGithubUrl(value: string) {
 
 async function fetchSuggestion<T>(
   endpoint: string,
-  payload: Record<string, string>
+  payload: Record<string, string>,
 ): Promise<{ data: T | null; error: string | null }> {
   try {
     const response = await fetch(endpoint, {
@@ -76,7 +79,10 @@ async function fetchSuggestion<T>(
     const json = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      return { data: null, error: json.message ?? "No pude traer sugerencias." };
+      return {
+        data: null,
+        error: json.message ?? "No pude traer sugerencias.",
+      };
     }
 
     return { data: json as T, error: null };
@@ -85,29 +91,41 @@ async function fetchSuggestion<T>(
   }
 }
 
-export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) {
+export function ProjectForm({
+  action,
+  project,
+  skills = [],
+  selectedSkillIds = [],
+  submitLabel,
+}: ProjectFormProps) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(action, initialState);
   const [isImportingImage, startImageImportTransition] = useTransition();
   const [title, setTitle] = useState(project?.title ?? "");
   const [shortDescription, setShortDescription] = useState(
-    project?.shortDescription ?? ""
+    project?.shortDescription ?? "",
   );
   const [description, setDescription] = useState(project?.description ?? "");
   const [problem, setProblem] = useState(project?.problem ?? "");
   const [solution, setSolution] = useState(project?.solution ?? "");
   const [results, setResults] = useState(project?.results ?? "");
-  const [technologies, setTechnologies] = useState(listValue(project?.technologies));
+  const [technologies, setTechnologies] = useState(
+    listValue(project?.technologies),
+  );
   const [categories, setCategories] = useState(listValue(project?.categories));
   const [demoUrl, setDemoUrl] = useState(project?.demoUrl ?? "");
-  const [repositoryUrl, setRepositoryUrl] = useState(project?.repositoryUrl ?? "");
+  const [repositoryUrl, setRepositoryUrl] = useState(
+    project?.repositoryUrl ?? "",
+  );
   const [featuredImageUrl, setFeaturedImageUrl] = useState(
-    project?.featuredImageUrl ?? ""
+    project?.featuredImageUrl ?? "",
   );
-  const [githubSuggestion, setGithubSuggestion] = useState<GithubSuggestion | null>(
-    null
+  const [selectedSkills, setSelectedSkills] = useState(selectedSkillIds);
+  const [githubSuggestion, setGithubSuggestion] =
+    useState<GithubSuggestion | null>(null);
+  const [siteSuggestion, setSiteSuggestion] = useState<SiteSuggestion | null>(
+    null,
   );
-  const [siteSuggestion, setSiteSuggestion] = useState<SiteSuggestion | null>(null);
   const [githubStatus, setGithubStatus] = useState<{
     loading: boolean;
     error: string | null;
@@ -116,7 +134,9 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
     loading: boolean;
     error: string | null;
   }>({ loading: false, error: null });
-  const [imageImportMessage, setImageImportMessage] = useState<string | null>(null);
+  const [imageImportMessage, setImageImportMessage] = useState<string | null>(
+    null,
+  );
 
   async function loadGithubSuggestion() {
     if (!repositoryUrl || !isGithubUrl(repositoryUrl)) return;
@@ -124,7 +144,7 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
     setGithubStatus({ loading: true, error: null });
     const { data, error } = await fetchSuggestion<GithubSuggestion>(
       "/api/dashboard/github-metadata",
-      { repositoryUrl }
+      { repositoryUrl },
     );
     setGithubSuggestion(data);
     setGithubStatus({ loading: false, error });
@@ -136,7 +156,7 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
     setSiteStatus({ loading: true, error: null });
     const { data, error } = await fetchSuggestion<SiteSuggestion>(
       "/api/dashboard/site-metadata",
-      { demoUrl }
+      { demoUrl },
     );
     setSiteSuggestion(data);
     setSiteStatus({ loading: false, error });
@@ -155,7 +175,7 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
       mergeList(technologies, [
         ...githubSuggestion.suggestedTechnologies,
         ...githubSuggestion.topics,
-      ])
+      ]),
     );
   }
 
@@ -183,7 +203,7 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
       const result = await importImageFromUrl(
         project.id,
         siteSuggestion.ogImageUrl ?? "",
-        title || siteSuggestion.suggestedTitle
+        title || siteSuggestion.suggestedTitle,
       );
       setImageImportMessage(result.message ?? null);
       router.refresh();
@@ -222,7 +242,10 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
       </div>
 
       <div>
-        <label htmlFor="short_description" className="font-mono text-xs text-ink-muted">
+        <label
+          htmlFor="short_description"
+          className="font-mono text-xs text-ink-muted"
+        >
           descripción corta
         </label>
         <input
@@ -235,7 +258,10 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
       </div>
 
       <div>
-        <label htmlFor="description" className="font-mono text-xs text-ink-muted">
+        <label
+          htmlFor="description"
+          className="font-mono text-xs text-ink-muted"
+        >
           descripción
         </label>
         <textarea
@@ -264,7 +290,10 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
         </div>
 
         <div>
-          <label htmlFor="solution" className="font-mono text-xs text-ink-muted">
+          <label
+            htmlFor="solution"
+            className="font-mono text-xs text-ink-muted"
+          >
             solución
           </label>
           <textarea
@@ -294,7 +323,10 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="technologies" className="font-mono text-xs text-ink-muted">
+          <label
+            htmlFor="technologies"
+            className="font-mono text-xs text-ink-muted"
+          >
             tecnologías
           </label>
           <input
@@ -308,7 +340,10 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
         </div>
 
         <div>
-          <label htmlFor="categories" className="font-mono text-xs text-ink-muted">
+          <label
+            htmlFor="categories"
+            className="font-mono text-xs text-ink-muted"
+          >
             categorías
           </label>
           <input
@@ -362,7 +397,10 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="demo_url" className="font-mono text-xs text-ink-muted">
+          <label
+            htmlFor="demo_url"
+            className="font-mono text-xs text-ink-muted"
+          >
             demo url
           </label>
           <input
@@ -375,15 +413,22 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
             className="mt-1.5 w-full border border-line bg-transparent px-3 py-2 font-body text-sm text-ink outline-none focus:border-signal"
           />
           {siteStatus.loading && (
-            <p className="mt-1.5 font-mono text-xs text-ink-muted">buscando...</p>
+            <p className="mt-1.5 font-mono text-xs text-ink-muted">
+              buscando...
+            </p>
           )}
           {siteStatus.error && (
-            <p className="mt-1.5 font-mono text-xs text-red-600">{siteStatus.error}</p>
+            <p className="mt-1.5 font-mono text-xs text-red-600">
+              {siteStatus.error}
+            </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="repository_url" className="font-mono text-xs text-ink-muted">
+          <label
+            htmlFor="repository_url"
+            className="font-mono text-xs text-ink-muted"
+          >
             repository url
           </label>
           <input
@@ -396,7 +441,9 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
             className="mt-1.5 w-full border border-line bg-transparent px-3 py-2 font-body text-sm text-ink outline-none focus:border-signal"
           />
           {githubStatus.loading && (
-            <p className="mt-1.5 font-mono text-xs text-ink-muted">buscando...</p>
+            <p className="mt-1.5 font-mono text-xs text-ink-muted">
+              buscando...
+            </p>
           )}
           {githubStatus.error && (
             <p className="mt-1.5 font-mono text-xs text-red-600">
@@ -408,14 +455,19 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
 
       {githubSuggestion && (
         <div className="border border-line p-4">
-          <p className="font-mono text-xs text-ink-muted">sugerencia desde github</p>
+          <p className="font-mono text-xs text-ink-muted">
+            sugerencia desde github
+          </p>
           {githubSuggestion.suggestedDescription && (
             <p className="mt-2 font-body text-sm leading-relaxed text-ink-muted">
               {githubSuggestion.suggestedDescription}
             </p>
           )}
           <p className="mt-3 font-mono text-xs text-ink-muted">
-            {[...githubSuggestion.suggestedTechnologies, ...githubSuggestion.topics]
+            {[
+              ...githubSuggestion.suggestedTechnologies,
+              ...githubSuggestion.topics,
+            ]
               .slice(0, 12)
               .join(", ") || "sin tecnologías detectadas"}
           </p>
@@ -423,7 +475,7 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
             {githubSuggestion.stars} stars
             {githubSuggestion.lastCommitDate
               ? ` · último cambio ${new Date(
-                  githubSuggestion.lastCommitDate
+                  githubSuggestion.lastCommitDate,
                 ).toLocaleDateString("es-CO")}`
               : ""}
           </p>
@@ -439,8 +491,11 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
 
       {siteSuggestion && (
         <div className="border border-line p-4">
-          <p className="font-mono text-xs text-ink-muted">sugerencia desde sitio</p>
-          {(siteSuggestion.suggestedTitle || siteSuggestion.suggestedDescription) && (
+          <p className="font-mono text-xs text-ink-muted">
+            sugerencia desde sitio
+          </p>
+          {(siteSuggestion.suggestedTitle ||
+            siteSuggestion.suggestedDescription) && (
             <div className="mt-2 space-y-1">
               {siteSuggestion.suggestedTitle && (
                 <p className="font-body text-sm font-medium text-ink">
@@ -467,7 +522,9 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
               </div>
               <button
                 type="button"
-                onClick={() => setFeaturedImageUrl(siteSuggestion.ogImageUrl ?? "")}
+                onClick={() =>
+                  setFeaturedImageUrl(siteSuggestion.ogImageUrl ?? "")
+                }
                 className="mt-3 border border-line px-3 py-1.5 font-mono text-xs text-ink transition-colors hover:border-signal hover:text-signal"
               >
                 usar imagen destacada
@@ -500,7 +557,10 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
       )}
 
       <div>
-        <label htmlFor="featured_image_url" className="font-mono text-xs text-ink-muted">
+        <label
+          htmlFor="featured_image_url"
+          className="font-mono text-xs text-ink-muted"
+        >
           imagen destacada url
         </label>
         <input
@@ -511,6 +571,43 @@ export function ProjectForm({ action, project, submitLabel }: ProjectFormProps) 
           onChange={(event) => setFeaturedImageUrl(event.target.value)}
           className="mt-1.5 w-full border border-line bg-transparent px-3 py-2 font-body text-sm text-ink outline-none focus:border-signal"
         />
+      </div>
+
+      <div>
+        <p className="font-mono text-xs text-ink-muted">skills del proyecto</p>
+        {skills.length === 0 ? (
+          <p className="mt-2 font-body text-sm text-ink-muted">
+            Crea skills desde el dashboard para poder vincularlas.
+          </p>
+        ) : (
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {skills.map((skill) => (
+              <label
+                key={skill.id}
+                className="flex items-center gap-2 font-mono text-xs text-ink-muted"
+              >
+                <input
+                  type="checkbox"
+                  name="skill_ids"
+                  value={skill.id}
+                  checked={selectedSkills.includes(skill.id)}
+                  onChange={(event) => {
+                    setSelectedSkills((current) =>
+                      event.target.checked
+                        ? [...current, skill.id]
+                        : current.filter((id) => id !== skill.id),
+                    );
+                  }}
+                  className="size-4 accent-signal"
+                />
+                {skill.name}
+                {skill.category && (
+                  <span className="text-ink-muted">· {skill.category}</span>
+                )}
+              </label>
+            ))}
+          </div>
+        )}
       </div>
 
       <button

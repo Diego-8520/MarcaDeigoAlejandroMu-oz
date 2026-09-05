@@ -3,30 +3,29 @@ import Image from "next/image";
 import { ProfileLinkIcon } from "@/components/profile/profile-link-icon";
 import { Section, Tag } from "@/components/ui/section";
 import { getProfile, getProfileLinks } from "@/lib/data/profile-queries";
+import { getSkills } from "@/lib/data/skills-queries";
 
 export const metadata: Metadata = {
   title: "Sobre mí — Diego Alejandro Muñoz",
 };
 
-const HEADLINE_TECH = [
-  "TypeScript",
-  "Next.js",
-  "React",
-  "Python",
-  "FastAPI",
-  "PostgreSQL",
-  "AI",
-  "n8n",
-  "Docker",
-  "Vercel",
-  "GitHub Actions",
-];
-
 export const dynamic = "force-dynamic";
 
 export default async function SobreMiPage() {
-  const [profile, links] = await Promise.all([getProfile(), getProfileLinks()]);
+  const [profile, links, skills] = await Promise.all([
+    getProfile(),
+    getProfileLinks(),
+    getSkills(),
+  ]);
   const fullName = profile?.fullName ?? "Diego Alejandro Muñoz";
+  const skillGroups = skills.reduce<Record<string, typeof skills>>(
+    (groups, skill) => {
+      const category = skill.category ?? "Tecnologías";
+      (groups[category] ??= []).push(skill);
+      return groups;
+    },
+    {},
+  );
 
   return (
     <Section className="pt-16 lg:pt-24">
@@ -83,11 +82,26 @@ export default async function SobreMiPage() {
         <h2 className="font-display text-base font-semibold text-ink">
           Tecnologías principales
         </h2>
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {HEADLINE_TECH.map((t) => (
-            <Tag key={t}>{t}</Tag>
-          ))}
-        </div>
+        {skills.length === 0 ? (
+          <p className="mt-4 font-body text-sm text-ink-muted">
+            Tecnologías en actualización.
+          </p>
+        ) : (
+          <div className="mt-4 space-y-4">
+            {Object.entries(skillGroups).map(([category, categorySkills]) => (
+              <div key={category}>
+                <p className="mb-2 font-mono text-[11px] text-ink-muted">
+                  {category}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {categorySkills.map((skill) => (
+                    <Tag key={skill.id}>{skill.name}</Tag>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </Section>
   );
