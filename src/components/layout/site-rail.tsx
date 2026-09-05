@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: "/sobre-mi", label: "sobre mí" },
   { href: "/experiencia", label: "experiencia" },
   { href: "/cv", label: "cv" },
+  { href: "/arquitectura", label: "arquitectura" },
   { href: "/contacto", label: "contacto" },
 ];
 
@@ -57,12 +58,19 @@ export function SiteRail() {
 
       {/* Barra superior — mobile */}
       <header className="flex items-center justify-between border-b border-line px-5 py-4 lg:hidden">
-        <Link href="/" className="font-display text-base font-semibold text-ink">
+        <Link
+          href="/"
+          className="font-display text-base font-semibold text-ink"
+        >
           Diego Alejandro Muñoz
         </Link>
         <nav className="flex gap-4 overflow-x-auto font-mono text-xs text-ink-muted">
           {NAV_ITEMS.slice(1).map((item) => (
-            <Link key={item.href} href={item.href} className="whitespace-nowrap hover:text-ink">
+            <Link
+              key={item.href}
+              href={item.href}
+              className="whitespace-nowrap hover:text-ink"
+            >
               {item.label}
             </Link>
           ))}
