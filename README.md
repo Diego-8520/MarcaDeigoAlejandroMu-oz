@@ -91,13 +91,32 @@ independiente del proveedor utilizado.
 
 ## Base de datos
 
-El esquema inicial esta en `supabase/migrations/0001_init.sql`. Aplicarlo con
-la CLI de Supabase:
+Las migraciones versionadas viven en `supabase/migrations/`. El despliegue
+normal a producción se hace con la CLI de Supabase; el SQL Editor queda
+reservado para emergencias documentadas.
 
 ```bash
-supabase link --project-ref <tu-project-ref>
+npm install -g supabase
+supabase login
+supabase link --project-ref hhmzkxbsdeddwplxwhmd
+supabase migration list
 supabase db push
 ```
+
+Antes de cada despliegue, comprobar que `supabase migration list` no muestra
+migraciones locales pendientes inesperadas. Después de un despliegue, verificar
+que todas las versiones de `supabase/migrations/` aparecen en
+`supabase_migrations.schema_migrations`:
+
+```sql
+select version, name
+from supabase_migrations.schema_migrations
+order by version;
+```
+
+No aplicar archivos de migración manualmente desde el SQL Editor salvo una
+emergencia. Si se usa ese procedimiento, registrar después la causa, el SQL
+ejecutado y la reconciliación necesaria antes del siguiente `supabase db push`.
 
 ## Storage
 
@@ -113,8 +132,9 @@ project-images/{project_id}/{uuid}.{ext}
 
 Los archivos fisicos dentro del bucket usan `{project_id}/{uuid}.{ext}`.
 
-Para el avatar del perfil, crear manualmente el bucket `profile-media` en
-Supabase Storage con lectura publica. La escritura queda restringida al
+Para el avatar del perfil, el bucket `profile-media` debe existir en Supabase
+Storage con lectura publica. El bucket `project-images` usa la misma política
+de lectura pública para la galería. La escritura de ambos queda restringida al
 servidor mediante `SUPABASE_SERVICE_ROLE_KEY`; no se suben archivos
 directamente desde el cliente.
 
