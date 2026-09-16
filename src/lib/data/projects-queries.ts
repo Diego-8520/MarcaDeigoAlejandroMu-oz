@@ -1,4 +1,9 @@
-import type { Project, ProjectImage, ProjectStatus } from "@/types/project";
+import type {
+  GithubMetadata,
+  Project,
+  ProjectImage,
+  ProjectStatus,
+} from "@/types/project";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -17,6 +22,12 @@ type ProjectRow = {
   demo_url: string | null;
   repository_url: string | null;
   featured_image_url: string | null;
+  github_metadata: GithubMetadata | null;
+  github_synced_at: string | null;
+  vercel_project_url: string | null;
+  vercel_production_url: string | null;
+  vercel_custom_domain: string | null;
+  vercel_deployment_status: string | null;
   technologies: string[] | null;
   categories: string[] | null;
   created_at: string;
@@ -33,7 +44,7 @@ type ProjectImageRow = {
 };
 
 const PROJECT_COLUMNS =
-  "id,title,slug,short_description,description,problem,solution,results,status,featured,published,demo_url,repository_url,featured_image_url,technologies,categories,created_at,updated_at";
+  "id,title,slug,short_description,description,problem,solution,results,status,featured,published,demo_url,repository_url,featured_image_url,technologies,categories,github_metadata,github_synced_at,vercel_project_url,vercel_production_url,vercel_custom_domain,vercel_deployment_status,created_at,updated_at";
 const PROJECT_IMAGE_COLUMNS = "id,project_id,storage_path,alt_text,sort_order";
 const PROJECT_WITH_IMAGES_COLUMNS = `${PROJECT_COLUMNS},project_images(${PROJECT_IMAGE_COLUMNS})`;
 const PROJECT_IMAGES_BUCKET = "project-images";
@@ -51,6 +62,10 @@ function imagePublicUrl(storagePath: string) {
     .getPublicUrl(storageObjectPath(storagePath));
 
   return data.publicUrl;
+}
+
+function normalizeGithubMetadata(value: GithubMetadata | null) {
+  return value && typeof value.repositoryUrl === "string" ? value : null;
 }
 
 export function mapProjectImage(row: ProjectImageRow): ProjectImage {
@@ -80,6 +95,12 @@ export function mapProject(row: ProjectRow): Project {
     demoUrl: row.demo_url,
     repositoryUrl: row.repository_url,
     featuredImageUrl: row.featured_image_url,
+    githubMetadata: normalizeGithubMetadata(row.github_metadata),
+    githubSyncedAt: row.github_synced_at,
+    vercelProjectUrl: row.vercel_project_url,
+    vercelProductionUrl: row.vercel_production_url,
+    vercelCustomDomain: row.vercel_custom_domain,
+    vercelDeploymentStatus: row.vercel_deployment_status,
     technologies: row.technologies ?? [],
     categories: row.categories ?? [],
     createdAt: row.created_at,
@@ -116,7 +137,9 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   return data ? mapProject(data as ProjectRow) : null;
 }
 
-export async function getProjectImages(projectId: string): Promise<ProjectImage[]> {
+export async function getProjectImages(
+  projectId: string,
+): Promise<ProjectImage[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("project_images")
@@ -129,7 +152,7 @@ export async function getProjectImages(projectId: string): Promise<ProjectImage[
 }
 
 export async function getProjectImagesAdmin(
-  projectId: string
+  projectId: string,
 ): Promise<ProjectImage[]> {
   const supabase = createAdminClient();
   const { data, error } = await supabase

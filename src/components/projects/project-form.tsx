@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition } from "react";
 import { importImageFromUrl } from "@/actions/project-images";
 import type { ProjectActionState } from "@/actions/projects";
-import type { Project } from "@/types/project";
+import type { GithubMetadata, Project } from "@/types/project";
 import type { Skill } from "@/lib/data/skills-queries";
 
 type ProjectFormProps = {
@@ -20,11 +20,20 @@ type ProjectFormProps = {
 };
 
 type GithubSuggestion = {
+  repositoryUrl: string;
+  owner: string;
+  name: string;
+  defaultBranch: string | null;
   suggestedDescription: string;
   suggestedTechnologies: string[];
+  primaryLanguage: string | null;
+  languages: Record<string, number>;
+  packageTechnologies: string[];
   topics: string[];
   lastCommitDate: string | null;
+  updatedAt: string | null;
   stars: number;
+  forks: number;
 };
 
 type SiteSuggestion = {
@@ -39,24 +48,6 @@ function listValue(items?: string[]) {
   return items?.join(", ") ?? "";
 }
 
-function mergeList(current: string, additions: string[]) {
-  const existing = current
-    .split(/[\n,]/)
-    .map((item) => item.trim())
-    .filter(Boolean);
-  const seen = new Set(existing.map((item) => item.toLowerCase()));
-
-  for (const item of additions) {
-    const normalized = item.trim();
-    if (normalized && !seen.has(normalized.toLowerCase())) {
-      existing.push(normalized);
-      seen.add(normalized.toLowerCase());
-    }
-  }
-
-  return existing.join(", ");
-}
-
 function isGithubUrl(value: string) {
   try {
     const url = new URL(value);
@@ -64,6 +55,10 @@ function isGithubUrl(value: string) {
   } catch {
     return false;
   }
+}
+
+function sameGithubRepository(first: string, second: string) {
+  return first.replace(/\/$/, "").toLowerCase() === second.replace(/\/$/, "").toLowerCase();
 }
 
 async function fetchSuggestion<T>(
@@ -120,6 +115,24 @@ export function ProjectForm({
   const [featuredImageUrl, setFeaturedImageUrl] = useState(
     project?.featuredImageUrl ?? "",
   );
+  const [githubMetadata, setGithubMetadata] = useState<GithubMetadata | null>(
+    project?.githubMetadata ?? null,
+  );
+  const [githubSyncedAt, setGithubSyncedAt] = useState(
+    project?.githubSyncedAt ?? "",
+  );
+  const [vercelProjectUrl, setVercelProjectUrl] = useState(
+    project?.vercelProjectUrl ?? "",
+  );
+  const [vercelProductionUrl, setVercelProductionUrl] = useState(
+    project?.vercelProductionUrl ?? "",
+  );
+  const [vercelCustomDomain, setVercelCustomDomain] = useState(
+    project?.vercelCustomDomain ?? "",
+  );
+  const [vercelDeploymentStatus, setVercelDeploymentStatus] = useState(
+    project?.vercelDeploymentStatus ?? "",
+  );
   const [selectedSkills, setSelectedSkills] = useState(selectedSkillIds);
   const [githubSuggestion, setGithubSuggestion] =
     useState<GithubSuggestion | null>(null);
@@ -139,7 +152,17 @@ export function ProjectForm({
   );
 
   async function loadGithubSuggestion() {
-    if (!repositoryUrl || !isGithubUrl(repositoryUrl)) return;
+    if (!repositoryUrl) {
+      setGithubStatus({ loading: false, error: "Ingresa una URL de GitHub." });
+      return;
+    }
+    if (!isGithubUrl(repositoryUrl)) {
+      setGithubStatus({
+        loading: false,
+        error: "La URL debe ser de GitHub, con formato github.com/owner/repo.",
+      });
+      return;
+    }
 
     setGithubStatus({ loading: true, error: null });
     const { data, error } = await fetchSuggestion<GithubSuggestion>(
@@ -147,6 +170,26 @@ export function ProjectForm({
       { repositoryUrl },
     );
     setGithubSuggestion(data);
+    if (data) {
+      setGithubMetadata({
+        repositoryUrl: data.repositoryUrl,
+        owner: data.owner,
+        name: data.name,
+        defaultBranch: data.defaultBranch,
+        description: data.suggestedDescription || null,
+        primaryLanguage: data.primaryLanguage,
+        languages: data.languages,
+        topics: data.topics,
+        stars: data.stars,
+        forks: data.forks,
+        lastUpdated: data.updatedAt ?? data.lastCommitDate,
+        detectedTechnologies: [
+          ...data.packageTechnologies,
+          ...data.suggestedTechnologies,
+        ].filter((item, index, list) => list.indexOf(item) === index),
+      });
+      setGithubSyncedAt(new Date().toISOString());
+    }
     setGithubStatus({ loading: false, error });
   }
 
@@ -171,12 +214,6 @@ export function ProjectForm({
     if (!description && githubSuggestion.suggestedDescription) {
       setDescription(githubSuggestion.suggestedDescription);
     }
-    setTechnologies(
-      mergeList(technologies, [
-        ...githubSuggestion.suggestedTechnologies,
-        ...githubSuggestion.topics,
-      ]),
-    );
   }
 
   function applySiteSuggestion() {
@@ -212,6 +249,18 @@ export function ProjectForm({
 
   return (
     <form action={formAction} className="mt-8 max-w-2xl space-y-5">
+      <input
+        type="hidden"
+        name="github_metadata"
+        value={githubMetadata ? JSON.stringify(githubMetadata) : ""}
+        readOnly
+      />
+      <input
+        type="hidden"
+        name="github_synced_at"
+        value={githubSyncedAt}
+        readOnly
+      />
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="title" className="font-mono text-xs text-ink-muted">
@@ -436,7 +485,18 @@ export function ProjectForm({
             name="repository_url"
             type="url"
             value={repositoryUrl}
-            onChange={(event) => setRepositoryUrl(event.target.value)}
+            onChange={(event) => {
+              const nextRepositoryUrl = event.target.value;
+              setRepositoryUrl(nextRepositoryUrl);
+              if (
+                githubMetadata &&
+                !sameGithubRepository(githubMetadata.repositoryUrl, nextRepositoryUrl)
+              ) {
+                setGithubMetadata(null);
+                setGithubSuggestion(null);
+                setGithubSyncedAt("");
+              }
+            }}
             onBlur={loadGithubSuggestion}
             className="mt-1.5 w-full border border-line bg-transparent px-3 py-2 font-body text-sm text-ink outline-none focus:border-signal"
           />
@@ -450,6 +510,14 @@ export function ProjectForm({
               {githubStatus.error}
             </p>
           )}
+          <button
+            type="button"
+            onClick={loadGithubSuggestion}
+            disabled={githubStatus.loading || !repositoryUrl}
+            className="mt-2 border border-line px-3 py-1.5 font-mono text-xs text-ink transition-colors hover:border-signal hover:text-signal disabled:opacity-50"
+          >
+            {githubStatus.loading ? "sincronizando..." : "sincronizar github"}
+          </button>
         </div>
       </div>
 
@@ -464,18 +532,29 @@ export function ProjectForm({
             </p>
           )}
           <p className="mt-3 font-mono text-xs text-ink-muted">
+            detectadas:{" "}
             {[
+              ...githubSuggestion.packageTechnologies,
               ...githubSuggestion.suggestedTechnologies,
-              ...githubSuggestion.topics,
             ]
               .slice(0, 12)
-              .join(", ") || "sin tecnologías detectadas"}
+              .join(", ") || "ninguna"}
+          </p>
+          <p className="mt-2 font-mono text-[11px] text-ink-muted">
+            {githubSuggestion.owner}/{githubSuggestion.name} · rama{" "}
+            {githubSuggestion.defaultBranch ?? "sin definir"} ·{" "}
+            {githubSuggestion.forks} forks
+          </p>
+          <p className="mt-2 font-mono text-[11px] text-ink-muted">
+            lenguajes:{" "}
+            {Object.keys(githubSuggestion.languages).join(", ") || "ninguno"}
           </p>
           <p className="mt-2 font-mono text-[11px] text-ink-muted">
             {githubSuggestion.stars} stars
-            {githubSuggestion.lastCommitDate
-              ? ` · último cambio ${new Date(
-                  githubSuggestion.lastCommitDate,
+            {(githubSuggestion.updatedAt ?? githubSuggestion.lastCommitDate)
+              ? ` · actualizado ${new Date(
+                  githubSuggestion.updatedAt ??
+                    githubSuggestion.lastCommitDate!,
                 ).toLocaleDateString("es-CO")}`
               : ""}
           </p>
@@ -484,7 +563,7 @@ export function ProjectForm({
             onClick={applyGithubSuggestion}
             className="mt-4 border border-line px-3 py-1.5 font-mono text-xs text-ink transition-colors hover:border-signal hover:text-signal"
           >
-            aplicar sugerencias
+            usar descripción detectada
           </button>
         </div>
       )}
@@ -555,6 +634,46 @@ export function ProjectForm({
           </button>
         </div>
       )}
+
+      <div className="border-t border-line pt-5">
+        <p className="font-mono text-xs text-ink-muted">vercel (manual)</p>
+        <div className="mt-3 grid gap-5 sm:grid-cols-2">
+          <input
+            aria-label="URL del proyecto de Vercel"
+            name="vercel_project_url"
+            type="url"
+            placeholder="URL del proyecto Vercel"
+            value={vercelProjectUrl}
+            onChange={(event) => setVercelProjectUrl(event.target.value)}
+            className="w-full border border-line bg-transparent px-3 py-2 font-body text-sm text-ink outline-none focus:border-signal"
+          />
+          <input
+            aria-label="URL de producción"
+            name="vercel_production_url"
+            type="url"
+            placeholder="URL de producción"
+            value={vercelProductionUrl}
+            onChange={(event) => setVercelProductionUrl(event.target.value)}
+            className="w-full border border-line bg-transparent px-3 py-2 font-body text-sm text-ink outline-none focus:border-signal"
+          />
+          <input
+            aria-label="Dominio personalizado"
+            name="vercel_custom_domain"
+            placeholder="Dominio personalizado"
+            value={vercelCustomDomain}
+            onChange={(event) => setVercelCustomDomain(event.target.value)}
+            className="w-full border border-line bg-transparent px-3 py-2 font-body text-sm text-ink outline-none focus:border-signal"
+          />
+          <input
+            aria-label="Estado del deployment"
+            name="vercel_deployment_status"
+            placeholder="Estado del deployment (opcional)"
+            value={vercelDeploymentStatus}
+            onChange={(event) => setVercelDeploymentStatus(event.target.value)}
+            className="w-full border border-line bg-transparent px-3 py-2 font-body text-sm text-ink outline-none focus:border-signal"
+          />
+        </div>
+      </div>
 
       <div>
         <label

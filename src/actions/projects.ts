@@ -33,6 +33,27 @@ function formValue(formData: FormData, name: string) {
   return value === "" ? undefined : value;
 }
 
+function jsonFormValue(formData: FormData, name: string) {
+  const value = formValue(formData, name);
+  if (!value) return undefined;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return undefined;
+  }
+}
+
+function sameRepositoryUrl(
+  first: string | undefined,
+  second: string | undefined,
+) {
+  return (
+    first?.replace(/\/$/, "").toLowerCase() ===
+    second?.replace(/\/$/, "").toLowerCase()
+  );
+}
+
 function skillIdsFromForm(formData: FormData) {
   return formData
     .getAll("skill_ids")
@@ -60,6 +81,12 @@ function projectFromFormData(formData: FormData) {
     demo_url: String(formData.get("demo_url") ?? ""),
     repository_url: String(formData.get("repository_url") ?? ""),
     featured_image_url: String(formData.get("featured_image_url") ?? ""),
+    github_metadata: jsonFormValue(formData, "github_metadata"),
+    github_synced_at: formValue(formData, "github_synced_at"),
+    vercel_project_url: String(formData.get("vercel_project_url") ?? ""),
+    vercel_production_url: String(formData.get("vercel_production_url") ?? ""),
+    vercel_custom_domain: formValue(formData, "vercel_custom_domain"),
+    vercel_deployment_status: formValue(formData, "vercel_deployment_status"),
   });
 }
 
@@ -76,6 +103,12 @@ async function ensureAuthenticated() {
 }
 
 function payloadFromInput(input: ProjectInput) {
+  const githubMetadata =
+    input.github_metadata &&
+    sameRepositoryUrl(input.github_metadata.repositoryUrl, input.repository_url)
+      ? input.github_metadata
+      : null;
+
   return {
     title: input.title,
     slug: input.slug || slugify(input.title),
@@ -92,6 +125,14 @@ function payloadFromInput(input: ProjectInput) {
     demo_url: input.demo_url ?? null,
     repository_url: input.repository_url ?? null,
     featured_image_url: input.featured_image_url ?? null,
+    github_metadata: githubMetadata,
+    github_synced_at: githubMetadata
+      ? (input.github_synced_at ?? new Date().toISOString())
+      : null,
+    vercel_project_url: input.vercel_project_url ?? null,
+    vercel_production_url: input.vercel_production_url ?? null,
+    vercel_custom_domain: input.vercel_custom_domain ?? null,
+    vercel_deployment_status: input.vercel_deployment_status ?? null,
     updated_at: new Date().toISOString(),
   };
 }

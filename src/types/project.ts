@@ -11,6 +11,21 @@ export type ProjectCategory =
 
 export type ProjectStatus = "live" | "en-desarrollo" | "archivado";
 
+export interface GithubMetadata {
+  repositoryUrl: string;
+  owner: string;
+  name: string;
+  defaultBranch: string | null;
+  description: string | null;
+  primaryLanguage: string | null;
+  languages: Record<string, number>;
+  topics: string[];
+  stars: number;
+  forks: number;
+  lastUpdated: string | null;
+  detectedTechnologies: string[];
+}
+
 export interface Project {
   id: string;
   slug: string;
@@ -28,6 +43,12 @@ export interface Project {
   demoUrl: string | null;
   repositoryUrl: string | null;
   featuredImageUrl: string | null;
+  githubMetadata: GithubMetadata | null;
+  githubSyncedAt: string | null;
+  vercelProjectUrl: string | null;
+  vercelProductionUrl: string | null;
+  vercelCustomDomain: string | null;
+  vercelDeploymentStatus: string | null;
   createdAt: string;
   updatedAt: string;
   images?: ProjectImage[];

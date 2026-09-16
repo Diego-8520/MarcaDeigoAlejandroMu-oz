@@ -122,15 +122,148 @@ export default async function ProjectPage({
         </section>
       )}
 
+      {(project.technologies.length > 0 ||
+        project.githubMetadata ||
+        project.demoUrl ||
+        project.repositoryUrl ||
+        project.vercelProjectUrl ||
+        project.vercelProductionUrl ||
+        project.vercelCustomDomain ||
+        project.vercelDeploymentStatus) && (
+        <section className="mt-10 border-t border-line pt-10">
+          <h2 className="font-display text-base font-semibold text-ink">
+            Ficha técnica
+          </h2>
+          <div className="mt-5 grid gap-6 sm:grid-cols-2">
+            {project.technologies.length > 0 && (
+              <div>
+                <p className="font-mono text-xs text-ink-muted">Tecnologías</p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {project.technologies.map((technology) => (
+                    <Tag key={technology}>{technology}</Tag>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {project.githubMetadata && (
+              <div>
+                <p className="font-mono text-xs text-ink-muted">GitHub</p>
+                <p className="mt-2 font-body text-sm text-ink">
+                  {project.githubMetadata.owner}/{project.githubMetadata.name}
+                </p>
+                <p className="mt-1 font-mono text-[11px] text-ink-muted">
+                  {project.githubMetadata.primaryLanguage ??
+                    "Lenguaje no detectado"}
+                  {project.githubMetadata.defaultBranch
+                    ? ` · rama ${project.githubMetadata.defaultBranch}`
+                    : ""}
+                  {` · ${project.githubMetadata.stars} stars · ${project.githubMetadata.forks} forks`}
+                </p>
+                {project.githubMetadata.topics.length > 0 && (
+                  <p className="mt-2 font-mono text-[11px] text-ink-muted">
+                    temas: {project.githubMetadata.topics.join(" · ")}
+                  </p>
+                )}
+                {Object.keys(project.githubMetadata.languages).length > 0 && (
+                  <p className="mt-2 font-mono text-[11px] text-ink-muted">
+                    lenguajes:{" "}
+                    {Object.keys(project.githubMetadata.languages).join(" · ")}
+                  </p>
+                )}
+                <a
+                  href={
+                    project.repositoryUrl ??
+                    project.githubMetadata.repositoryUrl
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-block font-mono text-xs text-signal hover:underline"
+                >
+                  ver repositorio →
+                </a>
+              </div>
+            )}
+
+            {project.demoUrl && (
+              <div>
+                <p className="font-mono text-xs text-ink-muted">Producción</p>
+                <a
+                  href={project.demoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 block break-all font-mono text-xs text-signal hover:underline"
+                >
+                  {project.demoUrl}
+                </a>
+              </div>
+            )}
+
+            {project.vercelProductionUrl && (
+              <div>
+                <p className="font-mono text-xs text-ink-muted">Vercel</p>
+                <a
+                  href={project.vercelProductionUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 block break-all font-mono text-xs text-signal hover:underline"
+                >
+                  {project.vercelProductionUrl}
+                </a>
+                {project.vercelDeploymentStatus && (
+                  <p className="mt-1 font-mono text-[11px] text-ink-muted">
+                    deployment: {project.vercelDeploymentStatus}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {project.vercelProjectUrl && (
+              <div>
+                <p className="font-mono text-xs text-ink-muted">
+                  Proyecto Vercel
+                </p>
+                <a
+                  href={project.vercelProjectUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-2 block break-all font-mono text-xs text-signal hover:underline"
+                >
+                  abrir proyecto →
+                </a>
+              </div>
+            )}
+
+            {project.vercelCustomDomain && (
+              <div>
+                <p className="font-mono text-xs text-ink-muted">Dominio</p>
+                <p className="mt-2 break-all font-mono text-xs text-ink">
+                  {project.vercelCustomDomain}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
       <div className="mt-10 flex flex-wrap gap-4 border-t border-line pt-10 font-mono text-sm">
         {project.demoUrl && (
-          <a href={project.demoUrl} className="text-signal hover:underline">
+          <a
+            href={project.demoUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-signal hover:underline"
+          >
             ver demo →
           </a>
         )}
-        {project.repositoryUrl && (
+        {(project.repositoryUrl || project.githubMetadata?.repositoryUrl) && (
           <a
-            href={project.repositoryUrl}
+            href={
+              project.repositoryUrl ?? project.githubMetadata?.repositoryUrl
+            }
+            target="_blank"
+            rel="noreferrer"
             className="text-signal hover:underline"
           >
             repositorio →

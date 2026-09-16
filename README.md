@@ -179,8 +179,8 @@ gestión real, sin datos de ejemplo pendientes.
       Educacion, CV, Contacto.
 - [x] Login con email/password y Google OAuth, proteccion de /dashboard
       via middleware + Supabase Auth.
-- [x] Esquema SQL versionado con RLS, migraciones 0001-0006 sincronizadas
-      entre local y produccion.
+- [x] Esquema SQL versionado con RLS, migraciones 0001-0008 versionadas
+      para local y produccion.
 - [x] Formulario de contacto con validacion (Zod), server action y bandeja
       de gestion de leads en el dashboard.
 - [x] CRUD completo de proyectos con auto-fetch de metadata desde GitHub y

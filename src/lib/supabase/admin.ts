@@ -1,4 +1,4 @@
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createAdminClient as createSupabaseAdminClient } from "@supabase/server/core";
 
 /**
  * Cliente con SUPABASE_SERVICE_ROLE_KEY.
@@ -6,9 +6,10 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
  * Nunca importar este archivo desde un componente de cliente.
  */
 export function createAdminClient() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false } }
-  );
+  return createSupabaseAdminClient({
+    env: {
+      url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      secretKeys: { default: process.env.SUPABASE_SERVICE_ROLE_KEY! },
+    },
+  });
 }

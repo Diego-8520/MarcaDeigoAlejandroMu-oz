@@ -1,5 +1,20 @@
 import { z } from "zod";
 
+export const githubMetadataSchema = z.object({
+  repositoryUrl: z.url(),
+  owner: z.string().min(1),
+  name: z.string().min(1),
+  defaultBranch: z.string().nullable(),
+  description: z.string().nullable(),
+  primaryLanguage: z.string().nullable(),
+  languages: z.record(z.string(), z.number()),
+  topics: z.array(z.string()),
+  stars: z.number().int().nonnegative(),
+  forks: z.number().int().nonnegative(),
+  lastUpdated: z.string().nullable(),
+  detectedTechnologies: z.array(z.string()),
+});
+
 const optionalUrl = z
   .string()
   .trim()
@@ -29,6 +44,12 @@ export const projectSchema = z.object({
   demo_url: optionalUrl,
   repository_url: optionalUrl,
   featured_image_url: optionalUrl,
+  github_metadata: githubMetadataSchema.nullable().optional(),
+  github_synced_at: z.string().datetime().nullable().optional(),
+  vercel_project_url: optionalUrl,
+  vercel_production_url: optionalUrl,
+  vercel_custom_domain: z.string().trim().optional(),
+  vercel_deployment_status: z.string().trim().max(80).optional(),
 });
 
 export type ProjectInput = z.infer<typeof projectSchema>;

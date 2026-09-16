@@ -2,12 +2,17 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 type GithubRepoResponse = {
+  name: string;
+  html_url: string;
+  default_branch: string | null;
+  owner: { login: string };
   description: string | null;
   language: string | null;
   topics?: string[];
   stargazers_count: number;
+  forks_count: number;
+  updated_at: string | null;
   pushed_at: string | null;
-  message?: string;
 };
 
 function parseGithubRepositoryUrl(repositoryUrl: string) {
@@ -60,25 +65,61 @@ async function parseGithubResponse(response: Response) {
         message:
           "GitHub alcanzó el límite de consultas. Configura GITHUB_TOKEN o intenta más tarde.",
       },
-      { status: 429 }
+      { status: 429 },
     );
   }
 
   if (response.status === 404) {
     return NextResponse.json(
-      { message: "No encontré ese repositorio. Puede no existir o ser privado." },
-      { status: 404 }
+      {
+        message: "No encontré ese repositorio. Puede no existir o ser privado.",
+      },
+      { status: 404 },
     );
   }
 
   if (!response.ok) {
     return NextResponse.json(
       { message: "No pude consultar GitHub en este momento." },
-      { status: response.status }
+      { status: response.status },
     );
   }
 
   return null;
+}
+
+async function detectPackageTechnologies(
+  repoUrl: string,
+  headers: HeadersInit,
+) {
+  const response = await fetch(`${repoUrl}/contents/package.json`, {
+    headers,
+    cache: "no-store",
+  });
+  if (!response.ok) return [];
+
+  const payload = (await response.json().catch(() => null)) as {
+    content?: string;
+    encoding?: string;
+  } | null;
+  if (!payload?.content || payload.encoding !== "base64") return [];
+
+  try {
+    const packageJson = JSON.parse(
+      Buffer.from(payload.content, "base64").toString("utf8"),
+    ) as {
+      dependencies?: Record<string, unknown>;
+      devDependencies?: Record<string, unknown>;
+    };
+    return [
+      ...Object.keys(packageJson.dependencies ?? {}),
+      ...Object.keys(packageJson.devDependencies ?? {}),
+    ]
+      .filter((name, index, list) => list.indexOf(name) === index)
+      .slice(0, 24);
+  } catch {
+    return [];
+  }
 }
 
 export async function POST(request: Request) {
@@ -95,15 +136,18 @@ export async function POST(request: Request) {
   if (!repositoryUrl) {
     return NextResponse.json(
       { message: "Envía la URL del repositorio." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const repository = parseGithubRepositoryUrl(repositoryUrl);
   if (!repository) {
     return NextResponse.json(
-      { message: "La URL debe ser de GitHub, con formato github.com/owner/repo." },
-      { status: 400 }
+      {
+        message:
+          "La URL debe ser de GitHub, con formato github.com/owner/repo.",
+      },
+      { status: 400 },
     );
   }
 
@@ -124,16 +168,29 @@ export async function POST(request: Request) {
 
   const repo = (await repoResponse.json()) as GithubRepoResponse;
   const languages = (await languagesResponse.json()) as Record<string, number>;
+  const packageTechnologies = await detectPackageTechnologies(repoUrl, headers);
   const suggestedTechnologies = [
     repo.language,
     ...Object.keys(languages).sort((a, b) => languages[b] - languages[a]),
-  ].filter((item, index, list): item is string => Boolean(item) && list.indexOf(item) === index);
+  ].filter(
+    (item, index, list): item is string =>
+      Boolean(item) && list.indexOf(item) === index,
+  );
 
   return NextResponse.json({
+    repositoryUrl: repo.html_url,
+    owner: repo.owner.login,
+    name: repo.name,
+    defaultBranch: repo.default_branch,
     suggestedDescription: repo.description ?? "",
+    primaryLanguage: repo.language,
+    languages,
     suggestedTechnologies,
+    packageTechnologies,
     topics: repo.topics ?? [],
     lastCommitDate: repo.pushed_at,
+    updatedAt: repo.updated_at,
     stars: repo.stargazers_count,
+    forks: repo.forks_count,
   });
 }
