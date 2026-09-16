@@ -170,18 +170,28 @@ supabase/
   migrations/     esquema SQL
 ```
 
-## Estado actual - Fase 1 (MVP)
+## Estado actual
+
+Fase 1 (MVP) y Fase 2 completas — plataforma en producción con contenido y
+gestión real, sin datos de ejemplo pendientes.
 
 - [x] Sitio publico con Home, Proyectos, Servicios, Sobre mi, Experiencia,
       Educacion, CV, Contacto.
-- [x] Login y proteccion de `/dashboard` via middleware + Supabase Auth.
-- [x] Esquema SQL inicial con RLS.
-- [x] Formulario de contacto con validacion (Zod) y server action.
-- [ ] CRUD real de proyectos/servicios en el dashboard (Fase 2 - hoy son
-      paginas placeholder).
-- [ ] Contenido real (biografia, experiencia, educacion) - hoy son datos de
-      ejemplo marcados con `TODO`.
-- [ ] Analytics propio conectado a `analytics_events` (Fase 2).
+- [x] Login con email/password y Google OAuth, proteccion de /dashboard
+      via middleware + Supabase Auth.
+- [x] Esquema SQL versionado con RLS, migraciones 0001-0006 sincronizadas
+      entre local y produccion.
+- [x] Formulario de contacto con validacion (Zod), server action y bandeja
+      de gestion de leads en el dashboard.
+- [x] CRUD completo de proyectos con auto-fetch de metadata desde GitHub y
+      sitio en vivo, galeria de imagenes por proyecto.
+- [x] CRUD de perfil (bio, avatar, enlaces de redes dinamicos), experiencia
+      laboral, educacion/certificaciones y skills vinculadas a proyectos.
+- [x] Testimonios de clientes vinculados opcionalmente a proyectos.
+- [x] Analitica propia y anonima sobre analytics_events, complementada
+      con Vercel Web Analytics para Web Vitals.
+- [x] Pagina publica /arquitectura con stack derivado dinamicamente de
+      package.json.
 - [ ] AI Profile Assistant con RAG (Fase 3).
 - [ ] Automatizaciones con n8n (Fase 3-4).
 
