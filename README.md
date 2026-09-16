@@ -62,6 +62,22 @@ Ver `.env.example`. Nunca subir `.env.local` al repositorio.
 | `SUPABASE_SERVICE_ROLE_KEY`     | Clave de servicio (solo servidor, bypassa RLS) |
 | `OPENAI_API_KEY`                | Fase 3 - AI Profile Assistant                  |
 | `N8N_WEBHOOK_URL`               | Fase 3 - notificaciones de leads               |
+| `GITHUB_CLIENT_ID`              | OAuth de GitHub, solo servidor                 |
+| `GITHUB_CLIENT_SECRET`          | Secreto OAuth de GitHub, solo servidor         |
+| `INTEGRATIONS_ENCRYPTION_KEY`   | Clave base64 de 32 bytes para token GitHub     |
+| `VERCEL_API_TOKEN`              | Token de lectura de Vercel, solo servidor      |
+| `VERCEL_TEAM_ID`                | Equipo Vercel opcional                         |
+| `SUPABASE_MANAGEMENT_TOKEN`     | Token de lectura de proyectos Supabase         |
+
+Las variables de integraciones nunca deben tener prefijo `NEXT_PUBLIC_` ni
+aparecer en el navegador. `INTEGRATIONS_ENCRYPTION_KEY` debe generarse como
+una clave aleatoria de 32 bytes codificada en base64. Los tokens expuestos
+accidentalmente deben revocarse y reemplazarse antes de usarlos.
+
+La conexión OAuth actual de GitHub solicita lectura de identidad y `public_repo`
+para mantener el alcance limitado. Para descubrir repositorios privados con
+permisos de solo lectura será necesario crear una GitHub App independiente con
+permiso **Contents: read-only** y completar su flujo de instalación.
 
 ## Login con Google
 
@@ -179,7 +195,7 @@ gestión real, sin datos de ejemplo pendientes.
       Educacion, CV, Contacto.
 - [x] Login con email/password y Google OAuth, proteccion de /dashboard
       via middleware + Supabase Auth.
-- [x] Esquema SQL versionado con RLS, migraciones 0001-0008 versionadas
+- [x] Esquema SQL versionado con RLS, migraciones 0001-0009 versionadas
       para local y produccion.
 - [x] Formulario de contacto con validacion (Zod), server action y bandeja
       de gestion de leads en el dashboard.

@@ -1,0 +1,15 @@
+import { createClient } from "@/lib/supabase/server";
+
+export async function requireDashboardUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error || !user) {
+    throw new Error("No autorizado.");
+  }
+
+  return user;
+}

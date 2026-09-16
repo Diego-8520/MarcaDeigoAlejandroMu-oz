@@ -3,6 +3,8 @@ import Link from "next/link";
 const DASHBOARD_ITEMS = [
   { href: "/dashboard", label: "general" },
   { href: "/dashboard/proyectos", label: "proyectos" },
+  { href: "/dashboard/recursos-externos", label: "recursos externos" },
+  { href: "/dashboard/integraciones", label: "integraciones" },
   { href: "/dashboard/servicios", label: "servicios" },
   { href: "/dashboard/experiencia", label: "experiencia" },
   { href: "/dashboard/educacion", label: "educación" },
