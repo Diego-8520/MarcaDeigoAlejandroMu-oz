@@ -75,15 +75,15 @@ export function SiteRail() {
         </Link>
         <div className="flex min-w-0 items-center gap-4">
           <nav className="flex min-w-0 gap-4 overflow-x-auto font-mono text-xs text-ink-muted">
-          {NAV_ITEMS.slice(1).map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="whitespace-nowrap hover:text-ink"
-            >
-              {item.label}
-            </Link>
-          ))}
+            {NAV_ITEMS.slice(1).map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="whitespace-nowrap hover:text-ink"
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
           <Link
             href="/login"
