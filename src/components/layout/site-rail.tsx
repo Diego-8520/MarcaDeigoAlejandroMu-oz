@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogIn } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/", label: "inicio" },
@@ -53,6 +54,14 @@ export function SiteRail() {
             disponible para proyectos
           </div>
           <p>Bogotá, Colombia</p>
+          <Link
+            href="/login"
+            aria-label="Acceder al panel"
+            title="Acceder al panel"
+            className="mt-4 inline-flex text-ink-muted transition-colors hover:text-ink"
+          >
+            <LogIn aria-hidden="true" size={14} strokeWidth={1.5} />
+          </Link>
         </div>
       </aside>
 
@@ -64,7 +73,8 @@ export function SiteRail() {
         >
           Diego Alejandro Muñoz
         </Link>
-        <nav className="flex gap-4 overflow-x-auto font-mono text-xs text-ink-muted">
+        <div className="flex min-w-0 items-center gap-4">
+          <nav className="flex min-w-0 gap-4 overflow-x-auto font-mono text-xs text-ink-muted">
           {NAV_ITEMS.slice(1).map((item) => (
             <Link
               key={item.href}
@@ -74,7 +84,16 @@ export function SiteRail() {
               {item.label}
             </Link>
           ))}
-        </nav>
+          </nav>
+          <Link
+            href="/login"
+            aria-label="Acceder al panel"
+            title="Acceder al panel"
+            className="flex-none text-ink-muted transition-colors hover:text-ink"
+          >
+            <LogIn aria-hidden="true" size={14} strokeWidth={1.5} />
+          </Link>
+        </div>
       </header>
     </>
   );
