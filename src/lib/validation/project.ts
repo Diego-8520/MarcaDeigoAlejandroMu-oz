@@ -45,7 +45,11 @@ export const projectSchema = z.object({
   repository_url: optionalUrl,
   featured_image_url: optionalUrl,
   github_metadata: githubMetadataSchema.nullable().optional(),
-  github_synced_at: z.string().datetime().nullable().optional(),
+  github_synced_at: z
+    .string()
+    .datetime({ offset: true })
+    .nullable()
+    .optional(),
   vercel_project_url: optionalUrl,
   vercel_production_url: optionalUrl,
   vercel_custom_domain: z.string().trim().optional(),

@@ -102,6 +102,19 @@ async function ensureAuthenticated() {
   }
 }
 
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error) return error.message;
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as { message: unknown }).message === "string"
+  ) {
+    return (error as { message: string }).message;
+  }
+  return fallback;
+}
+
 function payloadFromInput(input: ProjectInput) {
   const githubMetadata =
     input.github_metadata &&
@@ -125,7 +138,7 @@ function payloadFromInput(input: ProjectInput) {
     demo_url: input.demo_url ?? null,
     repository_url: input.repository_url ?? null,
     featured_image_url: input.featured_image_url ?? null,
-    github_metadata: githubMetadata,
+    github_metadata: githubMetadata ?? {},
     github_synced_at: githubMetadata
       ? (input.github_synced_at ?? new Date().toISOString())
       : null,
@@ -156,6 +169,8 @@ function revalidateProjectPaths() {
   revalidatePath("/");
   revalidatePath("/proyectos");
   revalidatePath("/proyectos/[slug]", "page");
+  revalidatePath("/dashboard/proyectos");
+  revalidatePath("/dashboard/proyectos/[id]/editar", "page");
 }
 
 export async function createProject(
@@ -195,10 +210,7 @@ export async function createProject(
   } catch (error) {
     return {
       status: "error",
-      message:
-        error instanceof Error
-          ? error.message
-          : "No se pudo crear el proyecto.",
+      message: getErrorMessage(error, "No se pudo crear el proyecto."),
     };
   }
 }
@@ -237,10 +249,7 @@ export async function updateProject(
   } catch (error) {
     return {
       status: "error",
-      message:
-        error instanceof Error
-          ? error.message
-          : "No se pudo actualizar el proyecto.",
+      message: getErrorMessage(error, "No se pudo actualizar el proyecto."),
     };
   }
 }
@@ -258,10 +267,7 @@ export async function deleteProject(id: string): Promise<ProjectActionState> {
   } catch (error) {
     return {
       status: "error",
-      message:
-        error instanceof Error
-          ? error.message
-          : "No se pudo eliminar el proyecto.",
+      message: getErrorMessage(error, "No se pudo eliminar el proyecto."),
     };
   }
 }

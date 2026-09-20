@@ -40,6 +40,19 @@ function payload(input: SkillInput) {
   };
 }
 
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error) return error.message;
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as { message: unknown }).message === "string"
+  ) {
+    return (error as { message: string }).message;
+  }
+  return fallback;
+}
+
 function revalidateSkillPaths() {
   revalidatePath("/");
   revalidatePath("/sobre-mi");
@@ -68,8 +81,7 @@ export async function createSkill(
   } catch (error) {
     return {
       status: "error",
-      message:
-        error instanceof Error ? error.message : "No se pudo crear la skill.",
+      message: getErrorMessage(error, "No se pudo crear la skill."),
     };
   }
 }
@@ -97,10 +109,7 @@ export async function updateSkill(
   } catch (error) {
     return {
       status: "error",
-      message:
-        error instanceof Error
-          ? error.message
-          : "No se pudo actualizar la skill.",
+      message: getErrorMessage(error, "No se pudo actualizar la skill."),
     };
   }
 }
@@ -118,10 +127,7 @@ export async function deleteSkill(id: string): Promise<SkillActionState> {
   } catch (error) {
     return {
       status: "error",
-      message:
-        error instanceof Error
-          ? error.message
-          : "No se pudo eliminar la skill.",
+      message: getErrorMessage(error, "No se pudo eliminar la skill."),
     };
   }
 }
@@ -138,10 +144,10 @@ export async function setProjectSkills(
   } catch (error) {
     return {
       status: "error",
-      message:
-        error instanceof Error
-          ? error.message
-          : "No se pudieron actualizar las skills del proyecto.",
+      message: getErrorMessage(
+        error,
+        "No se pudieron actualizar las skills del proyecto.",
+      ),
     };
   }
 }
