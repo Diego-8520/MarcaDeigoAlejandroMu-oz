@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "ship": "git add .gitignore package.json supabase/migrations/0011_seed_real_content.sql && git commit -m \"feat(data): seed contenido real en Supabase (perfil, educacion, experiencia, proyectos, skills)\" && git push origin main"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

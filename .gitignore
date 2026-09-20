@@ -43,3 +43,8 @@ CLAUDE.md
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# supabase temp & redundant
+supabase/.temp/
+supabase/migrations/0011_seed_sobre_mi.sql
+graphify-out/
