@@ -56,10 +56,15 @@ function storageObjectPath(storagePath: string) {
 }
 
 function imagePublicUrl(storagePath: string) {
+  const cleanPath = storageObjectPath(storagePath);
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
+  if (supabaseUrl) {
+    return `${supabaseUrl}/storage/v1/object/public/${PROJECT_IMAGES_BUCKET}/${cleanPath}`;
+  }
   const supabase = createAdminClient();
   const { data } = supabase.storage
     .from(PROJECT_IMAGES_BUCKET)
-    .getPublicUrl(storageObjectPath(storagePath));
+    .getPublicUrl(cleanPath);
 
   return data.publicUrl;
 }

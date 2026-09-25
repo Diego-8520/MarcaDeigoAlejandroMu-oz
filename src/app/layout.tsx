@@ -22,9 +22,89 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Diego Alejandro Muñoz — Software Engineer · AI · Automation",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://diegoalejandromunoz.com",
+  ),
+  title: {
+    default: "Diego Alejandro Muñoz — Software Developer · Web & Automatización",
+    template: "%s | Diego Alejandro Muñoz",
+  },
   description:
-    "Construyo productos digitales, soluciones con IA y automatizaciones que resuelven problemas reales.",
+    "Desarrollador de software en Cali, Colombia. Construyo aplicaciones web con Next.js, React, TypeScript y C# .NET, bases de datos PostgreSQL y automatizaciones prácticas.",
+  keywords: [
+    "Diego Alejandro Muñoz",
+    "Software Developer",
+    "Next.js",
+    "React",
+    "TypeScript",
+    "C# .NET",
+    "PostgreSQL",
+    "Supabase",
+    "Automatización",
+    "Cali Colombia",
+  ],
+  authors: [{ name: "Diego Alejandro Muñoz", url: "https://diegoalejandromunoz.com" }],
+  creator: "Diego Alejandro Muñoz",
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    url: "https://diegoalejandromunoz.com",
+    title: "Diego Alejandro Muñoz — Software Developer",
+    description:
+      "Desarrollador de software en Cali, Colombia. Construcción de aplicaciones web completas, herramientas a medida y automatización de procesos.",
+    siteName: "Diego Alejandro Muñoz",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "/",
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://diegoalejandromunoz.com/#person",
+      "name": "Diego Alejandro Muñoz Arcos",
+      "alternateName": "Diego Muñoz",
+      "jobTitle": "Software Developer",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Cali",
+        "addressRegion": "Valle del Cauca",
+        "addressCountry": "CO",
+      },
+      "url": "https://diegoalejandromunoz.com",
+      "sameAs": [
+        "https://github.com/Diego-8520",
+        "https://www.linkedin.com/in/dalejandromunoz",
+      ],
+      "knowsAbout": [
+        "Software Engineering",
+        "Next.js",
+        "React",
+        "TypeScript",
+        "C#",
+        ".NET",
+        "PostgreSQL",
+        "Supabase",
+        "Process Automation",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://diegoalejandromunoz.com/#website",
+      "url": "https://diegoalejandromunoz.com",
+      "name": "Diego Alejandro Muñoz — Software Developer",
+      "publisher": {
+        "@id": "https://diegoalejandromunoz.com/#person",
+      },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -38,6 +118,10 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${plexMono.variable} ${workSans.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-paper text-ink">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {children}
         <Analytics />
       </body>

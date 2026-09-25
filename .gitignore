@@ -48,3 +48,13 @@ next-env.d.ts
 supabase/.temp/
 supabase/migrations/0011_seed_sobre_mi.sql
 graphify-out/
+
+# Local agent skills junctions
+/.agents/skills/*
+!/.agents/skills/supabase/
+!/.agents/skills/supabase-postgres-best-practices/
+!/.agents/skills/supabase-server/
+
+# IDE & Editor local settings
+.vscode/
+.claude/

@@ -25,7 +25,7 @@ export default function ArquitecturaPage() {
           funcionar.
         </p>
 
-        <div className="bracket-frame mt-10 border border-line bg-white/40 p-5 font-mono text-xs leading-loose text-ink-muted sm:p-6">
+        <div className="bracket-frame mt-10 border border-line bg-surface/80 p-5 font-mono text-xs leading-loose text-ink-muted sm:p-6 rounded-sm">
           <p>
             <span className="text-signal">visitante</span> → Next.js App Router
           </p>

@@ -1,0 +1,13 @@
+{
+  "entries": [
+    {
+      "path": "~/.agents/skills"
+    },
+    {
+      "path": "C:/Users/DIEGO/.gemini/antigravity-cli/builtin/skills"
+    },
+    {
+      "path": "node_modules/@supabase/middleware/skills"
+    }
+  ]
+}
