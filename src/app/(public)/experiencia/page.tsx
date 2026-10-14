@@ -10,7 +10,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Experiencia Laboral, Formación & Credenciales",
   description:
-    "Trayectoria profesional de Diego Alejandro Muñoz: experiencia técnica en Juniper Travel Technology, formación en Ingeniería de Sistemas y certificaciones.",
+    "Trayectoria profesional de Diego Alejandro Muñoz: desarrollo web, soporte operativo de datos, procesos y formación en Ingeniería de Sistemas.",
 };
 
 function formatDate(value: string | null) {
@@ -38,7 +38,7 @@ export default async function ExperienciaPage() {
           Experiencia, formación y método
         </h1>
         <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-ink-muted">
-          Mi camino combina rigor analítico, gestión de procesos complejos y desarrollo de software aplicado. No hay títulos inventados: aquí está la evidencia de lo que he hecho y lo que estoy estudiando.
+          Mi camino combina desarrollo web, soporte operativo de datos, gestión de procesos y formación en Ingeniería de Sistemas. La prioridad es mostrar experiencia real, proyectos verificables y aprendizajes conectados con tecnología.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-4">

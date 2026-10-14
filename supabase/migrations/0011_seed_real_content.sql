@@ -149,8 +149,8 @@ begin
   if exists (select 1 from profiles) then
     update profiles set
       full_name = 'Diego Alejandro Muñoz Arcos',
-      headline = 'Software Developer | C# .NET & React | E-commerce, SEO y Automatización',
-      bio = 'Mi trayectoria profesional inició en el área de Seguridad y Salud en el Trabajo, donde desarrollé disciplina, gestión de procesos y capacidad para trabajar en entornos exigentes. Con el tiempo, redirigí mi carrera hacia la tecnología, enfocándome en la creación de soluciones digitales orientadas a resolver problemas reales. Curso Ingeniería de Sistemas en la Institución Universitaria Antonio José Camacho y complemento mi formación con proyectos propios y trabajo freelance para startups y negocios digitales — landing pages, sitios web y tiendas e-commerce, incluyendo APIs en C# conectadas a bases de datos como Supabase. Trabajo con C#, .NET, React, Angular y SQL.',
+      headline = 'Software Developer | Next.js & TypeScript | Web, Datos y Automatización',
+      bio = 'Estudiante de Ingeniería de Sistemas en la Institución Universitaria Antonio José Camacho (UNIAJC). Desarrollo aplicaciones web funcionales, paneles administrativos y herramientas con Next.js, React, TypeScript y Supabase/PostgreSQL. Mi trayectoria previa en Seguridad y Salud en el Trabajo, soporte operativo de datos y proyectos digitales me aporta criterio práctico para entender procesos reales, ordenar información y construir soluciones útiles sin sobredimensionar el alcance.',
       email = 'diego_8520@outlook.com',
       phone = '+57 321 515 0904',
       location = 'Cali, Valle del Cauca, Colombia',
@@ -162,8 +162,8 @@ begin
     insert into profiles (full_name, headline, bio, email, phone, location, github_url, linkedin_url)
     values (
       'Diego Alejandro Muñoz Arcos',
-      'Software Developer | C# .NET & React | E-commerce, SEO y Automatización',
-      'Mi trayectoria profesional inició en el área de Seguridad y Salud en el Trabajo, donde desarrollé disciplina, gestión de procesos y capacidad para trabajar en entornos exigentes. Con el tiempo, redirigí mi carrera hacia la tecnología, enfocándome en la creación de soluciones digitales orientadas a resolver problemas reales. Curso Ingeniería de Sistemas en la Institución Universitaria Antonio José Camacho y complemento mi formación con proyectos propios y trabajo freelance para startups y negocios digitales — landing pages, sitios web y tiendas e-commerce, incluyendo APIs en C# conectadas a bases de datos como Supabase. Trabajo con C#, .NET, React, Angular y SQL.',
+      'Software Developer | Next.js & TypeScript | Web, Datos y Automatización',
+      'Estudiante de Ingeniería de Sistemas en la Institución Universitaria Antonio José Camacho (UNIAJC). Desarrollo aplicaciones web funcionales, paneles administrativos y herramientas con Next.js, React, TypeScript y Supabase/PostgreSQL. Mi trayectoria previa en Seguridad y Salud en el Trabajo, soporte operativo de datos y proyectos digitales me aporta criterio práctico para entender procesos reales, ordenar información y construir soluciones útiles sin sobredimensionar el alcance.',
       'diego_8520@outlook.com',
       '+57 321 515 0904',
       'Cali, Valle del Cauca, Colombia',
@@ -210,10 +210,7 @@ select v.name, v.category from (values
   ('JWT', 'Herramientas'),
   ('Vite', 'Herramientas'),
   ('Astro', 'Herramientas'),
-  ('Canva', 'Herramientas'),
-  ('Prompt Engineering', 'IA'),
-  ('Claude Agent SDK', 'IA'),
-  ('AWS AI Practitioner', 'IA')
+  ('Canva', 'Herramientas')
 ) as v(name, category)
 where not exists (select 1 from skills s where lower(s.name) = lower(v.name));
 
@@ -268,26 +265,38 @@ select
 from (values
   (
     'Juniper Travel Technology',
-    'Mapping Agent',
+    'Mapping Agent / Soporte Operativo de Datos',
     '2024-11-01',
-    '2026-04-30',
-    'Gestión, normalización y mapeo de contenido hotelero y turístico en plataformas globales de distribución. Homologación de inventarios entre proveedores y clientes mediante herramientas de integración y bases de datos, garantizando consistencia, precisión de datos y disponibilidad en tiempo real.',
+    null,
+    'Verificación de calidad, consistencia de inventario y resolución de discrepancias en información hotelera y turística. Atención de solicitudes operativas, revisión de datos de producto y soporte para mantener información confiable dentro de sistemas de distribución.',
     array[
-      'Mapeo y reconciliación de catálogos masivos de hoteles, tarifas y habitaciones provenientes de múltiples proveedores XML/APIs.',
-      'Detección y resolución de discrepancias en datos geoespaciales y atributos comerciales para evitar fallos de reserva.',
-      'Optimización de flujos de verificación de datos para reducir tiempos de publicación en motores de búsqueda turísticos.'
+      'Mapeo, configuración y validación de información hotelera y turística.',
+      'Detección y resolución de discrepancias en datos de producto, inventario y atributos comerciales.',
+      'Atención de tickets y documentación de solicitudes relacionadas con calidad y consistencia de datos.'
+    ]
+  ),
+  (
+    'UpSales',
+    'Responsable de Sistemas y Tecnología',
+    '2022-01-01',
+    null,
+    'Responsable del componente técnico dentro de un equipo pequeño orientado a soluciones digitales, comercio electrónico y presencia web. Desarrollo y mantenimiento de landing pages, sitios e-commerce, infraestructura digital y soporte técnico para operaciones comerciales.',
+    array[
+      'Desarrollo de sitios web, landing pages y herramientas digitales para iniciativas comerciales.',
+      'Apoyo en proyectos de e-commerce, incluyendo reconstrucción web sobre Shopify para Fundación Edén de los Sabios, con alcance específico pendiente de validación.',
+      'Investigación y propuesta de mejoras técnicas para publicar, mantener y conectar activos digitales del negocio.'
     ]
   ),
   (
     'Consultora de Recursos Humanos Nexo SAS',
-    'Auxiliar de prevención de riesgos',
+    'Asesor SST / Digitalización de Procesos',
     '2022-07-01',
     '2024-11-01',
-    'Apoyo en la formulación, implementación y seguimiento del Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST) para empresas clientes. Levantamiento de matrices de riesgos, reporte e investigación de incidentes laborales y ejecución de inspecciones periódicas.',
+    'Apoyo en la formulación, implementación y seguimiento del Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST) para empresas clientes. Esta etapa fortaleció el rigor documental, el seguimiento de indicadores y el acercamiento inicial a formularios digitales y Google Apps Script.',
     array[
-      'Diseño y actualización de matrices de identificación de peligros y valoración de riesgos (GTC 45) en diversos sectores.',
-      'Estructuración de indicadores de gestión, planes de trabajo anuales y auditorías de cumplimiento normativo legal.',
-      'Capacitación continua a comités paritarios (COPASST) y personal operativo en protocolos de prevención y emergencias.'
+      'Acompañamiento a empresas cliente en documentación, auditorías, planes de trabajo e informes para ARL.',
+      'Seguimiento de indicadores, investigación de accidentes y organización de información operativa.',
+      'Primer acercamiento a la estandarización de procesos mediante formularios digitales y Google Apps Script.'
     ]
   ),
   (
@@ -342,13 +351,29 @@ insert into projects (
 )
 values
 (
+  'diegoalejandromunoz.com',
+  'diegoalejandromunoz-com',
+  'Plataforma personal para marca profesional, portafolio y administración de contenido.',
+  'Sitio profesional construido como producto propio con Next.js App Router, TypeScript, Tailwind CSS, Supabase/PostgreSQL y Vercel. Incluye páginas públicas, dashboard privado, autenticación, gestión de proyectos, experiencia, CV, enlaces, analítica anónima e integraciones administrativas con GitHub, Vercel y Supabase.',
+  'Necesidad de demostrar experiencia técnica con evidencia real y mantener el portafolio actualizado sin editar código en cada cambio de contenido.',
+  'Implementación de una aplicación web con dashboard protegido, Server Actions, RLS, almacenamiento de archivos, tracking anónimo de eventos y sincronización de recursos externos para apoyar decisiones editoriales.',
+  'Plataforma en producción que centraliza marca personal, proyectos verificables, CV, contacto y administración de contenido desde un panel privado.',
+  'live',
+  true,
+  true,
+  'https://www.diegoalejandromunoz.com/',
+  'https://github.com/Diego-8520/MarcaDeigoAlejandroMu-oz',
+  array['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Supabase (PostgreSQL)'],
+  array['Web Apps', 'Data']
+),
+(
   'Safe Maps',
   'safe-maps',
   'Plataforma web de análisis de riesgo urbano para rutas en Cali, Colombia.',
   'Aplicación interactiva que permite a los ciudadanos evaluar y visualizar niveles de riesgo urbano en rutas de desplazamiento en Cali, combinando cálculo de rutas reales mediante OpenRouteService y modelado de riesgo acumulado.',
   'Los ciudadanos carecen de herramientas accesibles para evaluar la seguridad de sus trayectos urbanos antes de desplazarse, especialmente en zonas de alta vulnerabilidad.',
   'Desarrollo de una plataforma web con visualización cartográfica en tiempo real, integración de OpenRouteService para geometrías de ruta precisas y análisis de riesgo por comunas.',
-  'Interfaz responsiva y fluida con cálculo dinámico de trayectorias, visualización por niveles de riesgo y analítica geoespacial para la ciudad de Cali.',
+  'Proyecto académico/técnico con interfaz responsiva, cálculo de rutas y visualización de niveles de riesgo para explorar decisiones de producto basadas en datos geográficos.',
   'live',
   true,
   true,
@@ -360,11 +385,11 @@ values
 (
   'Pura Pasión V2',
   'pura-pasion-v2',
-  'Plataforma e-commerce y catálogo digital para marca de indumentaria deportiva.',
+  'E-commerce y catálogo digital para marca de indumentaria deportiva.',
   'Segunda generación de la tienda digital de Pura Pasión, rediseñada con arquitectura moderna, catálogo optimizado, panel administrativo y gestión de inventario en tiempo real con Supabase.',
   'La versión previa requería modernización en rendimiento, experiencia de compra en dispositivos móviles y una base de datos escalable con autenticación segura.',
   'Reconstrucción integral con Next.js App Router, TypeScript, Tailwind CSS y Supabase (Postgres + Auth + Storage), con Server Actions y validación tipada.',
-  'Mejora radical en tiempos de carga, administración centralizada de productos y una experiencia de navegación optimizada para conversión.',
+  'Proyecto propio en evolución para practicar catálogo, administración de productos y persistencia con Supabase.',
   'live',
   true,
   true,
@@ -376,11 +401,11 @@ values
 (
   'Budix Inc — UpSales LP',
   'upsales-budix',
-  'Landing page comercial de alta conversión construida con Vite y React.',
-  'Página de aterrizaje optimizada para conversión de prospectos y presentación de soluciones digitales de Budix Inc, con arquitectura modular y tiempos de carga ultrarrápidos.',
-  'Necesidad de captar leads calificados mediante una presencia web ágil, persuasiva y con altos estándares de rendimiento en Core Web Vitals.',
-  'Desarrollo frontend con Vite, React y Tailwind CSS, estructurado con llamadas a la acción estratégicas y diseño enfocado en la experiencia de usuario.',
-  'Carga instantánea, código desacoplado y un flujo de conversión intuitivo para clientes potenciales.',
+  'Landing page comercial construida con Vite, React y Tailwind CSS.',
+  'Página de aterrizaje para Budix Inc / UpSales enfocada en presentar servicios digitales y facilitar el contacto comercial, con arquitectura frontend modular y despliegue en Vercel.',
+  'Necesidad de comunicar una oferta comercial de forma clara y publicar una presencia web ágil para captar conversaciones con prospectos.',
+  'Desarrollo frontend con Vite, React y Tailwind CSS, estructura responsive, secciones comerciales y llamadas a la acción directas.',
+  'Landing page publicada con repositorio público y base reutilizable para comunicación comercial.',
   'live',
   false,
   true,

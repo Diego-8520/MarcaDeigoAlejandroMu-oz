@@ -13,15 +13,15 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Hoja de Vida (CV) & Perfil Profesional",
   description:
-    "Hoja de vida verificada de Diego Alejandro Muñoz: Desarrollador de Software en Next.js, React, TypeScript y C# .NET.",
+    "Hoja de vida de Diego Alejandro Muñoz: Software Developer con foco en Next.js, React, TypeScript, Supabase y procesos de datos.",
 };
 
 const EXECUTIVE_HIGHLIGHTS = [
-  "Estudiante de Ingeniería en Sistemas de Información (UNIAJC, Cali, Colombia).",
-  "Experiencia técnica en normalización masiva de inventarios y datos XML/APIs en Juniper Travel Technology.",
-  "Desarrollo de aplicaciones completas: Next.js (App Router), TypeScript, Supabase (PostgreSQL + RLS) y C# .NET.",
+  "Estudiante de Ingeniería de Sistemas (UNIAJC, Cali, Colombia).",
+  "Experiencia en verificación de calidad, consistencia de inventario y soporte operativo de datos en Juniper Travel Technology.",
+  "Desarrollo de aplicaciones web y paneles administrativos con Next.js (App Router), React, TypeScript y Supabase/PostgreSQL.",
   "Sólida base en procesos, normatividad y control de riesgos heredada de formación tecnológica previa en SST.",
-  "Disponibilidad para puestos remotos e híbridos de desarrollo frontend, backend o full-stack.",
+  "Disponibilidad para roles junior remotos o híbridos en desarrollo web, backend inicial o soporte técnico orientado a datos.",
 ];
 
 export default async function CvPage() {

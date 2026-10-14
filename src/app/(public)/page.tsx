@@ -24,31 +24,31 @@ const CAPABILITIES = [
   {
     id: "fullstack",
     icon: Code2,
-    title: "Desarrollo Web Full-Stack",
-    eyebrow: "Front & Back Tipado",
+    title: "Desarrollo Web & Paneles Administrativos",
+    eyebrow: "Producto Funcional",
     description:
-      "Aplicaciones web modernas de alto rendimiento con Next.js (App Router), React, TypeScript y C# .NET. Enfoque en código modular, arquitecturas limpias y UX sin fricción.",
-    deliverables: ["Plataformas en producción", "Diseño responsivo optimizado", "Server Actions & APIs seguras", "Pruebas y tipado TypeScript"],
-    stack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "C# .NET"],
+      "Aplicaciones web funcionales con Next.js, React y TypeScript, enfocadas en administrar contenido, publicar proyectos y resolver necesidades reales sin inflar el alcance.",
+    deliverables: ["Sitios y paneles administrables", "Diseño responsivo", "Server Actions y validación", "Código tipado y mantenible"],
+    stack: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
   },
   {
     id: "databases",
     icon: Layers,
-    title: "Arquitectura de Datos & Supabase",
-    eyebrow: "PostgreSQL & Seguridad",
+    title: "Bases de Datos & Persistencia Segura",
+    eyebrow: "Supabase & RLS",
     description:
-      "Diseño de esquemas relacionales, políticas de seguridad a nivel de fila (RLS), almacenamiento seguro de archivos y persistencia confiable para plataformas con múltiples usuarios.",
-    deliverables: ["Modelado relacional en PostgreSQL", "Políticas RLS estrictas", "Gestión de buckets en Storage", "Auditoría e integridad de datos"],
-    stack: ["Supabase", "PostgreSQL", "RLS", "Storage", "SQL"],
+      "Estructuración de datos para proyectos web con Supabase/PostgreSQL, autenticación, políticas RLS y almacenamiento, priorizando seguridad básica y consistencia editorial.",
+    deliverables: ["Tablas relacionales", "Políticas RLS", "Storage para archivos", "Datos administrables"],
+    stack: ["Supabase", "PostgreSQL", "RLS", "Storage"],
   },
   {
     id: "integrations",
     icon: Cpu,
-    title: "Automatización & APIs de Datos",
-    eyebrow: "Flujos & Reconciliación",
+    title: "Integración de APIs y Automatización de Procesos",
+    eyebrow: "REST & Operación",
     description:
-      "Normalización de catálogos e inventarios, consumo de APIs geoespaciales y comerciales, y automatización de tareas operativas para eliminar el trabajo manual repetitivo.",
-    deliverables: ["Integración de APIs de terceros", "Procesamiento y mapeo masivo", "Webhooks y sincronizaciones", "Alertas y registros en tiempo real"],
+      "Consumo de servicios REST, sincronización de datos y reducción de tareas manuales con herramientas simples, scripts e integraciones ajustadas al problema.",
+    deliverables: ["Consumo de APIs externas", "Sincronización de datos", "Formularios y registros", "Documentación del flujo"],
     stack: ["APIs REST", "OpenRouteService", "Webhooks", "Node.js"],
   },
 ];
@@ -99,11 +99,11 @@ export default async function HomePage() {
           </div>
 
           <h1 className="mt-6 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl lg:text-6xl leading-[1.12]">
-            Construyo productos web completos, herramientas a medida y flujos que funcionan en producción.
+            Diego Alejandro Muñoz — Software Developer · Next.js & TypeScript
           </h1>
 
           <p className="mt-6 max-w-2xl font-body text-base sm:text-lg leading-relaxed text-ink-muted">
-            Estudiante de Ingeniería de Sistemas con experiencia en conciliación masiva de datos turísticos en Juniper Travel Technology y background riguroso en gestión de procesos. Desarrollo con Next.js, React, TypeScript, C# .NET y PostgreSQL.
+            Estudiante de Ingeniería de Sistemas (UNIAJC). Desarrollo aplicaciones web funcionales, paneles administrativos y herramientas con Next.js, React, TypeScript y PostgreSQL, respaldadas por criterio práctico en consistencia de datos y procesos operativos.
           </p>
 
           {/* Doble CTA Interactivo para Recruiter vs Cliente */}
@@ -131,15 +131,15 @@ export default async function HomePage() {
           <div className="bracket-frame mt-12 grid gap-3 border border-line bg-surface/80 p-5 sm:grid-cols-4 font-mono text-xs text-ink-muted rounded-sm">
             <div>
               <p className="text-[10px] uppercase text-ink-subtle">Stack Principal</p>
-              <p className="mt-1 text-ink font-semibold">Next.js · React · TS</p>
+              <p className="mt-1 text-ink font-semibold">Next.js · React · TypeScript</p>
             </div>
             <div>
               <p className="text-[10px] uppercase text-ink-subtle">Base de Datos</p>
-              <p className="mt-1 text-ink font-semibold">Supabase · PostgreSQL</p>
+              <p className="mt-1 text-ink font-semibold">Supabase (PostgreSQL)</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase text-ink-subtle">Backend Alterno</p>
-              <p className="mt-1 text-ink font-semibold">C# · .NET Core</p>
+              <p className="text-[10px] uppercase text-ink-subtle">Frontend</p>
+              <p className="mt-1 text-ink font-semibold">React · Tailwind CSS</p>
             </div>
             <div>
               <p className="text-[10px] uppercase text-ink-subtle">Disponibilidad</p>
@@ -200,7 +200,7 @@ export default async function HomePage() {
         </div>
 
         <p className="mt-3 max-w-xl font-body text-sm leading-relaxed text-ink-muted">
-          Cada proyecto demuestra decisiones arquitectónicas reales: análisis de riesgo geoespacial, catálogos e-commerce con Supabase, landing pages de alta conversión y código limpio en GitHub.
+          Cada proyecto muestra evidencia concreta: análisis de riesgo geoespacial, catálogos e-commerce con Supabase, landing pages, paneles administrativos y código disponible para revisión.
         </p>
 
         <div className="mt-8 space-y-5">
@@ -216,7 +216,7 @@ export default async function HomePage() {
           <div>
             <div className="flex items-center gap-2 font-mono text-xs text-signal-light font-semibold">
               <span className="h-1.5 w-1.5 rounded-full bg-signal" />
-              <span>SOLUCIONES PARA CLIENTES Y EQUIPOS</span>
+              <span>SOLUCIONES DIGITALES PRÁCTICAS</span>
             </div>
             <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-ink">
               Qué puedo construir para ti
@@ -367,7 +367,7 @@ export default async function HomePage() {
                 {experiences[0]?.company ?? "Juniper Travel Technology"} · 2024 — Presente
               </p>
               <p className="mt-3 font-body text-xs sm:text-sm text-ink-muted leading-relaxed">
-                Gestión, normalización y conciliación de inventarios masivos de distribución turística entre cientos de proveedores XML/APIs y clientes en tiempo real, garantizando exactitud geoespacial y disponibilidad de datos.
+                Verificación de calidad, consistencia de inventario y resolución de discrepancias en información hotelera y turística, trabajando con solicitudes operativas y datos de producto.
               </p>
             </div>
 
@@ -430,7 +430,7 @@ export default async function HomePage() {
             Iniciemos una conversación
           </h2>
           <p className="mt-3 max-w-xl font-body text-sm leading-relaxed text-ink-muted">
-            Tanto si buscas un desarrollador con rigor técnico para tu equipo de ingeniería, como si necesitas construir un producto digital o automatización a medida para tu empresa.
+            Tanto si buscas un desarrollador junior con criterio práctico para tu equipo, como si necesitas construir un producto web, panel administrativo o integración funcional para tu negocio.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">

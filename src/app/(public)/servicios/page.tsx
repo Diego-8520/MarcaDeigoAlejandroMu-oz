@@ -8,60 +8,60 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Servicios de Desarrollo Web & Automatización",
   description:
-    "Soluciones digitales a medida: aplicaciones web completas, landing pages de alta conversión y automatización de procesos para negocios y startups.",
+    "Soluciones digitales prácticas: aplicaciones web, paneles administrativos, landing pages e integración de APIs para negocios y proyectos en crecimiento.",
 };
 
 const SERVICES = [
   {
     slug: "aplicaciones-web",
-    name: "Desarrollo de Aplicaciones Web a Medida",
-    badge: "Full-Stack",
+    name: "Desarrollo Web y Paneles Administrativos",
+    badge: "Web Apps",
     summary:
-      "Construyo aplicaciones web completas y robustas, desde la arquitectura de base de datos hasta la interfaz de usuario.",
+      "Construyo aplicaciones web funcionales, paneles privados y flujos de administración de contenido con tecnologías modernas.",
     problem:
       "Necesitas un sistema propio para tu negocio (catálogo interactivo, panel de administración, intranet o portal de clientes) pero las herramientas genéricas no se ajustan a tus reglas de negocio.",
     solution:
-      "Desarrollo frontend en Next.js/React con backend en Server Actions o C# .NET y bases de datos relacionales en PostgreSQL / Supabase, con autenticación, permisos por rol y rendimiento garantizado.",
+      "Desarrollo interfaces en Next.js/React con Server Actions, validación tipada y persistencia en Supabase/PostgreSQL, cuidando autenticación, permisos y una experiencia clara para el usuario.",
     deliverables: [
-      "Aplicación web responsiva desplegada en producción (Vercel / Cloud)",
-      "Base de datos PostgreSQL estructurada y con reglas de seguridad (RLS)",
+      "Aplicación web responsiva desplegada en Vercel",
+      "Base de datos PostgreSQL estructurada con reglas de seguridad RLS",
       "Panel de administración privado para gestionar tu contenido o datos",
       "Código fuente completo, tipado en TypeScript y documentado",
     ],
-    technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase", "PostgreSQL", "C# .NET"],
+    technologies: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase", "PostgreSQL"],
   },
   {
     slug: "landing-pages-conversion",
-    name: "Landing Pages de Alta Conversión & SEO",
-    badge: "Frontend & CRO",
+    name: "Landing Pages y Sitios Comerciales",
+    badge: "Frontend & SEO",
     summary:
-      "Páginas comerciales y sitios corporativos enfocados en velocidad extrema, claridad de propuesta y captación de clientes.",
+      "Páginas comerciales y sitios corporativos enfocados en velocidad, claridad de propuesta y captación de contactos.",
     problem:
       "Tu sitio web actual tarda en cargar, se ve mal en teléfonos móviles o recibe visitas pero nadie te contacta ni compra.",
     solution:
       "Diseño e implemento páginas de aterrizaje livianas y persuasivas con entrega estática (Next.js, Vite o Astro) que cargan al instante y facilitan el contacto directo por WhatsApp o formulario.",
     deliverables: [
-      "Entrega estática con puntajes máximos en Core Web Vitals",
+      "Entrega estática optimizada para carga rápida",
       "Formularios de contacto integrados y notificaciones directas",
-      "Estructura semántica optimizada para motores de búsqueda (SEO)",
+      "Estructura semántica preparada para SEO básico",
       "Diseño adaptable y fluido probado en múltiples dispositivos",
     ],
     technologies: ["React", "Vite", "Astro", "Tailwind CSS", "HTML5 Semántico", "Analytics anónimo"],
   },
   {
     slug: "automatizacion-integraciones",
-    name: "Automatización de Flujos & Conexión de APIs",
+    name: "Integración de APIs y Automatización de Procesos",
     badge: "Integraciones",
     summary:
-      "Conecto tus herramientas y bases de datos para eliminar la carga operativa manual y reconciliar información.",
+      "Conecto servicios, formularios y bases de datos para reducir tareas manuales y mantener información más consistente.",
     problem:
       "Tu equipo pierde horas diarias copiando datos entre hojas de cálculo, sistemas de inventario, correos y plataformas externas.",
     solution:
-      "Implemento scripts e integraciones de APIs REST y webhooks para sincronizar inventarios, normalizar datos de múltiples fuentes y disparar notificaciones automáticas.",
+      "Implemento integraciones con APIs REST, webhooks y scripts de apoyo para mover datos entre herramientas, registrar eventos y disparar notificaciones operativas.",
     deliverables: [
       "Integración estable entre sistemas mediante APIs y webhooks",
       "Normalización y limpieza automática de datos",
-      "Manejo de errores y alertas ante fallos de sincronización",
+      "Manejo básico de errores y alertas ante fallos de sincronización",
       "Guía clara de funcionamiento y mantenimiento",
     ],
     technologies: ["APIs REST", "Webhooks", "Node.js", "SQL", "OpenRouteService", "Postman"],
@@ -96,7 +96,7 @@ export default function ServiciosPage() {
           Qué puedo construir para tu negocio
         </h1>
         <p className="mt-5 max-w-2xl font-body text-base leading-relaxed text-ink-muted">
-          Desarrollo soluciones digitales basadas exclusivamente en tecnologías y capacidades que domino con rigor. Sin sobrecostos de agencia ni plantillas infladas: trato directo con el desarrollador que construye tu producto.
+          Desarrollo soluciones digitales basadas en tecnologías que ya he aplicado en proyectos reales. Sin prometer capas innecesarias: trato directo, alcance claro y foco en resolver el problema operativo o comercial.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-4">

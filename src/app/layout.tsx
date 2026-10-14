@@ -30,14 +30,13 @@ export const metadata: Metadata = {
     template: "%s | Diego Alejandro Muñoz",
   },
   description:
-    "Desarrollador de software en Cali, Colombia. Construyo aplicaciones web con Next.js, React, TypeScript y C# .NET, bases de datos PostgreSQL y automatizaciones prácticas.",
+    "Software Developer en Cali, Colombia. Desarrollo aplicaciones web, paneles administrativos e integraciones con Next.js, React, TypeScript y Supabase/PostgreSQL.",
   keywords: [
     "Diego Alejandro Muñoz",
     "Software Developer",
     "Next.js",
     "React",
     "TypeScript",
-    "C# .NET",
     "PostgreSQL",
     "Supabase",
     "Automatización",
@@ -49,9 +48,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_CO",
     url: "https://diegoalejandromunoz.com",
-    title: "Diego Alejandro Muñoz — Software Developer",
+    title: "Diego Alejandro Muñoz — Software Developer · Next.js & TypeScript",
     description:
-      "Desarrollador de software en Cali, Colombia. Construcción de aplicaciones web completas, herramientas a medida y automatización de procesos.",
+      "Desarrollador de software en Cali, Colombia. Aplicaciones web funcionales, paneles administrativos, datos consistentes e integraciones prácticas.",
     siteName: "Diego Alejandro Muñoz",
   },
   robots: {
@@ -88,8 +87,6 @@ const jsonLd = {
         "Next.js",
         "React",
         "TypeScript",
-        "C#",
-        ".NET",
         "PostgreSQL",
         "Supabase",
         "Process Automation",

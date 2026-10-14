@@ -58,3 +58,4 @@ graphify-out/
 # IDE & Editor local settings
 .vscode/
 .claude/
+.agents/me/

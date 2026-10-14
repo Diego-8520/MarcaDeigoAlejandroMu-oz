@@ -12,7 +12,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Sobre Diego Alejandro Muñoz — Historia, Enfoque & Principios",
   description:
-    "De la gestión de procesos y normatividad rigurosa al desarrollo de software en Next.js, React, TypeScript y C# .NET.",
+    "De la gestión de procesos y datos operativos al desarrollo web con Next.js, React, TypeScript y Supabase.",
 };
 
 export default async function SobreMiPage() {
@@ -54,10 +54,10 @@ export default async function SobreMiPage() {
               {fullName}
             </h1>
             <p className="mt-2 font-mono text-sm text-signal-light font-medium">
-              Software Developer · Cali, Valle del Cauca, Colombia
+              Software Developer · Next.js & TypeScript · Cali, Colombia
             </p>
             <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-ink-muted">
-              Estudiante de Ingeniería en Sistemas de Información en la UNIAJC. Construyo aplicaciones web modernas, paneles de gestión e integraciones con Next.js, React, TypeScript, C# .NET y PostgreSQL.
+              Estudiante de Ingeniería de Sistemas en la UNIAJC. Construyo aplicaciones web funcionales, paneles administrativos e integraciones con Next.js, React, TypeScript y Supabase/PostgreSQL.
             </p>
           </div>
         </div>
@@ -92,10 +92,10 @@ export default async function SobreMiPage() {
             Mi trayectoria profesional comenzó en el área de Seguridad y Salud en el Trabajo (SST). En ese entorno, la atención rigurosa a las normas, el análisis metódico de matrices de riesgos y el control estricto de procedimientos no son opcionales: son la diferencia entre un ambiente seguro y una contingencia grave.
           </p>
           <p>
-            Esa disciplina estructurada fue la base con la que redirigí mi vocación hacia la ingeniería y la tecnología. Descubrí que la arquitectura de software comparte esa misma naturaleza: requiere modelar datos con precisión, prever fallos en las capas de entrada, respetar contratos de API y construir sistemas resilientes que no dependan de la improvisación.
+            Esa disciplina estructurada fue la base con la que redirigí mi vocación hacia la ingeniería y la tecnología. Descubrí que construir software también exige entender procesos, modelar información con cuidado, validar entradas y crear sistemas que respondan a necesidades concretas.
           </p>
           <p>
-            Actualmente curso Ingeniería en Sistemas de Información en la Institución Universitaria Antonio José Camacho (UNIAJC) y trabajo como Mapping Agent en Juniper Travel Technology, donde normalizo y concilio catálogos masivos de distribución turística entre cientos de proveedores XML/APIs y clientes internacionales en tiempo real.
+            Actualmente curso Ingeniería de Sistemas en la Institución Universitaria Antonio José Camacho (UNIAJC) y trabajo como Mapping Agent / Soporte Operativo de Datos en Juniper Travel Technology, donde verifico calidad, consistencia de inventario y discrepancias en información hotelera y turística.
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export default async function SobreMiPage() {
             <ShieldCheck className="h-5 w-5 text-signal-light mb-2" />
             <h3 className="font-display text-sm font-semibold text-ink">Rigor en Datos</h3>
             <p className="font-body text-xs text-ink-muted mt-1 leading-relaxed">
-              Esquemas relacionales sólidos en PostgreSQL, tipado estricto con TypeScript y validación de esquemas con Zod.
+              Persistencia con Supabase/PostgreSQL, tipado con TypeScript y validación de datos en proyectos propios.
             </p>
           </div>
           <div className="border border-line bg-surface/60 p-4">
@@ -119,7 +119,7 @@ export default async function SobreMiPage() {
             <Compass className="h-5 w-5 text-amber mb-2" />
             <h3 className="font-display text-sm font-semibold text-ink">Evolución Continua</h3>
             <p className="font-body text-xs text-ink-muted mt-1 leading-relaxed">
-              Formación universitaria activa, proyectos propios en producción y experimentación con automatización y agentes de IA.
+              Formación universitaria activa, proyectos propios en producción y aprendizaje gradual en automatización e integración de herramientas.
             </p>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default async function SobreMiPage() {
           Stack y herramientas comprobadas
         </h2>
         <p className="mt-2 text-xs font-mono text-ink-muted">
-          Tecnologías aplicadas en proyectos reales, repositorios y plataformas en vivo:
+          Tecnologías aplicadas en proyectos propios, repositorios y plataformas en vivo:
         </p>
 
         <div className="mt-8 space-y-6">

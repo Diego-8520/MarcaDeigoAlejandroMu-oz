@@ -10,7 +10,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Proyectos y Casos de Estudio",
   description:
-    "Catálogo de aplicaciones web, e-commerce, herramientas interactivas y automatizaciones desarrolladas por Diego Alejandro Muñoz.",
+    "Catálogo de aplicaciones web, e-commerce, herramientas interactivas e integraciones desarrolladas por Diego Alejandro Muñoz.",
 };
 
 export default async function ProyectosPage() {
@@ -24,14 +24,14 @@ export default async function ProyectosPage() {
           Proyectos y casos de estudio
         </h1>
         <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-ink-muted">
-          Cada desarrollo responde a un problema concreto: análisis de riesgo geoespacial, comercio electrónico con base de datos en tiempo real, landing pages de alta conversión o automatización de flujos con APIs.
+          Cada desarrollo responde a un problema concreto: análisis de riesgo geoespacial, comercio electrónico con base de datos, landing pages, paneles administrativos o integración funcional con APIs.
         </p>
         <div className="mt-6 flex flex-wrap gap-2 text-xs font-mono text-ink-muted">
           <span className="border border-line bg-surface/70 px-2.5 py-1 rounded-sm">
             Total proyectos activos: <strong className="text-ink">{projects.length}</strong>
           </span>
           <span className="border border-line bg-surface/70 px-2.5 py-1 rounded-sm">
-            Next.js · React · TypeScript · C# .NET · Supabase
+            Next.js · React · TypeScript · Supabase
           </span>
         </div>
       </Section>
