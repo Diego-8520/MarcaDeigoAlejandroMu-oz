@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/types/project";
-import { gsap, motionEnabled } from "@/components/motion/gsap";
+import { loadMotion, motionEnabled, type Motion } from "@/components/motion/gsap";
 import { cn } from "@/lib/utils";
 
 function projectThumb(project: Project) {
@@ -38,26 +38,40 @@ export function WorkIndex({ projects, showFilters = false }: { projects: Project
   const hoveredThumb = hoveredProject ? projectThumb(hoveredProject) : null;
 
   // La vista previa sigue al cursor con inercia (quickTo, fuera del render de React).
+  // GSAP se pide al primer contacto del ratón; hasta que llega, la vista previa se posiciona sin inercia.
   const quick = useRef<{ x: (v: number) => void; y: (v: number) => void } | null>(null);
+  const motion = useRef<Motion | null>(null);
+
+  function onEnter(e: React.PointerEvent) {
+    if (e.pointerType !== "mouse" || motion.current) return;
+    loadMotion().then((m) => {
+      motion.current = m;
+    });
+  }
 
   function onMove(e: React.PointerEvent) {
     const el = previewRef.current;
     if (!el || e.pointerType !== "mouse") return;
-    if (!quick.current) {
+    const bounds = rootRef.current?.getBoundingClientRect();
+    if (!bounds) return;
+    if (!quick.current && !motion.current) {
+      el.style.transform = `translate(${e.clientX - bounds.left}px, ${e.clientY - bounds.top}px)`;
+      return;
+    }
+    if (!quick.current && motion.current) {
+      const { gsap } = motion.current;
       const lerp = motionEnabled() ? 0.55 : 0.01;
       quick.current = {
         x: gsap.quickTo(el, "x", { duration: lerp, ease: "power3.out" }),
         y: gsap.quickTo(el, "y", { duration: lerp, ease: "power3.out" }),
       };
     }
-    const bounds = rootRef.current?.getBoundingClientRect();
-    if (!bounds) return;
-    quick.current.x(e.clientX - bounds.left);
-    quick.current.y(e.clientY - bounds.top);
+    quick.current?.x(e.clientX - bounds.left);
+    quick.current?.y(e.clientY - bounds.top);
   }
 
   return (
-    <div ref={rootRef} className="relative" onPointerMove={onMove} onPointerLeave={() => setHovered(null)}>
+    <div ref={rootRef} className="relative" onPointerEnter={onEnter} onPointerMove={onMove} onPointerLeave={() => setHovered(null)}>
       {showFilters && categories.length > 1 && (
         <div role="group" aria-label="Filtrar por categoría" className="mb-10 flex flex-wrap gap-2 font-mono text-[11px] uppercase tracking-[0.08em]">
           <button

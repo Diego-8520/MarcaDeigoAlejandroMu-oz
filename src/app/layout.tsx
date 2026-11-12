@@ -9,6 +9,9 @@ import {
   SITE_URL,
 } from "@/lib/seo";
 
+// Solo se precarga la fuente de los titulares (Archivo, variable con eje de
+// ancho): es la del texto más grande al cargar. Serif y mono se descargan
+// sin precarga, con fallback métrico ajustado para no mover el layout.
 const archivo = Archivo({
   variable: "--font-archivo",
   subsets: ["latin"],
@@ -20,15 +23,19 @@ const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
   subsets: ["latin"],
   weight: "400",
-  style: ["normal", "italic"],
+  // En el sitio solo aparece en cursiva (acentos de titulares, citas, capitulares).
+  style: "italic",
   display: "swap",
+  preload: false,
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  // Pesos realmente usados en etiquetas y datos.
+  weight: ["400", "500"],
   display: "swap",
+  preload: false,
 });
 
 // Activa el modo de movimiento antes del primer pintado. Sin JS o con

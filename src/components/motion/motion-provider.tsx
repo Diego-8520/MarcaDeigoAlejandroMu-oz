@@ -2,8 +2,8 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
-import Lenis from "lenis";
-import { gsap, ScrollTrigger, motionEnabled } from "./gsap";
+import type Lenis from "lenis";
+import { loadMotion, motionEnabled } from "./gsap";
 
 // Lenis es un sistema externo a React: se expone con un store mínimo.
 let current: Lenis | null = null;
@@ -36,27 +36,42 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const lenis = useLenis();
 
+  // Lenis y GSAP llegan después de la hidratación (import dinámico): el
+  // scroll es nativo durante ese primer instante y luego se suaviza.
   useEffect(() => {
     if (!motionEnabled()) return;
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
 
-    const instance = new Lenis({ lerp: 0.11, anchors: true });
-    instance.on("scroll", ScrollTrigger.update);
-    const tick = (time: number) => instance.raf(time * 1000);
-    gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
-    setCurrent(instance);
+    Promise.all([import("lenis"), loadMotion()]).then(([{ default: LenisCtor }, { gsap, ScrollTrigger }]) => {
+      if (cancelled) return;
+      const instance = new LenisCtor({ lerp: 0.11, anchors: true });
+      instance.on("scroll", ScrollTrigger.update);
+      const tick = (time: number) => instance.raf(time * 1000);
+      gsap.ticker.add(tick);
+      gsap.ticker.lagSmoothing(0);
+      setCurrent(instance);
+      cleanup = () => {
+        gsap.ticker.remove(tick);
+        instance.destroy();
+        setCurrent(null);
+      };
+    });
 
     return () => {
-      gsap.ticker.remove(tick);
-      instance.destroy();
-      setCurrent(null);
+      cancelled = true;
+      cleanup?.();
     };
   }, []);
 
   // En cada navegación: volver arriba (salvo anclas) y recalcular triggers.
   useEffect(() => {
     if (lenis && !window.location.hash) lenis.scrollTo(0, { immediate: true, force: true });
-    const id = requestAnimationFrame(() => ScrollTrigger.refresh());
+    if (!motionEnabled()) return;
+    let id = 0;
+    loadMotion().then(({ ScrollTrigger }) => {
+      id = requestAnimationFrame(() => ScrollTrigger.refresh());
+    });
     return () => cancelAnimationFrame(id);
   }, [pathname, lenis]);
 

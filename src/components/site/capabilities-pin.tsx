@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { gsap, useGSAP, motionEnabled } from "@/components/motion/gsap";
+import { useMotion } from "@/components/motion/gsap";
 
 export interface Capability {
   id: string;
@@ -22,9 +22,8 @@ export function CapabilitiesPin({ items }: { items: Capability[] }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      if (!motionEnabled()) return;
+  useMotion(
+    ({ gsap }) => {
       const mm = gsap.matchMedia();
       mm.add("(min-width: 1024px)", () => {
         const track = trackRef.current;
@@ -51,6 +50,7 @@ export function CapabilitiesPin({ items }: { items: Capability[] }) {
       });
       return () => mm.revert();
     },
+    [],
     { scope: sectionRef },
   );
 

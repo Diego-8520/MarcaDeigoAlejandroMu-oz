@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ScrollTrigger, useGSAP } from "@/components/motion/gsap";
 import { AudienceSwitch } from "./audience-switch";
 import { CaliClock } from "./cali-clock";
 import { SiteMenu } from "./site-menu";
@@ -24,18 +23,28 @@ export function SiteHeader() {
   const headerRef = useRef<HTMLElement>(null);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  useGSAP(() => {
-    const st = ScrollTrigger.create({
-      start: 0,
-      end: "max",
-      onUpdate(self) {
-        const y = self.scroll();
-        setScrolled(y > 24);
-        setHidden(self.direction === 1 && y > 320);
-      },
-    });
-    return () => st.kill();
-  });
+  // Scroll nativo (Lenis también mueve el scroll de la ventana): sin GSAP
+  // en el JavaScript inicial. Una lectura por frame como máximo.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      if (y !== lastY) setHidden(y > lastY && y > 320);
+      lastY = y;
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   // Atajo "/" para abrir o cerrar el menú.
   useEffect(() => {

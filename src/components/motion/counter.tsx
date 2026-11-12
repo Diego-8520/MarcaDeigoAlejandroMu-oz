@@ -1,15 +1,15 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, motionEnabled } from "./gsap";
+import { useMotion } from "./gsap";
 
 /** Número que cuenta desde 0 al entrar en vista. El valor final ya llega renderizado desde el servidor. */
 export function Counter({ value, suffix = "", className }: { value: number; suffix?: string; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
 
-  useGSAP(() => {
+  useMotion(({ gsap }) => {
     const el = ref.current;
-    if (!el || !motionEnabled() || value === 0) return;
+    if (!el || value === 0) return;
     const state = { n: 0 };
     el.textContent = `0${suffix}`;
     gsap.to(state, {
@@ -21,7 +21,10 @@ export function Counter({ value, suffix = "", className }: { value: number; suff
         el.textContent = `${Math.round(state.n)}${suffix}`;
       },
     });
-  });
+    return () => {
+      el.textContent = `${value}${suffix}`;
+    };
+  }, [value, suffix]);
 
   return (
     <span ref={ref} className={className}>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, ScrollTrigger, useGSAP, motionEnabled } from "./gsap";
+import { useMotion } from "./gsap";
 
 /**
  * Cinta infinita cuya velocidad y dirección siguen al scroll.
@@ -10,12 +10,16 @@ import { gsap, ScrollTrigger, useGSAP, motionEnabled } from "./gsap";
 export function Marquee({ items, separator = "/" }: { items: string[]; separator?: string }) {
   const trackRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
+  useMotion(({ gsap, ScrollTrigger }) => {
     const track = trackRef.current;
-    if (!track || !motionEnabled()) return;
+    if (!track) return;
+    // GSAP toma el relevo de la animación CSS desde la posición actual.
+    const offset = new DOMMatrix(getComputedStyle(track).transform).m41;
+    const progress = track.offsetWidth ? Math.min(Math.abs(offset) / (track.offsetWidth / 2), 1) : 0;
     track.style.animation = "none";
 
-    const loop = gsap.to(track, { xPercent: -50, duration: 42, ease: "none", repeat: -1 });
+    const loop = gsap.fromTo(track, { xPercent: 0 }, { xPercent: -50, duration: 42, ease: "none", repeat: -1 });
+    loop.progress(progress);
     let direction = 1;
 
     const st = ScrollTrigger.create({
@@ -36,8 +40,9 @@ export function Marquee({ items, separator = "/" }: { items: string[]; separator
     return () => {
       st.kill();
       loop.kill();
+      track.style.animation = "";
     };
-  });
+  }, []);
 
   const sequence = (copy: number) =>
     items.map((item) => (

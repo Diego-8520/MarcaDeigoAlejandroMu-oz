@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, LogIn } from "lucide-react";
-import { gsap, useGSAP, motionEnabled } from "@/components/motion/gsap";
+import { useMotion } from "@/components/motion/gsap";
 import { useLenis } from "@/components/motion/motion-provider";
 import { AudienceSwitch } from "./audience-switch";
 import { CONTACT, NAV_ITEMS, isActivePath } from "@/lib/site";
@@ -62,10 +62,10 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
     };
   }, [open, onClose, lenis]);
 
-  useGSAP(
-    () => {
+  useMotion(
+    ({ gsap }) => {
       const root = rootRef.current;
-      if (!root || !open || !motionEnabled()) return;
+      if (!root || !open) return;
       gsap
         .timeline()
         .fromTo(root, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "expo.inOut" })
@@ -73,7 +73,8 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
         .from("[data-menu-link]", { yPercent: 110, duration: 1, stagger: 0.045 }, 0.35)
         .from("[data-menu-meta]", { autoAlpha: 0, y: 16, duration: 0.8, stagger: 0.05 }, 0.55);
     },
-    { scope: rootRef, dependencies: [open] },
+    [open],
+    { scope: rootRef },
   );
 
   if (!open) return null;
