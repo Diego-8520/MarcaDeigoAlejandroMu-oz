@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, LogIn } from "lucide-react";
-import { gsap, useGSAP, motionEnabled } from "@/components/motion/gsap";
+import { useMotion } from "@/components/motion/gsap";
 import { useLenis } from "@/components/motion/motion-provider";
 import { AudienceSwitch } from "./audience-switch";
 import { CONTACT, NAV_ITEMS, isActivePath } from "@/lib/site";
@@ -62,10 +62,10 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
     };
   }, [open, onClose, lenis]);
 
-  useGSAP(
-    () => {
+  useMotion(
+    ({ gsap }) => {
       const root = rootRef.current;
-      if (!root || !open || !motionEnabled()) return;
+      if (!root || !open) return;
       gsap
         .timeline()
         .fromTo(root, { clipPath: "inset(0% 0% 100% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.9, ease: "expo.inOut" })
@@ -73,7 +73,8 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
         .from("[data-menu-link]", { yPercent: 110, duration: 1, stagger: 0.045 }, 0.35)
         .from("[data-menu-meta]", { autoAlpha: 0, y: 16, duration: 0.8, stagger: 0.05 }, 0.55);
     },
-    { scope: rootRef, dependencies: [open] },
+    [open],
+    { scope: rootRef },
   );
 
   if (!open) return null;
@@ -98,7 +99,7 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
           type="button"
           onClick={onClose}
           data-menu-first
-          className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink hover:text-signal"
+          className="tap font-mono text-[11px] uppercase tracking-[0.08em] text-ink hover:text-signal"
         >
           Cerrar <span className="text-ink-subtle">[esc]</span>
         </button>
@@ -156,33 +157,34 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
               <p className="eyebrow mb-3">¿Qué buscas?</p>
               <AudienceSwitch size="lg" />
             </div>
-            <ul data-menu-meta className="grid grid-cols-2 gap-y-2 font-mono text-xs">
+            <ul data-menu-meta className="grid grid-cols-2 gap-y-7 font-mono text-xs sm:gap-y-2">
               <li>
-                <a href={`mailto:${CONTACT.email}`} className="link-draw text-ink">
+                <a href={`mailto:${CONTACT.email}`} className="link-draw tap inline-block min-w-11 text-ink">
                   Correo
                 </a>
               </li>
               <li>
-                <a href={CONTACT.whatsappUrl()} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1 text-ink">
+                <a href={CONTACT.whatsappUrl()} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1 text-ink">
                   WhatsApp <ArrowUpRight size={12} aria-hidden="true" />
                 </a>
               </li>
               <li>
-                <a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1 text-ink">
+                <a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1 text-ink">
                   LinkedIn <ArrowUpRight size={12} aria-hidden="true" />
                 </a>
               </li>
               <li>
-                <a href={CONTACT.github} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1 text-ink">
+                <a href={CONTACT.github} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1 text-ink">
                   GitHub <ArrowUpRight size={12} aria-hidden="true" />
                 </a>
               </li>
             </ul>
             <div data-menu-meta className="flex items-center justify-between border-t border-line pt-4 font-mono text-[10px] uppercase tracking-[0.08em] text-ink-subtle">
               <span>Atajos: / menú · G rejilla</span>
-              <Link href="/login" onClick={onClose} aria-label="Acceso administrativo privado" className="hover:text-ink">
+              {/* Carga completa (no <Link>): el documento del login no hereda GTM del sitio público. */}
+              <a href="/login" aria-label="Acceso administrativo privado" className="tap-area hover:text-ink">
                 <LogIn size={12} aria-hidden="true" />
-              </Link>
+              </a>
             </div>
           </div>
         </aside>

@@ -13,9 +13,8 @@ export function SiteFooter() {
         <Link
           href="/contacto"
           className="group mt-6 block focus-visible:outline-offset-8"
-          aria-label="Ir a contacto: ¿Construimos algo?"
         >
-          <span className="display relative block text-[clamp(2.3rem,8.6vw,10rem)] text-ink">
+          <span className="display relative block text-[clamp(1.75rem,8.6vw,10rem)] text-ink">
             {/* Capa de acento que se revela de izquierda a derecha */}
             <span
               aria-hidden="true"
@@ -24,6 +23,7 @@ export function SiteFooter() {
               ¿Construimos <span className="font-serif">algo?</span>
             </span>
             ¿Construimos <span className="font-serif">algo?</span>
+            <span className="sr-only">: ir a contacto</span>
           </span>
         </Link>
       </div>
@@ -31,14 +31,14 @@ export function SiteFooter() {
       <div className="container-x mt-20 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-line py-12 font-mono text-xs md:grid-cols-4">
         <div>
           <p className="eyebrow mb-4">Contacto</p>
-          <ul className="space-y-2 text-ink">
+          <ul className="space-y-7 text-ink sm:space-y-2">
             <li>
-              <a href={`mailto:${CONTACT.email}`} className="link-draw break-all">
+              <a href={`mailto:${CONTACT.email}`} className="link-draw tap break-all">
                 {CONTACT.email}
               </a>
             </li>
             <li>
-              <a href={CONTACT.whatsappUrl()} target="_blank" rel="noreferrer" className="link-draw">
+              <a href={CONTACT.whatsappUrl()} target="_blank" rel="noreferrer" className="link-draw tap">
                 {CONTACT.phoneDisplay}
               </a>
             </li>
@@ -48,14 +48,14 @@ export function SiteFooter() {
 
         <div>
           <p className="eyebrow mb-4">Redes</p>
-          <ul className="space-y-2 text-ink">
+          <ul className="space-y-7 text-ink sm:space-y-2">
             <li>
-              <a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1">
+              <a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1">
                 LinkedIn <ArrowUpRight size={12} aria-hidden="true" />
               </a>
             </li>
             <li>
-              <a href={CONTACT.github} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1">
+              <a href={CONTACT.github} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1">
                 GitHub <ArrowUpRight size={12} aria-hidden="true" />
               </a>
             </li>
@@ -64,10 +64,10 @@ export function SiteFooter() {
 
         <nav aria-label="Mapa del sitio">
           <p className="eyebrow mb-4">Índice</p>
-          <ul className="grid grid-cols-1 gap-2 text-ink sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-x-2 gap-y-7 text-ink sm:grid-cols-2 sm:gap-y-2">
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="link-draw">
+                <Link href={item.href} className="link-draw tap inline-block min-w-11">
                   {item.label}
                 </Link>
               </li>
@@ -79,7 +79,7 @@ export function SiteFooter() {
           <p className="eyebrow mb-4">Colofón</p>
           <p className="leading-relaxed text-ink-muted">
             Archivo, Instrument Serif y JetBrains Mono. Next.js 16, Supabase y GSAP.{" "}
-            <Link href="/arquitectura" className="link-draw text-ink">
+            <Link href="/arquitectura" className="link-draw tap text-ink">
               Ver arquitectura
             </Link>
           </p>

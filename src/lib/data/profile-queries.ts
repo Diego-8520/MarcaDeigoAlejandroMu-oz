@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export type Profile = {
   id: string;
@@ -97,7 +97,7 @@ function mapProfileLink(row: ProfileLinkRow): ProfileLink {
 }
 
 export async function getProfile(): Promise<Profile | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("profiles")
     .select(PROFILE_COLUMNS)
@@ -109,7 +109,7 @@ export async function getProfile(): Promise<Profile | null> {
 }
 
 export async function getProfileLinks(): Promise<ProfileLink[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("profile_links")
     .select(PROFILE_LINK_COLUMNS)

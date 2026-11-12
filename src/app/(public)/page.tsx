@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { getPublishedProjects } from "@/lib/data/projects-queries";
 import { getExperiences } from "@/lib/data/experiences-queries";
@@ -14,12 +16,22 @@ import { SectionHeading } from "@/components/site/page-header";
 import { CapabilitiesPin, type Capability } from "@/components/site/capabilities-pin";
 import { TestimonialCarousel } from "@/components/site/testimonial-carousel";
 import { CaliClock } from "@/components/site/cali-clock";
+import { JsonLd } from "@/components/seo/json-ld";
+import { graph, personNode, profilePageNode } from "@/lib/schema";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = pageMetadata({
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  path: "/",
+  absoluteTitle: true,
+});
 
 const CAPABILITIES: Capability[] = [
   {
     id: "fullstack",
+    service: "aplicaciones-web",
     title: "Desarrollo Web & Paneles Administrativos",
     eyebrow: "Producto Funcional",
     description:
@@ -29,6 +41,7 @@ const CAPABILITIES: Capability[] = [
   },
   {
     id: "databases",
+    service: "aplicaciones-web",
     title: "Bases de Datos & Persistencia Segura",
     eyebrow: "Supabase & RLS",
     description:
@@ -38,6 +51,7 @@ const CAPABILITIES: Capability[] = [
   },
   {
     id: "integrations",
+    service: "automatizacion-integraciones",
     title: "Integración de APIs y Automatización de Procesos",
     eyebrow: "REST & Operación",
     description:
@@ -81,6 +95,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={graph(personNode(), profilePageNode("/", HOME_TITLE))} />
       {/* 1. HERO */}
       <section className="relative flex min-h-[100dvh] flex-col overflow-hidden">
         <DotField className="absolute inset-0 h-full w-full [mask-image:radial-gradient(ellipse_at_70%_40%,black_20%,transparent_75%)]" />
@@ -110,32 +125,39 @@ export default async function HomePage() {
             </div>
           </Reveal>
 
-          <div className="mt-16 sm:mt-20">
-            <SplitReveal as="h1" immediate delay={0.15} className="display display-xl text-ink">
-              <span className="block">Diego</span>
-              <span className="block">Alejandro</span>
-              <span className="block">
-                Muñoz<span className="text-signal">.</span>
+          {/*
+            Un solo H1 con nombre y rol. En escritorio la fila del rol usa subgrid
+            para que la entradilla (fuera del H1) quede a la derecha como antes.
+            Dentro del H1 solo hay <span> (contenido en línea) y espacios
+            explícitos entre bloques para que el texto no se lea pegado.
+          */}
+          <div className="mt-16 flex flex-col sm:mt-20 lg:grid lg:grid-cols-12 lg:gap-x-6">
+            <h1 className="lg:col-span-12 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-subgrid lg:grid-rows-subgrid">
+              <SplitReveal as="span" immediate delay={0.15} className="display display-xl block text-ink lg:col-span-12">
+                <span className="block">Diego</span>{" "}
+                <span className="block">Alejandro</span>{" "}
+                <span className="block">
+                  Muñoz<span className="text-signal">.</span>
+                </span>
+              </SplitReveal>{" "}
+              <span className="mt-10 block border-t border-line pt-8 lg:col-span-12 lg:grid lg:grid-cols-subgrid">
+                <Reveal as="span" immediate delay={0.55} className="block lg:col-span-5">
+                  <span className="block font-serif text-[clamp(1.7rem,2.8vw,2.6rem)] italic leading-[1.1] text-ink">
+                    Desarrollador de software <span className="text-signal">·</span> Next.js y TypeScript
+                  </span>
+                </Reveal>
               </span>
-            </SplitReveal>
-
-            <div className="mt-10 grid grid-cols-1 gap-8 border-t border-line pt-8 lg:grid-cols-12 lg:gap-6">
-              <Reveal immediate delay={0.55} className="lg:col-span-5">
-                <p className="font-serif text-[clamp(1.7rem,2.8vw,2.6rem)] italic leading-[1.1] text-ink">
-                  Software Developer <span className="text-signal">·</span> Next.js &amp; TypeScript
-                </p>
-              </Reveal>
-              <Reveal immediate delay={0.65} className="lg:col-span-6 lg:col-start-7">
-                <p className="lede max-w-[54ch]">
-                  Estudiante de Ingeniería de Sistemas (UNIAJC). Desarrollo aplicaciones web funcionales, paneles administrativos y
-                  herramientas con Next.js, React, TypeScript y PostgreSQL, respaldadas por criterio práctico en consistencia de datos y
-                  procesos operativos.
-                </p>
-                <div className="mt-8">
-                  <HeroCtas />
-                </div>
-              </Reveal>
-            </div>
+            </h1>
+            <Reveal immediate delay={0.65} className="mt-8 lg:col-span-6 lg:col-start-7 lg:row-start-2 lg:mt-10 lg:border-t lg:border-transparent lg:pt-8">
+              <p className="lede max-w-[54ch]">
+                Estudiante de Ingeniería de Sistemas (UNIAJC). Desarrollo aplicaciones web funcionales, paneles administrativos y
+                herramientas con Next.js, React, TypeScript y PostgreSQL, respaldadas por criterio práctico en consistencia de datos y
+                procesos operativos.
+              </p>
+              <div className="mt-8">
+                <HeroCtas />
+              </div>
+            </Reveal>
           </div>
 
           <div className="mt-12 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.1em] text-ink-subtle">
@@ -172,7 +194,7 @@ export default async function HomePage() {
           <WorkIndex projects={showcaseProjects} />
         </div>
         <div className="mt-10 flex justify-end">
-          <Link href="/proyectos" className="group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
+          <Link href="/proyectos" className="tap group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
             <span className="link-draw">Ver catálogo completo ({projects.length})</span>
             <ArrowRight aria-hidden="true" size={14} className="text-signal transition-transform duration-500 ease-expo group-hover:translate-x-1" />
           </Link>
@@ -193,7 +215,7 @@ export default async function HomePage() {
               className="flex min-w-0 flex-col justify-between gap-10 bg-paper px-[var(--gutter)] py-10 sm:py-14"
             >
               <dt className="eyebrow order-2">{stat.label}</dt>
-              <dd className="display order-1 text-[clamp(2rem,4.4vw,4.75rem)] text-ink">{stat.value}</dd>
+              <dd className="display order-1 text-[clamp(1.6rem,4.4vw,4.75rem)] text-ink">{stat.value}</dd>
             </div>
           ))}
         </dl>
@@ -233,7 +255,7 @@ export default async function HomePage() {
                 </span>
                 <span className="col-span-9 flex flex-wrap gap-x-4 gap-y-1 text-sm sm:col-span-5">
                   {techProjects.map((p) => (
-                    <Link key={p.slug} href={`/proyectos/${p.slug}`} className="link-draw text-ink-muted hover:text-ink">
+                    <Link key={p.slug} href={`/proyectos/${p.slug}`} className="link-draw tap text-ink-muted hover:text-ink">
                       {p.title}
                     </Link>
                   ))}
@@ -285,7 +307,7 @@ export default async function HomePage() {
           </Reveal>
         </div>
         <div className="mt-14 flex justify-end">
-          <Link href="/experiencia" className="group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
+          <Link href="/experiencia" className="tap group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
             <span className="link-draw">Ver trayectoria completa</span>
             <ArrowRight aria-hidden="true" size={14} className="text-signal transition-transform duration-500 ease-expo group-hover:translate-x-1" />
           </Link>

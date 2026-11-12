@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { gsap, useGSAP, motionEnabled } from "./gsap";
+import { useMotion } from "./gsap";
 import { cn } from "@/lib/utils";
 
 /**
@@ -11,9 +11,9 @@ import { cn } from "@/lib/utils";
 export function ScrollLine({ className }: { className?: string }) {
   const ref = useRef<HTMLSpanElement>(null);
 
-  useGSAP(() => {
+  useMotion(({ gsap }) => {
     const el = ref.current;
-    if (!el || !motionEnabled()) return;
+    if (!el) return;
     gsap.fromTo(
       el,
       { scaleY: 0 },
@@ -23,7 +23,7 @@ export function ScrollLine({ className }: { className?: string }) {
         scrollTrigger: { trigger: el.parentElement, start: "top 75%", end: "bottom 60%", scrub: true },
       },
     );
-  });
+  }, [], { trigger: ref });
 
   return (
     <span aria-hidden="true" className={cn("pointer-events-none absolute inset-y-0 left-0 w-px bg-line", className)}>

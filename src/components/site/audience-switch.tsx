@@ -35,7 +35,7 @@ export function AudienceSwitch({ className, size = "sm" }: { className?: string;
               title={opt.hint}
               onClick={() => setMode(active ? "all" : opt.mode)}
               className={cn(
-                "relative px-1.5 py-1 tracking-[0.08em] transition-colors duration-300",
+                "tap-area px-1.5 py-1 tracking-[0.08em] transition-colors duration-300",
                 size === "lg" ? "text-sm" : "text-[11px]",
                 active ? "bg-signal text-signal-ink" : "text-ink-muted hover:text-ink",
               )}

@@ -1,16 +1,20 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { ArrowUpRight } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 import { PageHeader } from "@/components/site/page-header";
 import { CaliClock } from "@/components/site/cali-clock";
 import { CONTACT } from "@/lib/site";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
 
-export const metadata: Metadata = {
-  title: "Contacto Directo",
+export const metadata: Metadata = pageMetadata({
+  title: "Contacto: proyectos y empleo",
   description:
-    "Escribe directamente a Diego Alejandro Muñoz para oportunidades laborales en desarrollo de software, cotización de proyectos web o consultas técnicas.",
-};
+    "Escríbeme para cotizar un proyecto web o proponer una oportunidad laboral. Respondo en menos de 24 horas por correo, WhatsApp o el formulario.",
+  path: "/contacto",
+});
 
 const CHANNELS = [
   { label: "Correo electrónico", value: CONTACT.email, href: `mailto:${CONTACT.email}`, external: false },
@@ -22,6 +26,7 @@ const CHANNELS = [
 export default function ContactoPage() {
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Contacto", path: "/contacto" }]))} />
       <PageHeader
         index="08"
         eyebrow="Canales de contacto"

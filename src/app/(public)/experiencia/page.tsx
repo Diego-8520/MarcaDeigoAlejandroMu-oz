@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, FileText } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
@@ -7,14 +8,18 @@ import { ScrollLine } from "@/components/motion/scroll-line";
 import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { getExperiences } from "@/lib/data/experiences-queries";
 import { getEducation, getCertifications } from "@/lib/data/education-queries";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
+import { NextSteps } from "@/components/site/next-steps";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Experiencia Laboral, Formación & Credenciales",
+export const metadata: Metadata = pageMetadata({
+  title: "Experiencia y formación",
   description:
-    "Trayectoria profesional de Diego Alejandro Muñoz: desarrollo web, soporte operativo de datos, procesos y formación en Ingeniería de Sistemas.",
-};
+    "Trayectoria de Diego Alejandro Muñoz: desarrollo web, soporte operativo de datos y procesos, y formación en Ingeniería de Sistemas en la UNIAJC.",
+  path: "/experiencia",
+});
 
 function formatDate(value: string | null) {
   if (!value) return "Presente";
@@ -31,6 +36,7 @@ export default async function ExperienciaPage() {
 
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Experiencia", path: "/experiencia" }]))} />
       <PageHeader
         index="04"
         eyebrow="Trayectoria & credenciales"
@@ -150,7 +156,7 @@ export default async function ExperienciaPage() {
                 <div className="flex items-center gap-5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">
                   {cert.issueDate && <span>{formatDate(cert.issueDate)}</span>}
                   {cert.credentialUrl && (
-                    <a href={cert.credentialUrl} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1 text-ink">
+                    <a href={cert.credentialUrl} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1 text-ink">
                       Ver credencial <ArrowUpRight aria-hidden="true" size={12} />
                     </a>
                   )}
@@ -160,6 +166,7 @@ export default async function ExperienciaPage() {
           </ul>
         </section>
       )}
+      <NextSteps hrefs={["/proyectos","/servicios"]} />
     </>
   );
 }

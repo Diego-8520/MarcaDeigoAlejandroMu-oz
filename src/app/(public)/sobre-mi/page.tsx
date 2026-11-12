@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { ProfileLinkIcon } from "@/components/profile/profile-link-icon";
 import { Reveal, SplitReveal } from "@/components/motion/reveal";
 import { SectionHeading } from "@/components/site/page-header";
 import { getProfile, getProfileLinks } from "@/lib/data/profile-queries";
 import { getSkills } from "@/lib/data/skills-queries";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph, personNode, profilePageNode } from "@/lib/schema";
+import { NextSteps } from "@/components/site/next-steps";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Sobre Diego Alejandro Muñoz — Historia, Enfoque & Principios",
-  description: "De la gestión de procesos y datos operativos al desarrollo web con Next.js, React, TypeScript y Supabase.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Sobre mí y forma de trabajar",
+  description:
+    "De la gestión de procesos y datos operativos al desarrollo de software con Next.js, React, TypeScript y Supabase: historia, principios y stack.",
+  path: "/sobre-mi",
+});
 
 const PILLARS = [
   {
@@ -40,6 +46,13 @@ export default async function SobreMiPage() {
 
   return (
     <>
+      <JsonLd
+        data={graph(
+          personNode(),
+          profilePageNode("/sobre-mi", "Sobre mí y forma de trabajar", profile?.updatedAt),
+          breadcrumbNode([{ name: "Sobre mí", path: "/sobre-mi" }]),
+        )}
+      />
       {/* Cabecera con retrato */}
       <header className="container-x pb-20 pt-[calc(var(--header-h)+3.5rem)] sm:pt-[calc(var(--header-h)+6rem)]">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-6">
@@ -91,7 +104,7 @@ export default async function SobreMiPage() {
                 href={link.url}
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.08em] text-ink-muted hover:text-ink"
+                className="tap group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.08em] text-ink-muted hover:text-ink"
               >
                 <ProfileLinkIcon name={link.icon} size={14} />
                 <span className="link-draw">{link.label}</span>
@@ -190,6 +203,7 @@ export default async function SobreMiPage() {
           </div>
         </section>
       )}
+      <NextSteps hrefs={["/proyectos","/servicios","/contacto"]} />
     </>
   );
 }

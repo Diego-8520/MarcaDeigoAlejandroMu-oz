@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Reveal } from "@/components/motion/reveal";
 import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { readTechStack } from "@/lib/data/tech-stack";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
+import { NextSteps } from "@/components/site/next-steps";
 
-export const metadata: Metadata = {
-  title: "Arquitectura — Diego Alejandro Muñoz",
-  description: "Cómo está construido diegoalejandromunoz.com: decisiones de arquitectura, datos, automatización y diseño.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Arquitectura de este sitio",
+  description:
+    "Cómo está construido diegoalejandromunoz.com: Next.js, Supabase, páginas estáticas con revalidación, panel administrativo y despliegue en Vercel.",
+  path: "/arquitectura",
+});
 
 /** Diagrama del flujo de datos. Las líneas discontinuas "fluyen" con una animación CSS. */
 function FlowDiagram() {
@@ -52,6 +58,7 @@ export default function ArquitecturaPage() {
 
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Arquitectura", path: "/arquitectura" }]))} />
       <PageHeader
         index="07"
         eyebrow="Arquitectura"
@@ -135,14 +142,14 @@ export default function ArquitecturaPage() {
         },
         {
           index: "05",
-          eyebrow: "Analítica propia",
+          eyebrow: "Medición",
           title: (
             <>
-              Medir sin entregar <span className="font-serif">el dato principal</span>
+              Una sola fuente <span className="font-serif">de medición</span>
             </>
           ),
           body: [
-            "El dashboard registra page views, sesiones, proyectos vistos, descargas de CV y contactos en Supabase, y los agrupa por página, procedencia, país y dispositivo. El core del dato vive en el propio proyecto, sin depender de Google Analytics; Vercel Web Analytics se usa como complemento para Web Vitals y señales de rendimiento.",
+            "La medición se centraliza en Google Analytics 4 a través de Google Tag Manager: page views, descargas de CV y envíos del formulario de contacto llegan como eventos al dataLayer y se gestionan desde el contenedor, sin scripts duplicados en el código. Supabase conserva lo operativo: contactos, proyectos y contenido del sitio.",
           ],
         },
       ].map((block) => (
@@ -155,6 +162,7 @@ export default function ArquitecturaPage() {
           </Reveal>
         </section>
       ))}
+      <NextSteps hrefs={["/proyectos","/sobre-mi","/contacto"]} />
     </>
   );
 }

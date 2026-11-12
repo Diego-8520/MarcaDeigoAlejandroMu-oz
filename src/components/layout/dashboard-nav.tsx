@@ -18,12 +18,11 @@ const DASHBOARD_ITEMS = [
   { href: "/dashboard/perfil", label: "Perfil" },
   { href: "/dashboard/testimonios", label: "Testimonios" },
   { href: "/dashboard/contactos", label: "Contactos" },
-  { href: "/dashboard/analytics", label: "Analytics" },
 ];
 
 function Brand() {
   return (
-    <Link href="/" className="group flex items-baseline gap-2" aria-label="Ir a la web pública">
+    <Link href="/" className="group flex items-baseline gap-2" aria-label="DAM: ir a la web pública">
       <span className="display text-lg text-ink">DAM</span>
       <span aria-hidden="true" className="h-1.5 w-1.5 bg-signal transition-transform duration-500 group-hover:rotate-45" />
     </Link>

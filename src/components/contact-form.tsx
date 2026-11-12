@@ -1,12 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { AlertCircle, ArrowRight, MessageSquare, RefreshCw } from "lucide-react";
 import { submitContact, type ContactActionState } from "@/actions/contact";
-import { getOrCreateSessionId } from "@/lib/analytics/session";
+import { sendGTMEvent } from "@next/third-parties/google";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { CONTACT } from "@/lib/site";
+import { CONTACT, SERVICE_NAMES, isServiceSlug } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const initialState: ContactActionState = { status: "idle" };
@@ -25,11 +25,12 @@ const LABEL = "block font-mono text-[11px] uppercase tracking-[0.08em] text-ink-
 
 export function ContactForm() {
   const [state, formAction, isPending] = useActionState(submitContact, initialState);
-  const formRef = useRef<HTMLFormElement>(null);
   const searchParams = useSearchParams();
 
   const prefillMotivo = (searchParams?.get("motivo") as IntentType) ?? "servicio";
-  const prefillServicio = searchParams?.get("servicio");
+  // Solo servicios conocidos: un parámetro arbitrario no se copia al mensaje.
+  const servicioParam = searchParams?.get("servicio");
+  const prefillServicio = isServiceSlug(servicioParam) ? SERVICE_NAMES[servicioParam] : null;
   const prefillProyecto = searchParams?.get("proyecto");
 
   const [selectedIntent, setSelectedIntent] = useState<IntentType>(prefillMotivo === "empleo" ? "empleo" : "servicio");
@@ -37,22 +38,17 @@ export function ContactForm() {
   const defaultMessage = prefillProyecto
     ? `Hola Diego, vi tu proyecto "${prefillProyecto}" y me gustaría discutir una solución similar para mi empresa...`
     : prefillServicio
-      ? `Hola Diego, me interesa consultar y cotizar el servicio de ${prefillServicio}...`
+      ? `Hola Diego, me interesa consultar y cotizar el servicio «${prefillServicio}»...`
       : "";
 
+  // Conversión para GA4 vía GTM: el disparador "generate_lead" se configura en el contenedor.
   useEffect(() => {
-    const form = formRef.current;
-    if (!form) return;
-
-    const setHiddenField = (name: string, value: string) => {
-      const field = form.elements.namedItem(name);
-      if (field instanceof HTMLInputElement) field.value = value;
-    };
-
-    setHiddenField("sessionId", getOrCreateSessionId());
-    setHiddenField("source", document.referrer);
-    setHiddenField("userAgent", navigator.userAgent);
-  }, []);
+    if (state.status === "success") {
+      sendGTMEvent({ event: "generate_lead", form: "contacto", request_type: selectedIntent });
+    }
+    // Solo al pasar a "success"; selectedIntent ya es el valor enviado.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.status]);
 
   if (state.status === "success") {
     return (
@@ -88,10 +84,7 @@ export function ContactForm() {
   }
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-12">
-      <input type="hidden" name="sessionId" value="" readOnly />
-      <input type="hidden" name="source" value="" readOnly />
-      <input type="hidden" name="userAgent" value="" readOnly />
+    <form action={formAction} className="space-y-12">
 
       <fieldset>
         <legend className={LABEL}>01 — ¿Cuál es el motivo de tu contacto? *</legend>

@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArrowRight, MessageSquare, Plus } from "lucide-react";
 import { Tag } from "@/components/ui/section";
 import { buttonVariants } from "@/components/ui/button";
 import { Reveal, SplitReveal } from "@/components/motion/reveal";
 import { PageHeader, SectionHeading } from "@/components/site/page-header";
-import { CONTACT } from "@/lib/site";
+import { CONTACT, SERVICE_PROJECTS, isServiceSlug } from "@/lib/site";
+import { getPublishedProjects } from "@/lib/data/projects-queries";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph, personRef, serviceNodes } from "@/lib/schema";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Servicios de Desarrollo Web & Automatización",
+export const metadata: Metadata = pageMetadata({
+  title: "Desarrollo web a medida en Cali",
   description:
-    "Soluciones digitales prácticas: aplicaciones web, paneles administrativos, landing pages e integración de APIs para negocios y proyectos en crecimiento.",
-};
+    "Aplicaciones web y paneles administrativos, landing pages y automatización con APIs para negocios en Cali o en remoto, con alcance y entregables claros.",
+  path: "/servicios",
+});
 
 const SERVICES = [
   {
@@ -87,9 +92,15 @@ const FAQS = [
   },
 ];
 
-export default function ServiciosPage() {
+export default async function ServiciosPage() {
+  // Casos de estudio publicados que respaldan cada servicio (enlazado interno).
+  const published = await getPublishedProjects().catch(() => []);
+  const related = (slug: string) =>
+    isServiceSlug(slug) ? SERVICE_PROJECTS[slug].map((s) => published.find((p) => p.slug === s)).filter((p) => p !== undefined) : [];
+
   return (
     <>
+      <JsonLd data={graph(personRef(), serviceNodes(SERVICES), breadcrumbNode([{ name: "Servicios", path: "/servicios" }]))} />
       <PageHeader
         index="03"
         eyebrow="Servicios & soluciones"
@@ -173,6 +184,20 @@ export default function ServiciosPage() {
                         <Tag key={t}>{t}</Tag>
                       ))}
                     </div>
+                    {related(s.slug).length > 0 && (
+                      <div>
+                        <h3 className="eyebrow">Casos relacionados</h3>
+                        <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs uppercase tracking-[0.08em]">
+                          {related(s.slug).map((p) => (
+                            <li key={p.slug}>
+                              <Link href={`/proyectos/${p.slug}`} className="link-draw tap text-ink hover:text-signal">
+                                {p.title}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                     <Link
                       href={`/contacto?motivo=servicio&servicio=${s.slug}`}
                       className={buttonVariants({ variant: "primary", size: "lg", className: "self-start" })}

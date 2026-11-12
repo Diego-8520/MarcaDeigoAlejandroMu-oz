@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { DashboardNav } from "@/components/layout/dashboard-nav";
+import { NO_INDEX } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: "Panel",
+  robots: NO_INDEX,
+};
 
 // La protección de esta ruta la resuelve src/proxy.ts (convención Next.js 16),
 // que redirige a /login con redirectTo si no hay sesión activa.

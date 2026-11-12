@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export type Skill = {
   id: string;
@@ -14,7 +14,7 @@ type ProjectSkillRow = { skill_id: string; skills: Skill | Skill[] | null };
 const SKILL_COLUMNS = "id,name,category,description";
 
 export async function getSkills(): Promise<Skill[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("skills")
     .select(SKILL_COLUMNS)
@@ -38,7 +38,7 @@ export async function getSkillsAdmin(): Promise<Skill[]> {
 }
 
 export async function getSkillsByProject(projectId: string): Promise<Skill[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("project_skills")
     .select(`skill_id,skills(${SKILL_COLUMNS})`)

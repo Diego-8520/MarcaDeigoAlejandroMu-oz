@@ -1,12 +1,13 @@
 "use client";
 
 import { Download } from "lucide-react";
-import { trackEvent } from "@/lib/analytics/track";
+import { sendGTMEvent } from "@next/third-parties/google";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /**
- * Enlace de descarga del CV que registra el evento `cv_download`.
+ * Enlace de descarga del CV. Envía `cv_download` al dataLayer para que GTM lo
+ * reenvíe a GA4 (el disparador se configura en el contenedor).
  * `hero` es la versión tipográfica gigante de la página /cv.
  */
 export function CvDownloadLink({
@@ -23,7 +24,7 @@ export function CvDownloadLink({
   className?: string;
 }) {
   const handleClick = () => {
-    trackEvent("cv_download", "/cv", { cvId, label });
+    sendGTMEvent({ event: "cv_download", cv_id: cvId, cv_label: label });
   };
 
   if (variant === "hero") {

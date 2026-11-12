@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Mail } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
@@ -8,14 +9,18 @@ import { Reveal } from "@/components/motion/reveal";
 import { PageHeader } from "@/components/site/page-header";
 import { getVisibleCvDocuments } from "@/lib/data/cv-queries";
 import { CONTACT } from "@/lib/site";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
+import { NextSteps } from "@/components/site/next-steps";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Hoja de Vida (CV) & Perfil Profesional",
+export const metadata: Metadata = pageMetadata({
+  title: "Hoja de vida (CV)",
   description:
-    "Hoja de vida de Diego Alejandro Muñoz: Software Developer con foco en Next.js, React, TypeScript, Supabase y procesos de datos.",
-};
+    "Hoja de vida de Diego Alejandro Muñoz en PDF: desarrollador de software en Cali con foco en Next.js, React, TypeScript, Supabase y datos.",
+  path: "/cv",
+});
 
 const EXECUTIVE_HIGHLIGHTS = [
   "Estudiante de Ingeniería de Sistemas (UNIAJC, Cali, Colombia).",
@@ -32,6 +37,7 @@ export default async function CvPage() {
 
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Hoja de vida", path: "/cv" }]))} />
       <PageHeader
         index="06"
         eyebrow="Documento verificado"
@@ -94,7 +100,7 @@ export default async function CvPage() {
                   href={primaryCv.downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-draw inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.08em] text-ink"
+                  className="link-draw tap inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.08em] text-ink"
                 >
                   Abrir PDF en pestaña nueva <ArrowUpRight aria-hidden="true" size={13} />
                 </a>
@@ -163,6 +169,7 @@ export default async function CvPage() {
           </div>
         </div>
       </section>
+      <NextSteps hrefs={["/experiencia","/proyectos"]} />
     </>
   );
 }

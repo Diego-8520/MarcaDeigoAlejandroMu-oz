@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export type Education = {
   id: string;
@@ -64,7 +64,7 @@ function mapCertification(row: CertificationRow): Certification {
 }
 
 export async function getEducation(): Promise<Education[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("education")
     .select(EDUCATION_COLUMNS)
@@ -75,7 +75,7 @@ export async function getEducation(): Promise<Education[]> {
 }
 
 export async function getCertifications(): Promise<Certification[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("certifications")
     .select(CERTIFICATION_COLUMNS)

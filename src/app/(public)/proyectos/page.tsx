@@ -1,24 +1,29 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getPublishedProjects } from "@/lib/data/projects-queries";
 import { PageHeader } from "@/components/site/page-header";
 import { WorkIndex } from "@/components/site/work-index";
 import { buttonVariants } from "@/components/ui/button";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: "Proyectos y Casos de Estudio",
+export const metadata: Metadata = pageMetadata({
+  title: "Proyectos y casos de estudio",
   description:
-    "Catálogo de aplicaciones web, e-commerce, herramientas interactivas e integraciones desarrolladas por Diego Alejandro Muñoz.",
-};
+    "Casos de estudio de aplicaciones web, e-commerce, herramientas e integraciones: el problema, la solución, el stack y el código o la demo cuando existen.",
+  path: "/proyectos",
+});
 
 export default async function ProyectosPage() {
   const projects = await getPublishedProjects();
 
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Proyectos", path: "/proyectos" }]))} />
       <PageHeader
         index="02"
         eyebrow="Portafolio & código"

@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { NO_INDEX } from "@/lib/seo";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
   title: "Iniciar sesión",
+  robots: NO_INDEX,
 };
 
 export default function LoginPage() {
@@ -13,7 +15,7 @@ export default function LoginPage() {
     <div className="grid min-h-[100dvh] grid-cols-1 bg-paper lg:grid-cols-2">
       {/* Panel editorial (solo escritorio) */}
       <div className="relative hidden flex-col justify-between border-r border-line p-12 lg:flex">
-        <Link href="/" className="group flex items-baseline gap-2" aria-label="Volver al sitio público">
+        <Link href="/" className="group flex items-baseline gap-2" aria-label="DAM: volver al sitio público">
           <span className="display text-xl text-ink">DAM</span>
           <span aria-hidden="true" className="h-2 w-2 bg-signal" />
         </Link>

@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export type Testimonial = {
   id: string;
@@ -55,7 +55,7 @@ function normalizedLimit(limit: number) {
 export async function getPublishedTestimonials(
   limit = 6,
 ): Promise<Testimonial[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("testimonials")
     .select(TESTIMONIAL_COLUMNS)
@@ -71,7 +71,7 @@ export async function getPublishedTestimonials(
 export async function getTestimonialsByProject(
   projectId: string,
 ): Promise<Testimonial[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("testimonials")
     .select(TESTIMONIAL_COLUMNS)

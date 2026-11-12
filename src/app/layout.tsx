@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
 import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/next";
+import {
+  HOME_DESCRIPTION,
+  HOME_TITLE,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo";
+import { graph, personRef, websiteNode } from "@/lib/schema";
+import { JsonLd } from "@/components/seo/json-ld";
 
+// Las tres familias aparecen en la primera pantalla (titular, rol en serif,
+// datos en mono), así que las tres se precargan: medido con Lighthouse móvil,
+// quitar la precarga de serif y mono subía el FCP ~0,4 s y causaba CLS por el
+// cambio de fuente. Lo que sí se recorta son estilos y pesos sin uso.
 const archivo = Archivo({
   variable: "--font-archivo",
   subsets: ["latin"],
@@ -14,14 +26,16 @@ const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
   subsets: ["latin"],
   weight: "400",
-  style: ["normal", "italic"],
+  // En el sitio solo aparece en cursiva (acentos de titulares, citas, capitulares).
+  style: "italic",
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  // Pesos realmente usados en etiquetas y datos.
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -30,87 +44,31 @@ const jetbrainsMono = JetBrains_Mono({
 const motionBootScript = `(function(){var d=document.documentElement;d.classList.add('js');try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('js-motion')}var a=sessionStorage.getItem('audience_mode');if(a==='recruiter'||a==='client'){d.dataset.audience=a}}catch(e){}})();`;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://diegoalejandromunoz.com",
-  ),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Diego Alejandro Muñoz — Software Developer · Web & Automatización",
-    template: "%s | Diego Alejandro Muñoz",
+    default: HOME_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Software Developer en Cali, Colombia. Desarrollo aplicaciones web, paneles administrativos e integraciones con Next.js, React, TypeScript y Supabase/PostgreSQL.",
-  keywords: [
-    "Diego Alejandro Muñoz",
-    "Software Developer",
-    "Next.js",
-    "React",
-    "TypeScript",
-    "PostgreSQL",
-    "Supabase",
-    "Automatización",
-    "Cali Colombia",
-  ],
-  authors: [{ name: "Diego Alejandro Muñoz", url: "https://diegoalejandromunoz.com" }],
-  creator: "Diego Alejandro Muñoz",
+  description: HOME_DESCRIPTION,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  // Sin canonical ni og:url aquí: cada página declara los suyos (pageMetadata).
+  // Un canonical en el layout raíz lo heredarían todas las rutas.
   openGraph: {
     type: "website",
-    locale: "es_CO",
-    url: "https://diegoalejandromunoz.com",
-    title: "Diego Alejandro Muñoz — Software Developer · Next.js & TypeScript",
-    description:
-      "Desarrollador de software en Cali, Colombia. Aplicaciones web funcionales, paneles administrativos, datos consistentes e integraciones prácticas.",
-    siteName: "Diego Alejandro Muñoz",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  alternates: {
-    canonical: "/",
+    locale: SITE_LOCALE,
+    siteName: SITE_NAME,
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
   },
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Person",
-      "@id": "https://diegoalejandromunoz.com/#person",
-      "name": "Diego Alejandro Muñoz Arcos",
-      "alternateName": "Diego Muñoz",
-      "jobTitle": "Software Developer",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Cali",
-        "addressRegion": "Valle del Cauca",
-        "addressCountry": "CO",
-      },
-      "url": "https://diegoalejandromunoz.com",
-      "sameAs": [
-        "https://github.com/Diego-8520",
-        "https://www.linkedin.com/in/dalejandromunoz",
-      ],
-      "knowsAbout": [
-        "Software Engineering",
-        "Next.js",
-        "React",
-        "TypeScript",
-        "PostgreSQL",
-        "Supabase",
-        "Process Automation",
-      ],
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://diegoalejandromunoz.com/#website",
-      "url": "https://diegoalejandromunoz.com",
-      "name": "Diego Alejandro Muñoz — Software Developer",
-      "publisher": {
-        "@id": "https://diegoalejandromunoz.com/#person",
-      },
-    },
-  ],
-};
+// En todas las páginas: el sitio y una referencia a su autor. Cada página
+// añade su propio grafo (perfil, servicios, caso de estudio, migas).
+const jsonLd = graph(websiteNode(), personRef());
+
+// Google Tag Manager se carga en src/app/(public)/layout.tsx, no aquí,
+// para que panel y login no envíen datos a GA4.
 
 export default function RootLayout({
   children,
@@ -128,12 +86,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: motionBootScript }} />
       </head>
       <body className="min-h-full bg-paper text-ink">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <JsonLd data={jsonLd} />
         {children}
-        <Analytics />
       </body>
     </html>
   );

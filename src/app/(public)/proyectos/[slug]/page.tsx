@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import type { Project } from "@/types/project";
+import { NO_INDEX, pageMetadata } from "@/lib/seo";
+import { SERVICE_NAMES, servicesForProject } from "@/lib/site";
 import { ViewTransition } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -10,23 +13,30 @@ import { buttonVariants } from "@/components/ui/button";
 import { Reveal, SplitReveal } from "@/components/motion/reveal";
 import { getProjectBySlug, getPublishedProjects } from "@/lib/data/projects-queries";
 import { getTestimonialsByProject } from "@/lib/data/testimonials-queries";
-import { ProjectViewTracker } from "@/components/analytics/project-view-tracker";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, creativeWorkNode, graph, personRef } from "@/lib/schema";
 
 export const revalidate = 60;
+
+/** Descripción corta del caso: la misma para metadata y datos estructurados. */
+function projectDescription(project: Project): string {
+  return (
+    project.shortDescription ??
+    project.description?.slice(0, 160) ??
+    `Caso de estudio técnico del proyecto ${project.title} desarrollado por Diego Alejandro Muñoz.`
+  );
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
 
   if (!project) {
-    return { title: "Proyecto no encontrado" };
+    return { title: "Proyecto no encontrado", robots: NO_INDEX };
   }
 
   const title = `${project.title} — Caso de Estudio`;
-  const description =
-    project.shortDescription ??
-    project.description?.slice(0, 160) ??
-    `Caso de estudio técnico del proyecto ${project.title} desarrollado por Diego Alejandro Muñoz.`;
+  const description = projectDescription(project);
 
   const ogImages = project.featuredImageUrl
     ? [{ url: project.featuredImageUrl, width: 1200, height: 630, alt: project.title }]
@@ -34,17 +44,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       ? [{ url: project.images[0].publicUrl, width: 1200, height: 630, alt: project.title }]
       : [];
 
-  return {
+  return pageMetadata({
     title,
     description,
-    openGraph: {
-      title: `${project.title} | Diego Alejandro Muñoz`,
-      description,
-      type: "article",
-      images: ogImages,
-    },
-    alternates: { canonical: `/proyectos/${project.slug}` },
-  };
+    path: `/proyectos/${project.slug}`,
+    openGraph: { type: "article", images: ogImages },
+  });
+}
+
+/** Prerenderiza los casos publicados; los nuevos se generan bajo demanda (ISR). */
+export async function generateStaticParams() {
+  try {
+    const projects = await getPublishedProjects();
+    return projects.map((p) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -89,14 +104,23 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
   return (
     <article>
-      <ProjectViewTracker projectId={project.id} />
+      <JsonLd
+        data={graph(
+          personRef(),
+          creativeWorkNode(project, projectDescription(project)),
+          breadcrumbNode([
+            { name: "Proyectos", path: "/proyectos" },
+            { name: project.title, path: `/proyectos/${project.slug}` },
+          ]),
+        )}
+      />
 
       {/* Cabecera */}
       <header className="container-x pb-12 pt-[calc(var(--header-h)+2.5rem)] sm:pt-[calc(var(--header-h)+4rem)]">
         <Link
           href="/proyectos"
           transitionTypes={["nav-back"]}
-          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted hover:text-ink"
+          className="tap group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted hover:text-ink"
         >
           <ArrowLeft aria-hidden="true" size={13} className="transition-transform duration-500 ease-expo group-hover:-translate-x-1" />
           <span>Volver a proyectos</span>
@@ -172,10 +196,25 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
               </dl>
             )}
 
+            {servicesForProject(project.slug).length > 0 && (
+              <div className="border-t border-line pt-6">
+                <p className="eyebrow">Servicio relacionado</p>
+                <ul className="mt-2 space-y-1">
+                  {servicesForProject(project.slug).map((s) => (
+                    <li key={s}>
+                      <Link href={`/servicios#${s}`} className="link-draw tap text-ink hover:text-signal">
+                        {SERVICE_NAMES[s]}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {(project.demoUrl || primaryRepoUrl) && (
               <div className="flex flex-col gap-2 border-t border-line pt-6">
                 {project.demoUrl && (
-                  <a href={project.demoUrl} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "signal", size: "md", className: "justify-between" })}>
+                  <a href={project.demoUrl} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "signal", size: "md", className: "tap-area justify-between" })}>
                     <span className="flex items-center gap-2">
                       <Globe aria-hidden="true" size={13} />
                       Demo en producción
@@ -184,7 +223,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   </a>
                 )}
                 {primaryRepoUrl && (
-                  <a href={primaryRepoUrl} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", size: "md", className: "justify-between" })}>
+                  <a href={primaryRepoUrl} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", size: "md", className: "tap-area justify-between" })}>
                     <span className="flex items-center gap-2">
                       <GithubIcon className="h-3.5 w-3.5" />
                       Repositorio en GitHub

@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ScrollTrigger, useGSAP } from "@/components/motion/gsap";
 import { AudienceSwitch } from "./audience-switch";
 import { CaliClock } from "./cali-clock";
 import { SiteMenu } from "./site-menu";
@@ -24,18 +23,28 @@ export function SiteHeader() {
   const headerRef = useRef<HTMLElement>(null);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  useGSAP(() => {
-    const st = ScrollTrigger.create({
-      start: 0,
-      end: "max",
-      onUpdate(self) {
-        const y = self.scroll();
-        setScrolled(y > 24);
-        setHidden(self.direction === 1 && y > 320);
-      },
-    });
-    return () => st.kill();
-  });
+  // Scroll nativo (Lenis también mueve el scroll de la ventana): sin GSAP
+  // en el JavaScript inicial. Una lectura por frame como máximo.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      if (y !== lastY) setHidden(y > lastY && y > 320);
+      lastY = y;
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
 
   // Atajo "/" para abrir o cerrar el menú.
   useEffect(() => {
@@ -66,7 +75,7 @@ export function SiteHeader() {
         )}
       >
         <div className="container-x flex h-[var(--header-h)] items-center justify-between gap-4">
-          <Link href="/" aria-label="Diego Alejandro Muñoz, ir al inicio" className="group flex items-baseline gap-2">
+          <Link href="/" aria-label="DAM, Diego Alejandro Muñoz: ir al inicio" className="tap-area group flex items-baseline gap-2">
             <span className="display stretch-hover text-xl text-ink">DAM</span>
             <span aria-hidden="true" className="h-2 w-2 bg-signal transition-transform duration-500 ease-expo group-hover:rotate-45" />
           </Link>
@@ -86,7 +95,7 @@ export function SiteHeader() {
               onClick={() => setMenuOpen(true)}
               aria-expanded={menuOpen}
               aria-controls="site-menu"
-              className="group flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink"
+              className="tap group flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink"
             >
               <span>Menú</span>
               <span aria-hidden="true" className="flex w-6 flex-col gap-[5px]">

@@ -3,10 +3,13 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { gsap, useGSAP, motionEnabled } from "@/components/motion/gsap";
+import type { ServiceSlug } from "@/lib/site";
+import { useMotion } from "@/components/motion/gsap";
 
 export interface Capability {
   id: string;
+  /** Servicio de /servicios al que corresponde (para el enlace de cotización). */
+  service: ServiceSlug;
   title: string;
   eyebrow: string;
   description: string;
@@ -22,9 +25,8 @@ export function CapabilitiesPin({ items }: { items: Capability[] }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(
-    () => {
-      if (!motionEnabled()) return;
+  useMotion(
+    ({ gsap }) => {
       const mm = gsap.matchMedia();
       mm.add("(min-width: 1024px)", () => {
         const track = trackRef.current;
@@ -51,7 +53,9 @@ export function CapabilitiesPin({ items }: { items: Capability[] }) {
       });
       return () => mm.revert();
     },
-    { scope: sectionRef },
+    [],
+    // El pin horizontal solo existe en escritorio.
+    { scope: sectionRef, trigger: sectionRef, media: "(min-width: 1024px)" },
   );
 
   return (
@@ -95,8 +99,8 @@ export function CapabilitiesPin({ items }: { items: Capability[] }) {
               <div className="flex flex-col justify-between gap-6 lg:col-span-6 lg:items-end">
                 <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">{cap.stack.join(" · ")}</p>
                 <Link
-                  href={`/contacto?motivo=servicio&servicio=${cap.id}`}
-                  className="group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink"
+                  href={`/contacto?motivo=servicio&servicio=${cap.service}`}
+                  className="tap group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink"
                 >
                   <span className="link-draw">Cotizar este servicio</span>
                   <ArrowRight aria-hidden="true" size={14} className="transition-transform duration-500 ease-expo group-hover:translate-x-1 text-signal" />
