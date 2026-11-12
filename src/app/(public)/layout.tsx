@@ -1,4 +1,3 @@
-import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { AudienceProvider } from "@/components/layout/audience-context";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { SiteHeader } from "@/components/site/site-header";
@@ -10,7 +9,6 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
     <AudienceProvider>
       <MotionProvider>
         <div className="flex min-h-[100dvh] flex-col bg-paper text-ink">
-          <PageViewTracker />
           <SiteHeader />
           <main id="main" tabIndex={-1} className="flex-1 outline-none">
             {children}

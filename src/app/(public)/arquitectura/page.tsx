@@ -137,14 +137,14 @@ export default function ArquitecturaPage() {
         },
         {
           index: "05",
-          eyebrow: "Analítica propia",
+          eyebrow: "Medición",
           title: (
             <>
-              Medir sin entregar <span className="font-serif">el dato principal</span>
+              Una sola fuente <span className="font-serif">de medición</span>
             </>
           ),
           body: [
-            "El dashboard registra page views, sesiones, proyectos vistos, descargas de CV y contactos en Supabase, y los agrupa por página, procedencia, país y dispositivo. El core del dato vive en el propio proyecto, sin depender de Google Analytics; Vercel Web Analytics se usa como complemento para Web Vitals y señales de rendimiento.",
+            "La medición se centraliza en Google Analytics 4 a través de Google Tag Manager: page views, descargas de CV y envíos del formulario de contacto llegan como eventos al dataLayer y se gestionan desde el contenedor, sin scripts duplicados en el código. Supabase conserva lo operativo: contactos, proyectos y contenido del sitio.",
           ],
         },
       ].map((block) => (

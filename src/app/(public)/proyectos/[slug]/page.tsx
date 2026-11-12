@@ -11,7 +11,6 @@ import { buttonVariants } from "@/components/ui/button";
 import { Reveal, SplitReveal } from "@/components/motion/reveal";
 import { getProjectBySlug, getPublishedProjects } from "@/lib/data/projects-queries";
 import { getTestimonialsByProject } from "@/lib/data/testimonials-queries";
-import { ProjectViewTracker } from "@/components/analytics/project-view-tracker";
 
 export const revalidate = 60;
 
@@ -95,7 +94,6 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
   return (
     <article>
-      <ProjectViewTracker projectId={project.id} />
 
       {/* Cabecera */}
       <header className="container-x pb-12 pt-[calc(var(--header-h)+2.5rem)] sm:pt-[calc(var(--header-h)+4rem)]">
