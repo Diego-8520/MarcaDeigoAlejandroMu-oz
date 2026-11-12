@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { Project } from "@/types/project";
 import { NO_INDEX, pageMetadata } from "@/lib/seo";
+import { SERVICE_NAMES, servicesForProject } from "@/lib/site";
 import { ViewTransition } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -193,6 +194,21 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   </div>
                 )}
               </dl>
+            )}
+
+            {servicesForProject(project.slug).length > 0 && (
+              <div className="border-t border-line pt-6">
+                <p className="eyebrow">Servicio relacionado</p>
+                <ul className="mt-2 space-y-1">
+                  {servicesForProject(project.slug).map((s) => (
+                    <li key={s}>
+                      <Link href={`/servicios#${s}`} className="link-draw tap text-ink hover:text-signal">
+                        {SERVICE_NAMES[s]}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
 
             {(project.demoUrl || primaryRepoUrl) && (

@@ -5,6 +5,7 @@ import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { readTechStack } from "@/lib/data/tech-stack";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbNode, graph } from "@/lib/schema";
+import { NextSteps } from "@/components/site/next-steps";
 
 export const metadata: Metadata = pageMetadata({
   title: "Arquitectura de este sitio",
@@ -161,6 +162,7 @@ export default function ArquitecturaPage() {
           </Reveal>
         </section>
       ))}
+      <NextSteps hrefs={["/proyectos","/sobre-mi","/contacto"]} />
     </>
   );
 }

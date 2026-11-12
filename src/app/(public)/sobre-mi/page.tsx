@@ -8,6 +8,7 @@ import { getProfile, getProfileLinks } from "@/lib/data/profile-queries";
 import { getSkills } from "@/lib/data/skills-queries";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbNode, graph, personNode, profilePageNode } from "@/lib/schema";
+import { NextSteps } from "@/components/site/next-steps";
 
 export const revalidate = 3600;
 
@@ -202,6 +203,7 @@ export default async function SobreMiPage() {
           </div>
         </section>
       )}
+      <NextSteps hrefs={["/proyectos","/servicios","/contacto"]} />
     </>
   );
 }

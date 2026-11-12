@@ -38,3 +38,35 @@ export function isActivePath(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
+
+/* ------------------------------------------------------------------ */
+/* Servicios y su relación con los casos de estudio (enlazado interno) */
+/* ------------------------------------------------------------------ */
+
+export const SERVICE_NAMES = {
+  "aplicaciones-web": "Desarrollo Web y Paneles Administrativos",
+  "landing-pages-conversion": "Landing Pages y Sitios Comerciales",
+  "automatizacion-integraciones": "Integración de APIs y Automatización de Procesos",
+} as const;
+
+export type ServiceSlug = keyof typeof SERVICE_NAMES;
+
+export function isServiceSlug(value: string | null | undefined): value is ServiceSlug {
+  return !!value && value in SERVICE_NAMES;
+}
+
+/**
+ * Casos de estudio que sirven de evidencia de cada servicio. Curado a mano a
+ * partir de la descripción de cada proyecto (las categorías en la base de
+ * datos no son uniformes). Los slugs no publicados se ignoran al renderizar.
+ * Al publicar un proyecto nuevo, añádelo aquí si encaja en un servicio.
+ */
+export const SERVICE_PROJECTS: Record<ServiceSlug, string[]> = {
+  "aplicaciones-web": ["safe-maps", "pura-pasion-v2"],
+  "landing-pages-conversion": ["upsales", "nexflow-connect", "fundacion-eden-de-los-sabios", "pura-pasion-v1"],
+  "automatizacion-integraciones": ["nexflow-connect"],
+};
+
+export function servicesForProject(slug: string): ServiceSlug[] {
+  return (Object.keys(SERVICE_PROJECTS) as ServiceSlug[]).filter((s) => SERVICE_PROJECTS[s].includes(slug));
+}

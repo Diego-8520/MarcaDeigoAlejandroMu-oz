@@ -10,6 +10,7 @@ import { getExperiences } from "@/lib/data/experiences-queries";
 import { getEducation, getCertifications } from "@/lib/data/education-queries";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbNode, graph } from "@/lib/schema";
+import { NextSteps } from "@/components/site/next-steps";
 
 export const revalidate = 3600;
 
@@ -165,6 +166,7 @@ export default async function ExperienciaPage() {
           </ul>
         </section>
       )}
+      <NextSteps hrefs={["/proyectos","/servicios"]} />
     </>
   );
 }

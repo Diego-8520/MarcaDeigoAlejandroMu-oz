@@ -11,6 +11,7 @@ import { getVisibleCvDocuments } from "@/lib/data/cv-queries";
 import { CONTACT } from "@/lib/site";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbNode, graph } from "@/lib/schema";
+import { NextSteps } from "@/components/site/next-steps";
 
 export const revalidate = 60;
 
@@ -168,6 +169,7 @@ export default async function CvPage() {
           </div>
         </div>
       </section>
+      <NextSteps hrefs={["/experiencia","/proyectos"]} />
     </>
   );
 }

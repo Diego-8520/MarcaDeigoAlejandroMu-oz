@@ -3,10 +3,13 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import type { ServiceSlug } from "@/lib/site";
 import { useMotion } from "@/components/motion/gsap";
 
 export interface Capability {
   id: string;
+  /** Servicio de /servicios al que corresponde (para el enlace de cotización). */
+  service: ServiceSlug;
   title: string;
   eyebrow: string;
   description: string;
@@ -96,7 +99,7 @@ export function CapabilitiesPin({ items }: { items: Capability[] }) {
               <div className="flex flex-col justify-between gap-6 lg:col-span-6 lg:items-end">
                 <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">{cap.stack.join(" · ")}</p>
                 <Link
-                  href={`/contacto?motivo=servicio&servicio=${cap.id}`}
+                  href={`/contacto?motivo=servicio&servicio=${cap.service}`}
                   className="tap group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink"
                 >
                   <span className="link-draw">Cotizar este servicio</span>

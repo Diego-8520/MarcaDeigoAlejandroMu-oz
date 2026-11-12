@@ -6,7 +6,7 @@ import { AlertCircle, ArrowRight, MessageSquare, RefreshCw } from "lucide-react"
 import { submitContact, type ContactActionState } from "@/actions/contact";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { CONTACT } from "@/lib/site";
+import { CONTACT, SERVICE_NAMES, isServiceSlug } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const initialState: ContactActionState = { status: "idle" };
@@ -28,7 +28,9 @@ export function ContactForm() {
   const searchParams = useSearchParams();
 
   const prefillMotivo = (searchParams?.get("motivo") as IntentType) ?? "servicio";
-  const prefillServicio = searchParams?.get("servicio");
+  // Solo servicios conocidos: un parámetro arbitrario no se copia al mensaje.
+  const servicioParam = searchParams?.get("servicio");
+  const prefillServicio = isServiceSlug(servicioParam) ? SERVICE_NAMES[servicioParam] : null;
   const prefillProyecto = searchParams?.get("proyecto");
 
   const [selectedIntent, setSelectedIntent] = useState<IntentType>(prefillMotivo === "empleo" ? "empleo" : "servicio");
@@ -36,7 +38,7 @@ export function ContactForm() {
   const defaultMessage = prefillProyecto
     ? `Hola Diego, vi tu proyecto "${prefillProyecto}" y me gustaría discutir una solución similar para mi empresa...`
     : prefillServicio
-      ? `Hola Diego, me interesa consultar y cotizar el servicio de ${prefillServicio}...`
+      ? `Hola Diego, me interesa consultar y cotizar el servicio «${prefillServicio}»...`
       : "";
 
   // Conversión para GA4 vía GTM: el disparador "generate_lead" se configura en el contenedor.

@@ -31,6 +31,7 @@ export const metadata: Metadata = pageMetadata({
 const CAPABILITIES: Capability[] = [
   {
     id: "fullstack",
+    service: "aplicaciones-web",
     title: "Desarrollo Web & Paneles Administrativos",
     eyebrow: "Producto Funcional",
     description:
@@ -40,6 +41,7 @@ const CAPABILITIES: Capability[] = [
   },
   {
     id: "databases",
+    service: "aplicaciones-web",
     title: "Bases de Datos & Persistencia Segura",
     eyebrow: "Supabase & RLS",
     description:
@@ -49,6 +51,7 @@ const CAPABILITIES: Capability[] = [
   },
   {
     id: "integrations",
+    service: "automatizacion-integraciones",
     title: "Integración de APIs y Automatización de Procesos",
     eyebrow: "REST & Operación",
     description:
