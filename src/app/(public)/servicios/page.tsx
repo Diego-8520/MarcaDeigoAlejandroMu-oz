@@ -7,6 +7,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Reveal, SplitReveal } from "@/components/motion/reveal";
 import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { CONTACT } from "@/lib/site";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph, personRef, serviceNodes } from "@/lib/schema";
 
 export const revalidate = 3600;
 
@@ -92,6 +94,7 @@ const FAQS = [
 export default function ServiciosPage() {
   return (
     <>
+      <JsonLd data={graph(personRef(), serviceNodes(SERVICES), breadcrumbNode([{ name: "Servicios", path: "/servicios" }]))} />
       <PageHeader
         index="03"
         eyebrow="Servicios & soluciones"

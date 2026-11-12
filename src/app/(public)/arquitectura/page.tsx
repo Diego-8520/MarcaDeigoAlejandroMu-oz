@@ -3,6 +3,8 @@ import { pageMetadata } from "@/lib/seo";
 import { Reveal } from "@/components/motion/reveal";
 import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { readTechStack } from "@/lib/data/tech-stack";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Arquitectura de este sitio",
@@ -55,6 +57,7 @@ export default function ArquitecturaPage() {
 
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Arquitectura", path: "/arquitectura" }]))} />
       <PageHeader
         index="07"
         eyebrow="Arquitectura"

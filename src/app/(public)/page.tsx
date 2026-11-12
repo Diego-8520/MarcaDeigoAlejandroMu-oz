@@ -16,6 +16,8 @@ import { SectionHeading } from "@/components/site/page-header";
 import { CapabilitiesPin, type Capability } from "@/components/site/capabilities-pin";
 import { TestimonialCarousel } from "@/components/site/testimonial-carousel";
 import { CaliClock } from "@/components/site/cali-clock";
+import { JsonLd } from "@/components/seo/json-ld";
+import { graph, personNode, profilePageNode } from "@/lib/schema";
 
 export const revalidate = 60;
 
@@ -90,6 +92,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={graph(personNode(), profilePageNode("/", HOME_TITLE))} />
       {/* 1. HERO */}
       <section className="relative flex min-h-[100dvh] flex-col overflow-hidden">
         <DotField className="absolute inset-0 h-full w-full [mask-image:radial-gradient(ellipse_at_70%_40%,black_20%,transparent_75%)]" />

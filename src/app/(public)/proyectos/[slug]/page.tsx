@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { Project } from "@/types/project";
 import { NO_INDEX, pageMetadata } from "@/lib/seo";
 import { ViewTransition } from "react";
 import { notFound } from "next/navigation";
@@ -11,8 +12,19 @@ import { buttonVariants } from "@/components/ui/button";
 import { Reveal, SplitReveal } from "@/components/motion/reveal";
 import { getProjectBySlug, getPublishedProjects } from "@/lib/data/projects-queries";
 import { getTestimonialsByProject } from "@/lib/data/testimonials-queries";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, creativeWorkNode, graph, personRef } from "@/lib/schema";
 
 export const revalidate = 60;
+
+/** Descripción corta del caso: la misma para metadata y datos estructurados. */
+function projectDescription(project: Project): string {
+  return (
+    project.shortDescription ??
+    project.description?.slice(0, 160) ??
+    `Caso de estudio técnico del proyecto ${project.title} desarrollado por Diego Alejandro Muñoz.`
+  );
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -23,10 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   const title = `${project.title} — Caso de Estudio`;
-  const description =
-    project.shortDescription ??
-    project.description?.slice(0, 160) ??
-    `Caso de estudio técnico del proyecto ${project.title} desarrollado por Diego Alejandro Muñoz.`;
+  const description = projectDescription(project);
 
   const ogImages = project.featuredImageUrl
     ? [{ url: project.featuredImageUrl, width: 1200, height: 630, alt: project.title }]
@@ -94,6 +103,16 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
   return (
     <article>
+      <JsonLd
+        data={graph(
+          personRef(),
+          creativeWorkNode(project, projectDescription(project)),
+          breadcrumbNode([
+            { name: "Proyectos", path: "/proyectos" },
+            { name: project.title, path: `/proyectos/${project.slug}` },
+          ]),
+        )}
+      />
 
       {/* Cabecera */}
       <header className="container-x pb-12 pt-[calc(var(--header-h)+2.5rem)] sm:pt-[calc(var(--header-h)+4rem)]">

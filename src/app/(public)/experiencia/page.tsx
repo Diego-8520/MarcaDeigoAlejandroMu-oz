@@ -8,6 +8,8 @@ import { ScrollLine } from "@/components/motion/scroll-line";
 import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { getExperiences } from "@/lib/data/experiences-queries";
 import { getEducation, getCertifications } from "@/lib/data/education-queries";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
 
 export const revalidate = 3600;
 
@@ -33,6 +35,7 @@ export default async function ExperienciaPage() {
 
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Experiencia", path: "/experiencia" }]))} />
       <PageHeader
         index="04"
         eyebrow="Trayectoria & credenciales"

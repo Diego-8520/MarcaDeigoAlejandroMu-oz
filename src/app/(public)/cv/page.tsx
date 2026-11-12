@@ -9,6 +9,8 @@ import { Reveal } from "@/components/motion/reveal";
 import { PageHeader } from "@/components/site/page-header";
 import { getVisibleCvDocuments } from "@/lib/data/cv-queries";
 import { CONTACT } from "@/lib/site";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
 
 export const revalidate = 60;
 
@@ -34,6 +36,7 @@ export default async function CvPage() {
 
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Hoja de vida", path: "/cv" }]))} />
       <PageHeader
         index="06"
         eyebrow="Documento verificado"

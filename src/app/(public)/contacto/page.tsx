@@ -6,6 +6,8 @@ import { ContactForm } from "@/components/contact-form";
 import { PageHeader } from "@/components/site/page-header";
 import { CaliClock } from "@/components/site/cali-clock";
 import { CONTACT } from "@/lib/site";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contacto: proyectos y empleo",
@@ -24,6 +26,7 @@ const CHANNELS = [
 export default function ContactoPage() {
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Contacto", path: "/contacto" }]))} />
       <PageHeader
         index="08"
         eyebrow="Canales de contacto"

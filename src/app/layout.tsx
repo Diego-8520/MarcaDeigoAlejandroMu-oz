@@ -8,6 +8,8 @@ import {
   SITE_NAME,
   SITE_URL,
 } from "@/lib/seo";
+import { graph, personRef, websiteNode } from "@/lib/schema";
+import { JsonLd } from "@/components/seo/json-ld";
 
 // Las tres familias aparecen en la primera pantalla (titular, rol en serif,
 // datos en mono), así que las tres se precargan: medido con Lighthouse móvil,
@@ -61,47 +63,9 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Person",
-      "@id": `${SITE_URL}/#person`,
-      "name": "Diego Alejandro Muñoz Arcos",
-      "alternateName": "Diego Muñoz",
-      "jobTitle": "Software Developer",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Cali",
-        "addressRegion": "Valle del Cauca",
-        "addressCountry": "CO",
-      },
-      "url": SITE_URL,
-      "sameAs": [
-        "https://github.com/Diego-8520",
-        "https://www.linkedin.com/in/dalejandromunoz",
-      ],
-      "knowsAbout": [
-        "Software Engineering",
-        "Next.js",
-        "React",
-        "TypeScript",
-        "PostgreSQL",
-        "Supabase",
-        "Process Automation",
-      ],
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${SITE_URL}/#website`,
-      "url": SITE_URL,
-      "name": "Diego Alejandro Muñoz — Software Developer",
-      "publisher": {
-        "@id": `${SITE_URL}/#person`,
-      },
-    },
-  ],
-};
+// En todas las páginas: el sitio y una referencia a su autor. Cada página
+// añade su propio grafo (perfil, servicios, caso de estudio, migas).
+const jsonLd = graph(websiteNode(), personRef());
 
 // Google Tag Manager se carga en src/app/(public)/layout.tsx, no aquí,
 // para que panel y login no envíen datos a GA4.
@@ -122,10 +86,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: motionBootScript }} />
       </head>
       <body className="min-h-full bg-paper text-ink">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <JsonLd data={jsonLd} />
         {children}
       </body>
     </html>

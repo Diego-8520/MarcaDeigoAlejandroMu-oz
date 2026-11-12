@@ -6,6 +6,8 @@ import { getPublishedProjects } from "@/lib/data/projects-queries";
 import { PageHeader } from "@/components/site/page-header";
 import { WorkIndex } from "@/components/site/work-index";
 import { buttonVariants } from "@/components/ui/button";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbNode, graph } from "@/lib/schema";
 
 export const revalidate = 60;
 
@@ -21,6 +23,7 @@ export default async function ProyectosPage() {
 
   return (
     <>
+      <JsonLd data={graph(breadcrumbNode([{ name: "Proyectos", path: "/proyectos" }]))} />
       <PageHeader
         index="02"
         eyebrow="Portafolio & código"
