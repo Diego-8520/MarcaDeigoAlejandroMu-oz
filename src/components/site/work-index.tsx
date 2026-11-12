@@ -80,7 +80,7 @@ export function WorkIndex({ projects, showFilters = false }: { projects: Project
             onClick={() => setFilter(null)}
             className={cn("tap-area border px-3 py-1.5 transition-colors", filter === null ? "border-signal bg-signal text-signal-ink" : "border-line text-ink-muted hover:border-ink hover:text-ink")}
           >
-            Todo <span className="opacity-60">({projects.length})</span>
+            Todo <span className="opacity-80">({projects.length})</span>
           </button>
           {categories.map((cat) => {
             const count = projects.filter((p) => p.categories.includes(cat)).length;
@@ -93,7 +93,7 @@ export function WorkIndex({ projects, showFilters = false }: { projects: Project
                 onClick={() => setFilter(active ? null : cat)}
                 className={cn("tap-area border px-3 py-1.5 transition-colors", active ? "border-signal bg-signal text-signal-ink" : "border-line text-ink-muted hover:border-ink hover:text-ink")}
               >
-                {cat} <span className="opacity-60">({count})</span>
+                {cat} <span className="opacity-80">({count})</span>
               </button>
             );
           })}

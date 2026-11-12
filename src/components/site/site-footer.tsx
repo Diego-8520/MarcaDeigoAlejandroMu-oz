@@ -13,7 +13,6 @@ export function SiteFooter() {
         <Link
           href="/contacto"
           className="group mt-6 block focus-visible:outline-offset-8"
-          aria-label="Ir a contacto: ¿Construimos algo?"
         >
           <span className="display relative block text-[clamp(1.75rem,8.6vw,10rem)] text-ink">
             {/* Capa de acento que se revela de izquierda a derecha */}
@@ -24,6 +23,7 @@ export function SiteFooter() {
               ¿Construimos <span className="font-serif">algo?</span>
             </span>
             ¿Construimos <span className="font-serif">algo?</span>
+            <span className="sr-only">: ir a contacto</span>
           </span>
         </Link>
       </div>

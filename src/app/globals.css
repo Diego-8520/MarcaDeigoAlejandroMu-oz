@@ -22,7 +22,8 @@
   /* Texto — bone */
   --ink: #edebe6;
   --ink-muted: #a3a09a;
-  --ink-subtle: #6e6b65;
+  /* ≥4.5:1 (AA) sobre paper, surface y surface-elevated. */
+  --ink-subtle: #86837c;
 
   /* Reglas */
   --line: #2a2926;
