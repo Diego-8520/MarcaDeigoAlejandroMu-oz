@@ -13,9 +13,9 @@ import { CONTACT } from "@/lib/site";
 export const revalidate = 60;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Hoja de Vida (CV) & Perfil Profesional",
+  title: "Hoja de vida (CV)",
   description:
-    "Hoja de vida de Diego Alejandro Muñoz: Software Developer con foco en Next.js, React, TypeScript, Supabase y procesos de datos.",
+    "Hoja de vida de Diego Alejandro Muñoz en PDF: desarrollador de software en Cali con foco en Next.js, React, TypeScript, Supabase y datos.",
   path: "/cv",
 });
 

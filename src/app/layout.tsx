@@ -3,8 +3,6 @@ import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import {
   HOME_DESCRIPTION,
-  HOME_OG_DESCRIPTION,
-  HOME_OG_TITLE,
   HOME_TITLE,
   SITE_LOCALE,
   SITE_NAME,
@@ -44,17 +42,6 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: HOME_DESCRIPTION,
-  keywords: [
-    "Diego Alejandro Muñoz",
-    "Software Developer",
-    "Next.js",
-    "React",
-    "TypeScript",
-    "PostgreSQL",
-    "Supabase",
-    "Automatización",
-    "Cali Colombia",
-  ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
   // Sin canonical ni og:url aquí: cada página declara los suyos (pageMetadata).
@@ -63,8 +50,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: SITE_LOCALE,
     siteName: SITE_NAME,
-    title: HOME_OG_TITLE,
-    description: HOME_OG_DESCRIPTION,
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
   },
 };
 

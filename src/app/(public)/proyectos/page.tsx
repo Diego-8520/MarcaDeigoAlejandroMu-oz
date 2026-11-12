@@ -10,9 +10,9 @@ import { buttonVariants } from "@/components/ui/button";
 export const revalidate = 60;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Proyectos y Casos de Estudio",
+  title: "Proyectos y casos de estudio",
   description:
-    "Catálogo de aplicaciones web, e-commerce, herramientas interactivas e integraciones desarrolladas por Diego Alejandro Muñoz.",
+    "Casos de estudio de aplicaciones web, e-commerce, herramientas e integraciones: el problema, la solución, el stack y el código o la demo cuando existen.",
   path: "/proyectos",
 });
 

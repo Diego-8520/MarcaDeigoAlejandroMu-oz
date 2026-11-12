@@ -12,9 +12,9 @@ import { getEducation, getCertifications } from "@/lib/data/education-queries";
 export const revalidate = 3600;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Experiencia Laboral, Formación & Credenciales",
+  title: "Experiencia y formación",
   description:
-    "Trayectoria profesional de Diego Alejandro Muñoz: desarrollo web, soporte operativo de datos, procesos y formación en Ingeniería de Sistemas.",
+    "Trayectoria de Diego Alejandro Muñoz: desarrollo web, soporte operativo de datos y procesos, y formación en Ingeniería de Sistemas en la UNIAJC.",
   path: "/experiencia",
 });
 

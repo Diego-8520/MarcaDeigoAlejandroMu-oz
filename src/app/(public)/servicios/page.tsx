@@ -11,9 +11,9 @@ import { CONTACT } from "@/lib/site";
 export const revalidate = 3600;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Servicios de Desarrollo Web & Automatización",
+  title: "Desarrollo web a medida en Cali",
   description:
-    "Soluciones digitales prácticas: aplicaciones web, paneles administrativos, landing pages e integración de APIs para negocios y proyectos en crecimiento.",
+    "Aplicaciones web y paneles administrativos, landing pages y automatización con APIs para negocios en Cali o en remoto, con alcance y entregables claros.",
   path: "/servicios",
 });
 

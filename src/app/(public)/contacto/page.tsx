@@ -8,9 +8,9 @@ import { CaliClock } from "@/components/site/cali-clock";
 import { CONTACT } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Contacto Directo",
+  title: "Contacto: proyectos y empleo",
   description:
-    "Escribe directamente a Diego Alejandro Muñoz para oportunidades laborales en desarrollo de software, cotización de proyectos web o consultas técnicas.",
+    "Escríbeme para cotizar un proyecto web o proponer una oportunidad laboral. Respondo en menos de 24 horas por correo, WhatsApp o el formulario.",
   path: "/contacto",
 });
 

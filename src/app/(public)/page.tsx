@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { HOME_DESCRIPTION, HOME_OG_DESCRIPTION, HOME_OG_TITLE, HOME_TITLE, pageMetadata } from "@/lib/seo";
+import { HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { getPublishedProjects } from "@/lib/data/projects-queries";
 import { getExperiences } from "@/lib/data/experiences-queries";
@@ -24,7 +24,6 @@ export const metadata: Metadata = pageMetadata({
   description: HOME_DESCRIPTION,
   path: "/",
   absoluteTitle: true,
-  openGraph: { title: HOME_OG_TITLE, description: HOME_OG_DESCRIPTION },
 });
 
 const CAPABILITIES: Capability[] = [
@@ -120,32 +119,39 @@ export default async function HomePage() {
             </div>
           </Reveal>
 
-          <div className="mt-16 sm:mt-20">
-            <SplitReveal as="h1" immediate delay={0.15} className="display display-xl text-ink">
-              <span className="block">Diego</span>
-              <span className="block">Alejandro</span>
-              <span className="block">
-                Muñoz<span className="text-signal">.</span>
+          {/*
+            Un solo H1 con nombre y rol. En escritorio la fila del rol usa subgrid
+            para que la entradilla (fuera del H1) quede a la derecha como antes.
+            Dentro del H1 solo hay <span> (contenido en línea) y espacios
+            explícitos entre bloques para que el texto no se lea pegado.
+          */}
+          <div className="mt-16 flex flex-col sm:mt-20 lg:grid lg:grid-cols-12 lg:gap-x-6">
+            <h1 className="lg:col-span-12 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:grid lg:grid-cols-subgrid lg:grid-rows-subgrid">
+              <SplitReveal as="span" immediate delay={0.15} className="display display-xl block text-ink lg:col-span-12">
+                <span className="block">Diego</span>{" "}
+                <span className="block">Alejandro</span>{" "}
+                <span className="block">
+                  Muñoz<span className="text-signal">.</span>
+                </span>
+              </SplitReveal>{" "}
+              <span className="mt-10 block border-t border-line pt-8 lg:col-span-12 lg:grid lg:grid-cols-subgrid">
+                <Reveal as="span" immediate delay={0.55} className="block lg:col-span-5">
+                  <span className="block font-serif text-[clamp(1.7rem,2.8vw,2.6rem)] italic leading-[1.1] text-ink">
+                    Desarrollador de software <span className="text-signal">·</span> Next.js y TypeScript
+                  </span>
+                </Reveal>
               </span>
-            </SplitReveal>
-
-            <div className="mt-10 grid grid-cols-1 gap-8 border-t border-line pt-8 lg:grid-cols-12 lg:gap-6">
-              <Reveal immediate delay={0.55} className="lg:col-span-5">
-                <p className="font-serif text-[clamp(1.7rem,2.8vw,2.6rem)] italic leading-[1.1] text-ink">
-                  Software Developer <span className="text-signal">·</span> Next.js &amp; TypeScript
-                </p>
-              </Reveal>
-              <Reveal immediate delay={0.65} className="lg:col-span-6 lg:col-start-7">
-                <p className="lede max-w-[54ch]">
-                  Estudiante de Ingeniería de Sistemas (UNIAJC). Desarrollo aplicaciones web funcionales, paneles administrativos y
-                  herramientas con Next.js, React, TypeScript y PostgreSQL, respaldadas por criterio práctico en consistencia de datos y
-                  procesos operativos.
-                </p>
-                <div className="mt-8">
-                  <HeroCtas />
-                </div>
-              </Reveal>
-            </div>
+            </h1>
+            <Reveal immediate delay={0.65} className="mt-8 lg:col-span-6 lg:col-start-7 lg:row-start-2 lg:mt-10 lg:border-t lg:border-transparent lg:pt-8">
+              <p className="lede max-w-[54ch]">
+                Estudiante de Ingeniería de Sistemas (UNIAJC). Desarrollo aplicaciones web funcionales, paneles administrativos y
+                herramientas con Next.js, React, TypeScript y PostgreSQL, respaldadas por criterio práctico en consistencia de datos y
+                procesos operativos.
+              </p>
+              <div className="mt-8">
+                <HeroCtas />
+              </div>
+            </Reveal>
           </div>
 
           <div className="mt-12 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.1em] text-ink-subtle">

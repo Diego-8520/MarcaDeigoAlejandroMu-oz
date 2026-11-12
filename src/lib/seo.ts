@@ -26,12 +26,9 @@ export const SITE_URL = resolveSiteUrl();
 export const SITE_NAME = "Diego Alejandro Muñoz";
 export const SITE_LOCALE = "es_CO";
 
-export const HOME_TITLE = "Diego Alejandro Muñoz — Software Developer · Web & Automatización";
+export const HOME_TITLE = "Diego Alejandro Muñoz | Desarrollador de software en Cali";
 export const HOME_DESCRIPTION =
-  "Software Developer en Cali, Colombia. Desarrollo aplicaciones web, paneles administrativos e integraciones con Next.js, React, TypeScript y Supabase/PostgreSQL.";
-export const HOME_OG_TITLE = "Diego Alejandro Muñoz — Software Developer · Next.js & TypeScript";
-export const HOME_OG_DESCRIPTION =
-  "Desarrollador de software en Cali, Colombia. Aplicaciones web funcionales, paneles administrativos, datos consistentes e integraciones prácticas.";
+  "Desarrollador de software en Cali, Colombia. Creo aplicaciones web, paneles administrativos e integraciones con Next.js, React, TypeScript y Supabase.";
 
 /** URL absoluta a partir de una ruta interna ("/proyectos"). */
 export function absoluteUrl(path = "/"): string {

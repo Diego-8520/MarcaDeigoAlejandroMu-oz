@@ -5,8 +5,9 @@ import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { readTechStack } from "@/lib/data/tech-stack";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Arquitectura — Diego Alejandro Muñoz",
-  description: "Cómo está construido diegoalejandromunoz.com: decisiones de arquitectura, datos, automatización y diseño.",
+  title: "Arquitectura de este sitio",
+  description:
+    "Cómo está construido diegoalejandromunoz.com: Next.js, Supabase, páginas estáticas con revalidación, panel administrativo y despliegue en Vercel.",
   path: "/arquitectura",
 });
 

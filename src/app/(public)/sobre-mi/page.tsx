@@ -10,8 +10,9 @@ import { getSkills } from "@/lib/data/skills-queries";
 export const revalidate = 3600;
 
 export const metadata: Metadata = pageMetadata({
-  title: "Sobre Diego Alejandro Muñoz — Historia, Enfoque & Principios",
-  description: "De la gestión de procesos y datos operativos al desarrollo web con Next.js, React, TypeScript y Supabase.",
+  title: "Sobre mí y forma de trabajar",
+  description:
+    "De la gestión de procesos y datos operativos al desarrollo de software con Next.js, React, TypeScript y Supabase: historia, principios y stack.",
   path: "/sobre-mi",
 });
 
