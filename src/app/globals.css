@@ -126,63 +126,67 @@ body {
 /* Tipografía editorial                                                */
 /* ------------------------------------------------------------------ */
 
-.display {
-  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
-  font-weight: 800;
-  font-stretch: 125%;
-  font-variation-settings: "wdth" 125;
-  line-height: 0.86;
-  letter-spacing: -0.045em;
-  text-transform: uppercase;
-  text-wrap: balance;
-}
+/* En @layer components para que las utilidades de Tailwind (text-*, max-w-*)
+   puedan sobrescribir color y medidas. */
+@layer components {
+  .display {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 800;
+    font-stretch: 125%;
+    font-variation-settings: "wdth" 125;
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
 
-.display-xl {
-  font-size: clamp(2.6rem, 11vw, 12rem);
-}
-.display-lg {
-  font-size: clamp(2.6rem, 8.5vw, 8.5rem);
-}
-.display-md {
-  font-size: clamp(2rem, 5.4vw, 5rem);
-}
-.display-sm {
-  font-size: clamp(1.6rem, 3.4vw, 3rem);
-  line-height: 0.92;
-}
+  .display-xl {
+    font-size: clamp(2.6rem, 11vw, 12rem);
+  }
+  .display-lg {
+    font-size: clamp(2.6rem, 8.5vw, 8.5rem);
+  }
+  .display-md {
+    font-size: clamp(2rem, 5.4vw, 5rem);
+  }
+  .display-sm {
+    font-size: clamp(1.6rem, 3.4vw, 3rem);
+    line-height: 0.92;
+  }
 
-/* Palabra de contraste en serif itálica dentro de un titular display. */
-.display .font-serif,
-.serif-accent {
-  font-family: var(--font-serif), ui-serif, Georgia, serif;
-  font-style: italic;
-  font-weight: 400;
-  font-stretch: 100%;
-  font-variation-settings: normal;
-  text-transform: none;
-  letter-spacing: -0.02em;
-}
+  /* Palabra de contraste en serif itálica dentro de un titular display. */
+  .display .font-serif,
+  .serif-accent {
+    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-stretch: 100%;
+    font-variation-settings: normal;
+    text-transform: none;
+    letter-spacing: -0.02em;
+  }
 
-.eyebrow {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.6875rem;
-  line-height: 1.4;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
+  .eyebrow {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
 
-.lede {
-  font-size: clamp(1.05rem, 1.35vw, 1.35rem);
-  line-height: 1.5;
-  color: var(--ink-muted);
-  max-width: 46ch;
-  text-wrap: pretty;
-}
+  .lede {
+    font-size: clamp(1.05rem, 1.35vw, 1.35rem);
+    line-height: 1.5;
+    color: var(--ink-muted);
+    max-width: 46ch;
+    text-wrap: pretty;
+  }
 
-.prose-editorial p {
-  max-width: 64ch;
-  text-wrap: pretty;
+  .prose-editorial p {
+    max-width: 64ch;
+    text-wrap: pretty;
+  }
 }
 
 /* Capitular para textos largos */

@@ -73,7 +73,11 @@ export default async function HomePage() {
     .slice(0, 9);
 
   const totalStars = projects.reduce((acc, p) => acc + (p.githubMetadata?.stars ?? 0), 0);
-  const currentJob = experiences[0];
+  // Cargo vigente (sin fecha de fin); si no hay, el más reciente.
+  const currentJob = experiences.find((e) => !e.endDate) ?? experiences[0];
+  const jobPeriod = currentJob
+    ? `${currentJob.startDate.slice(0, 4)} — ${currentJob.endDate ? currentJob.endDate.slice(0, 4) : "Presente"}`
+    : "";
 
   return (
     <>
@@ -255,19 +259,24 @@ export default async function HomePage() {
           <Reveal className="relative pl-8 lg:col-span-5 lg:col-start-4">
             <ScrollLine />
             <p className="eyebrow text-signal">Experiencia técnica actual</p>
-            <h3 className="display display-sm mt-4 text-ink">{currentJob?.position ?? "Mapping Agent"}</h3>
-            <p className="mt-3 font-mono text-xs uppercase tracking-[0.06em] text-ink-muted">
-              {currentJob?.company ?? "Juniper Travel Technology"} · 2024 — Presente
-            </p>
-            <p className="mt-6 max-w-[52ch] leading-relaxed text-ink-muted">
-              Verificación de calidad, consistencia de inventario y resolución de discrepancias en información hotelera y turística,
-              trabajando con solicitudes operativas y datos de producto.
-            </p>
+            <h3 className="display mt-4 text-[clamp(1.5rem,2.6vw,2.6rem)] leading-[0.95] text-ink">
+              {currentJob?.position ?? "Experiencia en actualización"}
+            </h3>
+            {currentJob && (
+              <p className="mt-3 font-mono text-xs uppercase tracking-[0.06em] text-ink-muted">
+                {currentJob.company} · {jobPeriod}
+              </p>
+            )}
+            {currentJob?.description && (
+              <p className="mt-6 max-w-[52ch] leading-relaxed text-ink-muted line-clamp-5">{currentJob.description}</p>
+            )}
           </Reveal>
           <Reveal delay={0.1} className="relative pl-8 lg:col-span-4">
             <ScrollLine />
             <p className="eyebrow text-signal">Formación universitaria</p>
-            <h3 className="display display-sm mt-4 text-ink">Ingeniería en Sistemas de Información</h3>
+            <h3 className="display mt-4 text-[clamp(1.5rem,2.6vw,2.6rem)] leading-[0.95] text-ink">
+              Ingeniería en Sistemas de Información
+            </h3>
             <p className="mt-3 font-mono text-xs uppercase tracking-[0.06em] text-ink-muted">UNIAJC · 2024 — 2029</p>
             <p className="mt-6 max-w-[52ch] leading-relaxed text-ink-muted">
               Formación en algoritmos, estructuras de datos, arquitectura de software y bases de datos relacionales. Complementado con
