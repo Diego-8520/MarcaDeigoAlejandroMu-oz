@@ -1,29 +1,25 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  FileText,
-  CheckCircle2,
-  Code2,
-  Layers,
-  Cpu,
-  GraduationCap,
-  Briefcase,
-  MessageSquare,
-} from "lucide-react";
-import { Section, Tag } from "@/components/ui/section";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ProjectCard } from "@/components/projects/project-card";
+import { ArrowDown, ArrowRight } from "lucide-react";
 import { getPublishedProjects } from "@/lib/data/projects-queries";
 import { getExperiences } from "@/lib/data/experiences-queries";
 import { getPublishedTestimonials } from "@/lib/data/testimonials-queries";
+import { Reveal, SplitReveal } from "@/components/motion/reveal";
+import { Marquee } from "@/components/motion/marquee";
+import { Counter } from "@/components/motion/counter";
+import { ScrollLine } from "@/components/motion/scroll-line";
+import { DotField } from "@/components/site/dot-field";
+import { HeroCtas } from "@/components/site/hero-ctas";
+import { WorkIndex } from "@/components/site/work-index";
+import { SectionHeading } from "@/components/site/page-header";
+import { CapabilitiesPin, type Capability } from "@/components/site/capabilities-pin";
+import { TestimonialCarousel } from "@/components/site/testimonial-carousel";
+import { CaliClock } from "@/components/site/cali-clock";
 
 export const revalidate = 60;
 
-const CAPABILITIES = [
+const CAPABILITIES: Capability[] = [
   {
     id: "fullstack",
-    icon: Code2,
     title: "Desarrollo Web & Paneles Administrativos",
     eyebrow: "Producto Funcional",
     description:
@@ -33,7 +29,6 @@ const CAPABILITIES = [
   },
   {
     id: "databases",
-    icon: Layers,
     title: "Bases de Datos & Persistencia Segura",
     eyebrow: "Supabase & RLS",
     description:
@@ -43,7 +38,6 @@ const CAPABILITIES = [
   },
   {
     id: "integrations",
-    icon: Cpu,
     title: "Integración de APIs y Automatización de Procesos",
     eyebrow: "REST & Operación",
     description:
@@ -52,6 +46,8 @@ const CAPABILITIES = [
     stack: ["APIs REST", "OpenRouteService", "Webhooks", "Node.js"],
   },
 ];
+
+const MARQUEE_STACK = ["Next.js", "React", "TypeScript", "Supabase", "PostgreSQL", "Tailwind CSS", "APIs REST", "Node.js"];
 
 export default async function HomePage() {
   const [projects, experiences, testimonials] = await Promise.all([
@@ -63,404 +59,240 @@ export default async function HomePage() {
   const featuredProjects = projects.filter((p) => p.featured);
   const showcaseProjects = featuredProjects.length > 0 ? featuredProjects : projects.slice(0, 4);
 
-  // Mapeo dinámico: Skill -> Proyectos reales donde se aplicó
-  const skillToProjectsMap = new Map<string, string[]>();
-  projects.forEach((p) => {
-    p.technologies.forEach((tech) => {
-      const existing = skillToProjectsMap.get(tech) || [];
-      if (!existing.includes(p.title)) {
-        existing.push(p.title);
-      }
-      skillToProjectsMap.set(tech, existing);
-    });
-  });
+  // Evidencia: cada tecnología enlazada a los proyectos donde se aplicó.
+  const skillToProjects = new Map<string, { title: string; slug: string }[]>();
+  for (const p of projects) {
+    for (const tech of p.technologies) {
+      const list = skillToProjects.get(tech) ?? [];
+      if (!list.some((x) => x.slug === p.slug)) list.push({ title: p.title, slug: p.slug });
+      skillToProjects.set(tech, list);
+    }
+  }
+  const evidence = Array.from(skillToProjects.entries())
+    .sort((a, b) => b[1].length - a[1].length)
+    .slice(0, 9);
 
-  const totalStars = projects.reduce(
-    (acc, p) => acc + (p.githubMetadata?.stars ?? 0),
-    0
-  );
+  const totalStars = projects.reduce((acc, p) => acc + (p.githubMetadata?.stars ?? 0), 0);
+  const currentJob = experiences[0];
 
   return (
-    <div className="relative overflow-hidden">
-      {/* 1. HERO SECTION: Posicionamiento Asertivo + Microcredenciales + Doble CTA */}
-      <section className="relative tech-grid border-b border-line pt-20 pb-20 sm:pt-28 sm:pb-28">
-        <div className="mx-auto max-w-4xl px-5 lg:px-12">
-          {/* Eyebrow interactivo de credibilidad */}
-          <div className="inline-flex flex-wrap items-center gap-2 rounded-full border border-line bg-surface/90 px-3 py-1 font-mono text-xs text-ink-muted shadow-sm backdrop-blur-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald" />
-            </span>
-            <span className="text-ink font-medium">Diego Alejandro Muñoz</span>
-            <span className="text-ink-subtle">·</span>
-            <span>Software Developer</span>
-            <span className="text-ink-subtle">·</span>
-            <span className="text-signal-light">Cali, Colombia</span>
-          </div>
+    <>
+      {/* 1. HERO */}
+      <section className="relative flex min-h-[100dvh] flex-col overflow-hidden">
+        <DotField className="absolute inset-0 h-full w-full [mask-image:radial-gradient(ellipse_at_70%_40%,black_20%,transparent_75%)]" />
 
-          <h1 className="mt-6 font-display text-4xl font-bold tracking-tight text-ink sm:text-5xl lg:text-6xl leading-[1.12]">
-            Diego Alejandro Muñoz — Software Developer · Next.js & TypeScript
-          </h1>
-
-          <p className="mt-6 max-w-2xl font-body text-base sm:text-lg leading-relaxed text-ink-muted">
-            Estudiante de Ingeniería de Sistemas (UNIAJC). Desarrollo aplicaciones web funcionales, paneles administrativos y herramientas con Next.js, React, TypeScript y PostgreSQL, respaldadas por criterio práctico en consistencia de datos y procesos operativos.
-          </p>
-
-          {/* Doble CTA Interactivo para Recruiter vs Cliente */}
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link href="/proyectos">
-              <Button variant="signal" size="lg" rightIcon={<ArrowRight size={16} />}>
-                Ver Proyectos y Código Real
-              </Button>
-            </Link>
-            <Link href="/contacto">
-              <Button variant="secondary" size="lg">
-                Hablemos de tu Proyecto
-              </Button>
-            </Link>
-            <Link
-              href="/cv"
-              className="inline-flex items-center gap-1.5 font-mono text-xs text-ink-muted hover:text-signal transition-colors py-2 px-1 ml-1"
-            >
-              <FileText size={15} />
-              <span>Descargar CV (PDF)</span>
-            </Link>
-          </div>
-
-          {/* Micro-credenciales & Estado de Producción */}
-          <div className="bracket-frame mt-12 grid gap-3 border border-line bg-surface/80 p-5 sm:grid-cols-4 font-mono text-xs text-ink-muted rounded-sm">
+        <div className="container-x relative flex flex-1 flex-col justify-between pb-10 pt-[calc(var(--header-h)+2.5rem)] sm:pt-[calc(var(--header-h)+4rem)]">
+          <Reveal immediate stagger as="dl" className="grid grid-cols-2 gap-x-6 gap-y-4 font-mono text-[11px] uppercase tracking-[0.08em] sm:grid-cols-4">
             <div>
-              <p className="text-[10px] uppercase text-ink-subtle">Stack Principal</p>
-              <p className="mt-1 text-ink font-semibold">Next.js · React · TypeScript</p>
+              <dt className="text-ink-subtle">Rol</dt>
+              <dd className="mt-1 text-ink">Software Developer</dd>
             </div>
             <div>
-              <p className="text-[10px] uppercase text-ink-subtle">Base de Datos</p>
-              <p className="mt-1 text-ink font-semibold">Supabase (PostgreSQL)</p>
+              <dt className="text-ink-subtle">Base</dt>
+              <dd className="mt-1 text-ink">Cali, Colombia</dd>
             </div>
             <div>
-              <p className="text-[10px] uppercase text-ink-subtle">Frontend</p>
-              <p className="mt-1 text-ink font-semibold">React · Tailwind CSS</p>
+              <dt className="text-ink-subtle">Hora local</dt>
+              <dd className="mt-1 text-ink">
+                <CaliClock />
+              </dd>
             </div>
             <div>
-              <p className="text-[10px] uppercase text-ink-subtle">Disponibilidad</p>
-              <p className="mt-1 text-emerald font-semibold flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald" />
+              <dt className="text-ink-subtle">Estado</dt>
+              <dd className="mt-1 flex items-center gap-2 text-emerald">
+                <span aria-hidden="true" className="pulse-dot h-1.5 w-1.5 rounded-full bg-emerald" />
                 Inmediata / Remoto
-              </p>
+              </dd>
             </div>
+          </Reveal>
+
+          <div className="mt-16 sm:mt-20">
+            <SplitReveal as="h1" immediate delay={0.15} className="display display-xl text-ink">
+              <span className="block">Diego</span>
+              <span className="block">Alejandro</span>
+              <span className="block">
+                Muñoz<span className="text-signal">.</span>
+              </span>
+            </SplitReveal>
+
+            <div className="mt-10 grid grid-cols-1 gap-8 border-t border-line pt-8 lg:grid-cols-12 lg:gap-6">
+              <Reveal immediate delay={0.55} className="lg:col-span-5">
+                <p className="font-serif text-[clamp(1.7rem,2.8vw,2.6rem)] italic leading-[1.1] text-ink">
+                  Software Developer <span className="text-signal">·</span> Next.js &amp; TypeScript
+                </p>
+              </Reveal>
+              <Reveal immediate delay={0.65} className="lg:col-span-6 lg:col-start-7">
+                <p className="lede max-w-[54ch]">
+                  Estudiante de Ingeniería de Sistemas (UNIAJC). Desarrollo aplicaciones web funcionales, paneles administrativos y
+                  herramientas con Next.js, React, TypeScript y PostgreSQL, respaldadas por criterio práctico en consistencia de datos y
+                  procesos operativos.
+                </p>
+                <div className="mt-8">
+                  <HeroCtas />
+                </div>
+              </Reveal>
+            </div>
+          </div>
+
+          <div className="mt-12 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.1em] text-ink-subtle">
+            <span className="flex items-center gap-2">
+              <ArrowDown aria-hidden="true" size={12} className="animate-bounce" />
+              Desplázate
+            </span>
+            <span className="hidden sm:inline">Portafolio · Edición {new Date().getFullYear()}</span>
           </div>
         </div>
       </section>
 
-      {/* 2. SOCIAL PROOF & MÉTRICAS EN VIVO */}
-      <section className="border-b border-line bg-surface/40 py-8">
-        <div className="mx-auto max-w-4xl px-5 lg:px-12 grid grid-cols-2 gap-4 sm:grid-cols-4 font-mono text-xs">
-          <div className="border-l-2 border-signal pl-4 py-1">
-            <span className="font-display text-2xl sm:text-3xl font-bold text-ink">
-              {projects.length}
-            </span>
-            <p className="text-ink-muted text-[11px] mt-0.5">Proyectos en Catálogo</p>
-          </div>
-          <div className="border-l-2 border-emerald pl-4 py-1">
-            <span className="font-display text-2xl sm:text-3xl font-bold text-ink">100%</span>
-            <p className="text-ink-muted text-[11px] mt-0.5">Código Tipado & Repos</p>
-          </div>
-          <div className="border-l-2 border-signal-light pl-4 py-1">
-            <span className="font-display text-2xl sm:text-3xl font-bold text-ink">
-              {totalStars > 0 ? `${totalStars}+` : "Open"}
-            </span>
-            <p className="text-ink-muted text-[11px] mt-0.5">Stars & Open Source</p>
-          </div>
-          <div className="border-l-2 border-amber pl-4 py-1">
-            <span className="font-display text-2xl sm:text-3xl font-bold text-ink">UNIAJC</span>
-            <p className="text-ink-muted text-[11px] mt-0.5">Ingeniería de Sistemas</p>
-          </div>
-        </div>
-      </section>
+      {/* Cinta de stack */}
+      <Marquee items={MARQUEE_STACK} />
 
-      {/* 3. PROYECTOS DESTACADOS: Interactive Showcase */}
-      <Section id="proyectos">
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 font-mono text-xs text-signal-light font-semibold">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal" />
-              <span>TRABAJO REAL Y COMPROBABLE</span>
-            </div>
-            <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-ink">
-              Proyectos destacados
-            </h2>
-          </div>
-          <Link
-            href="/proyectos"
-            className="font-mono text-xs text-signal hover:underline flex items-center gap-1"
-          >
-            <span>Ver catálogo completo ({projects.length})</span>
-            <ArrowRight size={13} />
+      {/* 2. TRABAJO SELECCIONADO */}
+      <section id="proyectos" className="container-x py-24 sm:py-32">
+        <SectionHeading
+          index="01"
+          eyebrow="Trabajo real y comprobable"
+          title={
+            <>
+              Proyectos <span className="font-serif">destacados</span>
+            </>
+          }
+          aside={
+            <p className="lede max-w-[60ch]">
+              Cada proyecto muestra evidencia concreta: análisis de riesgo geoespacial, catálogos e-commerce con Supabase, landing pages,
+              paneles administrativos y código disponible para revisión.
+            </p>
+          }
+        />
+        <div className="mt-16">
+          <WorkIndex projects={showcaseProjects} />
+        </div>
+        <div className="mt-10 flex justify-end">
+          <Link href="/proyectos" className="group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
+            <span className="link-draw">Ver catálogo completo ({projects.length})</span>
+            <ArrowRight aria-hidden="true" size={14} className="text-signal transition-transform duration-500 ease-expo group-hover:translate-x-1" />
           </Link>
         </div>
+      </section>
 
-        <p className="mt-3 max-w-xl font-body text-sm leading-relaxed text-ink-muted">
-          Cada proyecto muestra evidencia concreta: análisis de riesgo geoespacial, catálogos e-commerce con Supabase, landing pages, paneles administrativos y código disponible para revisión.
-        </p>
-
-        <div className="mt-8 space-y-5">
-          {showcaseProjects.map((project, i) => (
-            <ProjectCard key={project.slug} project={project} index={i} />
+      {/* 3. CIFRAS */}
+      <section aria-label="Cifras" className="border-y border-line">
+        <dl className="grid grid-cols-2 gap-px bg-line lg:grid-cols-4">
+          {[
+            { value: <Counter value={projects.length} />, label: "Proyectos en catálogo" },
+            { value: <Counter value={100} suffix="%" />, label: "Código tipado & repos" },
+            { value: totalStars > 0 ? <Counter value={totalStars} suffix="+" /> : "Open", label: "Stars & open source" },
+            { value: "UNIAJC", label: "Ingeniería de Sistemas" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="flex flex-col justify-between gap-10 bg-paper px-[var(--gutter)] py-10 sm:py-14"
+            >
+              <dt className="eyebrow order-2">{stat.label}</dt>
+              <dd className="display order-1 text-[clamp(2.6rem,6vw,6rem)] text-ink">{stat.value}</dd>
+            </div>
           ))}
-        </div>
-      </Section>
+        </dl>
+      </section>
 
-      {/* 4. CAPACIDADES & SOLUCIONES: Qué puedo construir */}
-      <Section className="border-t border-line">
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 font-mono text-xs text-signal-light font-semibold">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal" />
-              <span>SOLUCIONES DIGITALES PRÁCTICAS</span>
-            </div>
-            <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-ink">
-              Qué puedo construir para ti
-            </h2>
-          </div>
-          <Link
-            href="/servicios"
-            className="font-mono text-xs text-signal hover:underline flex items-center gap-1"
-          >
-            <span>Detalle de servicios & entregables</span>
-            <ArrowRight size={13} />
-          </Link>
-        </div>
+      {/* 4. CAPACIDADES (scroll horizontal anclado) */}
+      <section className="py-24 sm:py-32 lg:py-0">
+        <CapabilitiesPin items={CAPABILITIES} />
+      </section>
 
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {CAPABILITIES.map((cap) => {
-            const Icon = cap.icon;
-            return (
-              <div
-                key={cap.id}
-                className="bracket-frame flex flex-col justify-between border border-line bg-surface/80 p-6 rounded-sm hover:border-line-focus transition-all"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <Icon className="h-5 w-5 text-signal-light" />
-                    <span className="font-mono text-[10px] text-ink-subtle uppercase">
-                      {cap.eyebrow}
-                    </span>
-                  </div>
-
-                  <h3 className="mt-3 font-display text-lg font-semibold text-ink">
-                    {cap.title}
-                  </h3>
-                  <p className="mt-2 font-body text-xs leading-relaxed text-ink-muted">
-                    {cap.description}
-                  </p>
-
-                  <div className="mt-4 border-t border-line/60 pt-3">
-                    <p className="font-mono text-[10px] text-ink-subtle uppercase tracking-wider font-semibold">
-                      Entregables típicos:
-                    </p>
-                    <ul className="mt-2 space-y-1.5">
-                      {cap.deliverables.map((deliv) => (
-                        <li key={deliv} className="flex items-start gap-1.5 font-body text-xs text-ink-muted">
-                          <CheckCircle2 size={12} className="text-signal-light mt-0.5 flex-none" />
-                          <span>{deliv}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-line/60 flex items-center justify-between">
-                  <div className="flex flex-wrap gap-1">
-                    {cap.stack.slice(0, 3).map((t) => (
-                      <Tag key={t}>{t}</Tag>
-                    ))}
-                  </div>
-                  <Link
-                    href={`/contacto?motivo=servicio&servicio=${cap.id}`}
-                    className="font-mono text-xs text-signal hover:underline inline-flex items-center gap-1"
-                  >
-                    <span>Cotizar</span>
-                    <ArrowRight size={11} />
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </Section>
-
-      {/* 5. STACK TECNOLÓGICO CONECTADO A PROYECTOS REALES */}
-      <Section className="border-t border-line">
-        <div className="flex items-center gap-2 font-mono text-xs text-signal-light font-semibold">
-          <span className="h-1.5 w-1.5 rounded-full bg-signal" />
-          <span>EVIDENCIA DE HABILIDADES</span>
-        </div>
-        <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-ink">
-          Stack técnico con respaldo en código
-        </h2>
-        <p className="mt-2 max-w-xl font-body text-sm text-ink-muted leading-relaxed">
-          No muestro habilidades como una lista aislada sin evidencia. Cada tecnología clave está vinculada a los proyectos reales donde se implementó:
-        </p>
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from(skillToProjectsMap.entries())
-            .slice(0, 9)
-            .map(([tech, techProjects]) => (
-              <div
-                key={tech}
-                className="border border-line bg-surface/60 p-4 rounded-sm hover:border-line-focus transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-display font-semibold text-sm text-ink">{tech}</span>
-                  <Badge variant="tech">
-                    {techProjects.length} {techProjects.length === 1 ? "proyecto" : "proyectos"}
-                  </Badge>
-                </div>
-                <p className="font-mono text-[11px] text-ink-subtle mt-2">Aplicado en:</p>
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {techProjects.map((pName) => (
-                    <span
-                      key={pName}
-                      className="font-body text-xs text-signal-light/90 hover:underline"
-                    >
-                      {pName} ·
-                    </span>
+      {/* 5. STACK CON EVIDENCIA */}
+      {evidence.length > 0 && (
+        <section className="container-x border-t border-line py-24 sm:py-32">
+          <SectionHeading
+            index="04"
+            eyebrow="Evidencia de habilidades"
+            title={
+              <>
+                Stack con respaldo <span className="font-serif">en código</span>
+              </>
+            }
+            aside={
+              <p className="lede max-w-[60ch]">
+                No muestro habilidades como una lista aislada sin evidencia. Cada tecnología clave está vinculada a los proyectos reales donde
+                se implementó.
+              </p>
+            }
+          />
+          <Reveal as="ul" stagger className="mt-16 border-t border-line">
+            {evidence.map(([tech, techProjects]) => (
+              <li key={tech} className="group grid grid-cols-12 items-baseline gap-x-4 gap-y-2 border-b border-line py-5 transition-colors hover:bg-surface sm:py-6">
+                <span className="display stretch-hover col-span-12 text-[clamp(1.5rem,3vw,2.75rem)] text-ink transition-colors group-hover:text-signal sm:col-span-5">
+                  {tech}
+                </span>
+                <span className="col-span-3 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-subtle sm:col-span-2">
+                  {techProjects.length} {techProjects.length === 1 ? "proyecto" : "proyectos"}
+                </span>
+                <span className="col-span-9 flex flex-wrap gap-x-4 gap-y-1 text-sm sm:col-span-5">
+                  {techProjects.map((p) => (
+                    <Link key={p.slug} href={`/proyectos/${p.slug}`} className="link-draw text-ink-muted hover:text-ink">
+                      {p.title}
+                    </Link>
                   ))}
-                </div>
-              </div>
+                </span>
+              </li>
             ))}
-        </div>
-      </Section>
-
-      {/* 6. TIMELINE: Experiencia & Educación */}
-      <Section className="border-t border-line">
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 font-mono text-xs text-signal-light font-semibold">
-              <span className="h-1.5 w-1.5 rounded-full bg-signal" />
-              <span>RIGOR OPERATIVO & FORMACIÓN</span>
-            </div>
-            <h2 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-ink">
-              Trayectoria profesional
-            </h2>
-          </div>
-          <Link
-            href="/experiencia"
-            className="font-mono text-xs text-signal hover:underline flex items-center gap-1"
-          >
-            <span>Ver trayectoria completa</span>
-            <ArrowRight size={13} />
-          </Link>
-        </div>
-
-        <div className="mt-8 border border-line bg-surface/70 p-6 sm:p-8 rounded-sm">
-          <div className="grid gap-8 sm:grid-cols-2">
-            <div>
-              <div className="flex items-center gap-2 text-signal-light font-mono text-xs font-semibold">
-                <Briefcase size={14} />
-                <span>EXPERIENCIA TÉCNICA ACTUAL</span>
-              </div>
-              <h3 className="mt-2 font-display text-xl font-semibold text-ink">
-                {experiences[0]?.position ?? "Mapping Agent"}
-              </h3>
-              <p className="font-mono text-xs text-ink-muted mt-1">
-                {experiences[0]?.company ?? "Juniper Travel Technology"} · 2024 — Presente
-              </p>
-              <p className="mt-3 font-body text-xs sm:text-sm text-ink-muted leading-relaxed">
-                Verificación de calidad, consistencia de inventario y resolución de discrepancias en información hotelera y turística, trabajando con solicitudes operativas y datos de producto.
-              </p>
-            </div>
-
-            <div className="border-t sm:border-t-0 sm:border-l border-line sm:pl-8 pt-6 sm:pt-0">
-              <div className="flex items-center gap-2 text-signal-light font-mono text-xs font-semibold">
-                <GraduationCap size={14} />
-                <span>FORMACIÓN UNIVERSITARIA</span>
-              </div>
-              <h3 className="mt-2 font-display text-xl font-semibold text-ink">
-                Ingeniería en Sistemas de Información
-              </h3>
-              <p className="font-mono text-xs text-ink-muted mt-1">
-                Institución Universitaria Antonio José Camacho (UNIAJC) · 2024 — 2029
-              </p>
-              <p className="mt-3 font-body text-xs sm:text-sm text-ink-muted leading-relaxed">
-                Formación en algoritmos, estructuras de datos, arquitectura de software y bases de datos relacionales. Complementado con titulación tecnológica previa en SST (SENA).
-              </p>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* 7. TESTIMONIOS (Social Proof) */}
-      {testimonials.length > 0 && (
-        <Section className="border-t border-line">
-          <div className="flex items-center gap-2 font-mono text-xs text-signal-light font-semibold">
-            <span className="h-1.5 w-1.5 rounded-full bg-signal" />
-            <span>CONFIRMACIóN DE CLIENTES</span>
-          </div>
-          <h2 className="mt-1 font-display text-2xl font-bold text-ink">
-            Lo que dicen quienes han colaborado conmigo
-          </h2>
-          <div className="mt-6 grid gap-6 md:grid-cols-3">
-            {testimonials.map((t) => (
-              <figure key={t.id} className="bracket-frame border border-line bg-surface/80 p-5 rounded-sm">
-                <blockquote className="font-body text-xs sm:text-sm leading-relaxed text-ink-muted">
-                  “{t.quote}”
-                </blockquote>
-                <figcaption className="mt-4 font-mono text-xs text-ink">
-                  <span className="font-semibold">{t.authorName}</span>
-                  {(t.authorRole || t.authorCompany) && (
-                    <span className="block text-ink-subtle text-[11px] mt-0.5">
-                      {[t.authorRole, t.authorCompany].filter(Boolean).join(" · ")}
-                    </span>
-                  )}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </Section>
+          </Reveal>
+        </section>
       )}
 
-      {/* 8. CTA FINAL PERSUASIVO & FOOTER TÉCNICO */}
-      <Section className="border-t border-line pb-28">
-        <div className="bracket-frame border border-line bg-surface/90 p-8 sm:p-12 rounded-sm shadow-lg">
-          <p className="font-mono text-xs text-signal-light font-semibold uppercase tracking-wider">
-            ¿Listo para dar el siguiente paso?
-          </p>
-          <h2 className="mt-2 font-display text-3xl sm:text-4xl font-bold text-ink">
-            Iniciemos una conversación
-          </h2>
-          <p className="mt-3 max-w-xl font-body text-sm leading-relaxed text-ink-muted">
-            Tanto si buscas un desarrollador junior con criterio práctico para tu equipo, como si necesitas construir un producto web, panel administrativo o integración funcional para tu negocio.
-          </p>
-
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/contacto">
-              <Button variant="signal" size="lg" rightIcon={<ArrowRight size={15} />}>
-                Escribir Mensaje Directo
-              </Button>
-            </Link>
-            <a
-              href="https://wa.me/573215150904?text=Hola%20Diego,%20vi%20tu%20perfil%20y%20me%20gustar%C3%ADa%20conversar."
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Button variant="secondary" size="lg" leftIcon={<MessageSquare size={15} />}>
-                WhatsApp Directo
-              </Button>
-            </a>
-            <Link href="/cv">
-              <Button variant="outline" size="lg" leftIcon={<FileText size={15} />}>
-                Descargar CV (PDF)
-              </Button>
-            </Link>
-          </div>
-
-          <div className="mt-8 pt-6 border-t border-line/60 flex flex-wrap items-center justify-between gap-4 font-mono text-xs text-ink-subtle">
-            <span>Cali, Colombia · diego_8520@outlook.com</span>
-            <span>Respuesta en menos de 24 horas laborables</span>
-          </div>
+      {/* 6. TRAYECTORIA */}
+      <section className="container-x border-t border-line py-24 sm:py-32">
+        <SectionHeading
+          index="05"
+          eyebrow="Rigor operativo & formación"
+          title={
+            <>
+              Trayectoria <span className="font-serif">profesional</span>
+            </>
+          }
+        />
+        <div className="mt-16 grid grid-cols-1 gap-16 lg:grid-cols-12 lg:gap-6">
+          <Reveal className="relative pl-8 lg:col-span-5 lg:col-start-4">
+            <ScrollLine />
+            <p className="eyebrow text-signal">Experiencia técnica actual</p>
+            <h3 className="display display-sm mt-4 text-ink">{currentJob?.position ?? "Mapping Agent"}</h3>
+            <p className="mt-3 font-mono text-xs uppercase tracking-[0.06em] text-ink-muted">
+              {currentJob?.company ?? "Juniper Travel Technology"} · 2024 — Presente
+            </p>
+            <p className="mt-6 max-w-[52ch] leading-relaxed text-ink-muted">
+              Verificación de calidad, consistencia de inventario y resolución de discrepancias en información hotelera y turística,
+              trabajando con solicitudes operativas y datos de producto.
+            </p>
+          </Reveal>
+          <Reveal delay={0.1} className="relative pl-8 lg:col-span-4">
+            <ScrollLine />
+            <p className="eyebrow text-signal">Formación universitaria</p>
+            <h3 className="display display-sm mt-4 text-ink">Ingeniería en Sistemas de Información</h3>
+            <p className="mt-3 font-mono text-xs uppercase tracking-[0.06em] text-ink-muted">UNIAJC · 2024 — 2029</p>
+            <p className="mt-6 max-w-[52ch] leading-relaxed text-ink-muted">
+              Formación en algoritmos, estructuras de datos, arquitectura de software y bases de datos relacionales. Complementado con
+              titulación tecnológica previa en SST (SENA).
+            </p>
+          </Reveal>
         </div>
-      </Section>
-    </div>
+        <div className="mt-14 flex justify-end">
+          <Link href="/experiencia" className="group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
+            <span className="link-draw">Ver trayectoria completa</span>
+            <ArrowRight aria-hidden="true" size={14} className="text-signal transition-transform duration-500 ease-expo group-hover:translate-x-1" />
+          </Link>
+        </div>
+      </section>
+
+      {/* 7. TESTIMONIOS */}
+      {testimonials.length > 0 && (
+        <section className="container-x border-t border-line py-24 sm:py-32">
+          <div className="mb-12 flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.08em]">
+            <span className="text-signal">06</span>
+            <span className="text-ink-muted">Confirmación de clientes</span>
+          </div>
+          <TestimonialCarousel items={testimonials} />
+        </section>
+      )}
+    </>
   );
 }

@@ -1,25 +1,33 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, IBM_Plex_Mono, Work_Sans } from "next/font/google";
+import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  axes: ["wdth"],
+  display: "swap",
 });
 
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: "400",
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
-const workSans = Work_Sans({
-  variable: "--font-work-sans",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "700"],
+  display: "swap",
 });
+
+// Activa el modo de movimiento antes del primer pintado. Sin JS o con
+// prefers-reduced-motion el contenido queda visible y estático.
+const motionBootScript = `(function(){var d=document.documentElement;d.classList.add('js');try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('js-motion')}var a=sessionStorage.getItem('audience_mode');if(a==='recruiter'||a==='client'){d.dataset.audience=a}}catch(e){}})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -112,8 +120,13 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${spaceGrotesk.variable} ${plexMono.variable} ${workSans.variable} h-full antialiased`}
+      className={`${archivo.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      data-audience="all"
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: motionBootScript }} />
+      </head>
       <body className="min-h-full bg-paper text-ink">
         <script
           type="application/ld+json"
