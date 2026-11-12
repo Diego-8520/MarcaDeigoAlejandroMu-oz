@@ -14,15 +14,15 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const base =
-    "inline-flex items-center gap-1.5 font-mono text-[11px] rounded-sm px-2 py-0.5 transition-colors select-none";
+    "inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.08em] px-2 py-0.5 transition-colors select-none";
 
   const variants = {
-    tech: "border border-line/80 bg-surface/60 text-ink-muted",
-    live: "border border-emerald/40 bg-emerald-dim text-emerald font-medium",
-    produccion: "border border-signal/40 bg-signal-dim text-signal-light font-medium",
-    "open-source": "border border-line text-ink-muted bg-surface-elevated/40",
-    "en-desarrollo": "border border-amber/40 bg-amber-dim text-amber font-medium",
-    signal: "border border-signal/50 bg-signal-dim text-signal-light font-medium",
+    tech: "border border-line text-ink-muted",
+    live: "border border-emerald/40 text-emerald",
+    produccion: "bg-signal text-signal-ink",
+    "open-source": "border border-line-focus text-ink",
+    "en-desarrollo": "border border-amber/40 text-amber",
+    signal: "border border-signal/60 text-signal",
   };
 
   const hasPulse = variant === "live" || variant === "en-desarrollo";
@@ -35,7 +35,7 @@ export function Badge({
           {hasPulse && (
             <span
               className={cn(
-                "absolute inline-flex h-full w-full animate-ping rounded-full opacity-75",
+                "absolute inline-flex h-full w-full animate-ping rounded-full opacity-60",
                 pulseColor
               )}
             />

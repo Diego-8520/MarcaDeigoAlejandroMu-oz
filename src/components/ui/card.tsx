@@ -13,18 +13,18 @@ export function Card({
 }: CardProps) {
   const variants = {
     default:
-      "border border-line bg-surface/80 text-ink shadow-sm transition-all hover:border-line-focus",
+      "border border-line bg-surface text-ink transition-colors hover:border-line-focus",
     elevated:
-      "border border-line bg-surface-elevated text-ink shadow-md transition-all hover:border-signal/50",
+      "border border-line bg-surface-elevated text-ink transition-colors hover:border-ink/40",
     bracket:
-      "bracket-frame border border-line bg-surface/90 text-ink transition-all hover:border-line-focus",
+      "border-t-2 border-x border-b border-t-signal border-x-line border-b-line bg-surface text-ink transition-colors",
     ghost:
-      "border border-transparent bg-transparent text-ink hover:bg-surface/50",
+      "border border-transparent bg-transparent text-ink hover:bg-surface",
   };
 
   return (
     <div
-      className={cn("rounded-sm overflow-hidden", variants[variant], className)}
+      className={cn("overflow-hidden", variants[variant], className)}
       {...props}
     >
       {children}
@@ -52,7 +52,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        "font-display text-lg font-semibold tracking-tight text-ink",
+        "font-display text-lg font-bold tracking-tight text-ink",
         className
       )}
       {...props}

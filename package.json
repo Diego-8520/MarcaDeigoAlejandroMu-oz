@@ -10,6 +10,7 @@
     "ship": "git add .gitignore package.json supabase/migrations/0011_seed_real_content.sql && git commit -m \"feat(data): seed contenido real en Supabase (perfil, educacion, experiencia, proyectos, skills)\" && git push origin main"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@hookform/resolvers": "^5.9.1",
     "@supabase/server": "^1.6.1",
     "@supabase/ssr": "^0.12.7",
@@ -17,6 +18,8 @@
     "@vercel/analytics": "^2.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "gsap": "^3.13.0",
+    "lenis": "^1.3.4",
     "lucide-react": "^1.39.0",
     "next": "16.3.4",
     "react": "19.2.8",

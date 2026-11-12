@@ -3,130 +3,127 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const DASHBOARD_ITEMS = [
-  { href: "/dashboard", label: "general" },
-  { href: "/dashboard/proyectos", label: "proyectos" },
-  { href: "/dashboard/recursos-externos", label: "recursos externos" },
-  { href: "/dashboard/integraciones", label: "integraciones" },
-  { href: "/dashboard/experiencia", label: "experiencia" },
-  { href: "/dashboard/educacion", label: "educación" },
-  { href: "/dashboard/skills", label: "skills" },
-  { href: "/dashboard/cv", label: "cv" },
-  { href: "/dashboard/perfil", label: "perfil" },
-  { href: "/dashboard/testimonios", label: "testimonios" },
-  { href: "/dashboard/contactos", label: "contactos" },
-  { href: "/dashboard/analytics", label: "analytics" },
+  { href: "/dashboard", label: "General" },
+  { href: "/dashboard/proyectos", label: "Proyectos" },
+  { href: "/dashboard/recursos-externos", label: "Recursos externos" },
+  { href: "/dashboard/integraciones", label: "Integraciones" },
+  { href: "/dashboard/experiencia", label: "Experiencia" },
+  { href: "/dashboard/educacion", label: "Educación" },
+  { href: "/dashboard/skills", label: "Skills" },
+  { href: "/dashboard/cv", label: "CV" },
+  { href: "/dashboard/perfil", label: "Perfil" },
+  { href: "/dashboard/testimonios", label: "Testimonios" },
+  { href: "/dashboard/contactos", label: "Contactos" },
+  { href: "/dashboard/analytics", label: "Analytics" },
 ];
 
+function Brand() {
+  return (
+    <Link href="/" className="group flex items-baseline gap-2" aria-label="Ir a la web pública">
+      <span className="display text-lg text-ink">DAM</span>
+      <span aria-hidden="true" className="h-1.5 w-1.5 bg-signal transition-transform duration-500 group-hover:rotate-45" />
+    </Link>
+  );
+}
+
+/** Navegación del panel: riel con índice numerado en escritorio y desplegable en móvil. */
 export function DashboardNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const isActive = (href: string) => {
-    if (href === "/dashboard") return pathname === "/dashboard";
-    return pathname.startsWith(href);
-  };
+  const isActive = (href: string) => (href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href));
+  const current = DASHBOARD_ITEMS.find((i) => isActive(i.href));
 
   return (
     <>
-      {/* Barra superior móvil para el dashboard */}
-      <div className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-paper px-4 py-3 lg:hidden w-full">
-        <div className="flex items-center gap-2">
-          <Link
-            href="/"
-            className="text-ink-muted hover:text-ink p-1"
-            title="Volver a la web pública"
-            aria-label="Volver a la web pública"
-          >
-            <ArrowLeft size={16} />
-          </Link>
-          <span className="font-mono text-xs font-semibold text-ink">
-            admin / panel
-          </span>
+      {/* Barra superior móvil */}
+      <div className="sticky top-0 z-40 flex w-full items-center justify-between border-b border-line bg-paper/95 px-4 py-3 backdrop-blur-md lg:hidden">
+        <div className="flex items-center gap-4">
+          <Brand />
+          <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">/ {current?.label ?? "Panel"}</span>
         </div>
         <button
           type="button"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-1.5 text-ink hover:text-signal"
-          aria-label="Alternar menú de dashboard"
+          onClick={() => setMobileOpen((v) => !v)}
+          aria-expanded={mobileOpen}
+          aria-controls="dashboard-mobile-nav"
+          className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink hover:text-signal"
         >
-          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          {mobileOpen ? "Cerrar" : "Menú"}
         </button>
       </div>
 
-      {/* Menú desplegable móvil */}
       {mobileOpen && (
-        <div className="fixed inset-x-0 top-[49px] z-30 border-b border-line bg-paper px-6 py-6 shadow-xl lg:hidden">
-          <nav className="grid grid-cols-2 gap-2 font-mono text-xs">
-            {DASHBOARD_ITEMS.map((item) => {
+        <nav
+          id="dashboard-mobile-nav"
+          aria-label="Menú del panel"
+          className="fixed inset-x-0 top-[49px] z-30 border-b border-line bg-paper px-4 py-4 lg:hidden"
+        >
+          <ul className="grid grid-cols-2 gap-px bg-line">
+            {DASHBOARD_ITEMS.map((item, i) => {
               const active = isActive(item.href);
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`py-2 px-2.5 rounded border border-line/60 transition-colors ${
-                    active
-                      ? "bg-signal text-paper border-signal font-medium"
-                      : "text-ink hover:border-signal hover:text-signal"
-                  }`}
-                >
-                  {item.label}
-                </Link>
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "flex items-baseline gap-2 px-3 py-3 font-mono text-xs transition-colors",
+                      active ? "bg-signal text-signal-ink" : "bg-paper text-ink hover:bg-surface",
+                    )}
+                  >
+                    <span className={active ? "text-signal-ink/60" : "text-ink-subtle"}>{String(i + 1).padStart(2, "0")}</span>
+                    {item.label}
+                  </Link>
+                </li>
               );
             })}
-          </nav>
-          <div className="mt-4 pt-3 border-t border-line text-right">
-            <Link
-              href="/"
-              onClick={() => setMobileOpen(false)}
-              className="font-mono text-xs text-signal hover:underline"
-            >
-              ← Ir a la web pública
-            </Link>
-          </div>
-        </div>
+          </ul>
+        </nav>
       )}
 
-      {/* Sidebar Desktop */}
-      <aside className="hidden w-56 flex-none border-r border-line px-6 py-8 lg:flex lg:flex-col lg:justify-between min-h-screen">
+      {/* Riel de escritorio */}
+      <aside className="hidden min-h-screen w-60 flex-none flex-col justify-between border-r border-line px-6 py-8 lg:flex">
         <div>
-          <div className="flex items-center justify-between">
-            <p className="font-mono text-xs text-ink-muted font-medium">
-              panel de administración
-            </p>
-          </div>
-          <nav className="mt-8 flex flex-col gap-1" aria-label="Menú del panel">
-            {DASHBOARD_ITEMS.map((item) => {
-              const active = isActive(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`py-1.5 font-mono text-sm transition-colors ${
-                    active
-                      ? "text-signal font-medium"
-                      : "text-ink-muted hover:text-signal"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
+          <Brand />
+          <p className="eyebrow mt-3">Panel de administración</p>
+          <nav className="mt-10" aria-label="Menú del panel">
+            <ul className="border-t border-line">
+              {DASHBOARD_ITEMS.map((item, i) => {
+                const active = isActive(item.href);
+                return (
+                  <li key={item.href} className="border-b border-line">
+                    <Link
+                      href={item.href}
+                      aria-current={active ? "page" : undefined}
+                      className={cn(
+                        "group flex items-baseline gap-3 py-2.5 font-mono text-xs transition-colors",
+                        active ? "text-signal" : "text-ink-muted hover:text-ink",
+                      )}
+                    >
+                      <span className={cn("w-5 text-[10px]", active ? "text-signal" : "text-ink-subtle")}>{String(i + 1).padStart(2, "0")}</span>
+                      <span className="flex-1">{item.label}</span>
+                      {active && <span aria-hidden="true" className="h-1.5 w-1.5 bg-signal" />}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </nav>
         </div>
 
-        <div className="border-t border-line pt-4 font-mono text-xs text-ink-muted">
-          <Link
-            href="/"
-            className="flex items-center gap-1.5 hover:text-signal transition-colors"
-          >
-            <ArrowLeft size={13} />
-            <span>ir a la web pública</span>
-          </Link>
-        </div>
+        <Link
+          href="/"
+          className="flex items-center gap-2 border-t border-line pt-4 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted transition-colors hover:text-ink"
+        >
+          <ArrowLeft aria-hidden="true" size={13} />
+          Ir a la web pública
+        </Link>
       </aside>
     </>
   );

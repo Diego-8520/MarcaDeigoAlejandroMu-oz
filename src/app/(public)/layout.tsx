@@ -1,17 +1,25 @@
-import { SiteRail } from "@/components/layout/site-rail";
 import { PageViewTracker } from "@/components/analytics/page-view-tracker";
 import { AudienceProvider } from "@/components/layout/audience-context";
+import { MotionProvider } from "@/components/motion/motion-provider";
+import { SiteHeader } from "@/components/site/site-header";
+import { SiteFooter } from "@/components/site/site-footer";
+import { GridOverlay } from "@/components/site/grid-overlay";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <AudienceProvider>
-      <div className="min-h-screen bg-paper text-ink selection:bg-signal/30 lg:pl-64">
-        <PageViewTracker />
-        <SiteRail />
-        <main id="main" className="min-h-screen">
-          {children}
-        </main>
-      </div>
+      <MotionProvider>
+        <div className="flex min-h-[100dvh] flex-col bg-paper text-ink">
+          <PageViewTracker />
+          <SiteHeader />
+          <main id="main" tabIndex={-1} className="flex-1 outline-none">
+            {children}
+          </main>
+          <SiteFooter />
+        </div>
+        <div aria-hidden="true" className="grain" />
+        <GridOverlay />
+      </MotionProvider>
     </AudienceProvider>
   );
 }
