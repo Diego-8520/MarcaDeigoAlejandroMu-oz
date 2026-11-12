@@ -155,7 +155,7 @@ export default async function ExperienciaPage() {
                 <div className="flex items-center gap-5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">
                   {cert.issueDate && <span>{formatDate(cert.issueDate)}</span>}
                   {cert.credentialUrl && (
-                    <a href={cert.credentialUrl} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1 text-ink">
+                    <a href={cert.credentialUrl} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1 text-ink">
                       Ver credencial <ArrowUpRight aria-hidden="true" size={12} />
                     </a>
                   )}

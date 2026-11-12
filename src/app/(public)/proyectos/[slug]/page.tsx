@@ -119,7 +119,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         <Link
           href="/proyectos"
           transitionTypes={["nav-back"]}
-          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted hover:text-ink"
+          className="tap group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted hover:text-ink"
         >
           <ArrowLeft aria-hidden="true" size={13} className="transition-transform duration-500 ease-expo group-hover:-translate-x-1" />
           <span>Volver a proyectos</span>
@@ -198,7 +198,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             {(project.demoUrl || primaryRepoUrl) && (
               <div className="flex flex-col gap-2 border-t border-line pt-6">
                 {project.demoUrl && (
-                  <a href={project.demoUrl} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "signal", size: "md", className: "justify-between" })}>
+                  <a href={project.demoUrl} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "signal", size: "md", className: "tap-area justify-between" })}>
                     <span className="flex items-center gap-2">
                       <Globe aria-hidden="true" size={13} />
                       Demo en producción
@@ -207,7 +207,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                   </a>
                 )}
                 {primaryRepoUrl && (
-                  <a href={primaryRepoUrl} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", size: "md", className: "justify-between" })}>
+                  <a href={primaryRepoUrl} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", size: "md", className: "tap-area justify-between" })}>
                     <span className="flex items-center gap-2">
                       <GithubIcon className="h-3.5 w-3.5" />
                       Repositorio en GitHub

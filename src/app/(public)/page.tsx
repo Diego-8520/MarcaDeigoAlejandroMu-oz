@@ -191,7 +191,7 @@ export default async function HomePage() {
           <WorkIndex projects={showcaseProjects} />
         </div>
         <div className="mt-10 flex justify-end">
-          <Link href="/proyectos" className="group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
+          <Link href="/proyectos" className="tap group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
             <span className="link-draw">Ver catálogo completo ({projects.length})</span>
             <ArrowRight aria-hidden="true" size={14} className="text-signal transition-transform duration-500 ease-expo group-hover:translate-x-1" />
           </Link>
@@ -212,7 +212,7 @@ export default async function HomePage() {
               className="flex min-w-0 flex-col justify-between gap-10 bg-paper px-[var(--gutter)] py-10 sm:py-14"
             >
               <dt className="eyebrow order-2">{stat.label}</dt>
-              <dd className="display order-1 text-[clamp(2rem,4.4vw,4.75rem)] text-ink">{stat.value}</dd>
+              <dd className="display order-1 text-[clamp(1.6rem,4.4vw,4.75rem)] text-ink">{stat.value}</dd>
             </div>
           ))}
         </dl>
@@ -252,7 +252,7 @@ export default async function HomePage() {
                 </span>
                 <span className="col-span-9 flex flex-wrap gap-x-4 gap-y-1 text-sm sm:col-span-5">
                   {techProjects.map((p) => (
-                    <Link key={p.slug} href={`/proyectos/${p.slug}`} className="link-draw text-ink-muted hover:text-ink">
+                    <Link key={p.slug} href={`/proyectos/${p.slug}`} className="link-draw tap text-ink-muted hover:text-ink">
                       {p.title}
                     </Link>
                   ))}
@@ -304,7 +304,7 @@ export default async function HomePage() {
           </Reveal>
         </div>
         <div className="mt-14 flex justify-end">
-          <Link href="/experiencia" className="group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
+          <Link href="/experiencia" className="tap group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink">
             <span className="link-draw">Ver trayectoria completa</span>
             <ArrowRight aria-hidden="true" size={14} className="text-signal transition-transform duration-500 ease-expo group-hover:translate-x-1" />
           </Link>

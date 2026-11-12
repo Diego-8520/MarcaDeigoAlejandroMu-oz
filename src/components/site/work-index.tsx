@@ -78,7 +78,7 @@ export function WorkIndex({ projects, showFilters = false }: { projects: Project
             type="button"
             aria-pressed={filter === null}
             onClick={() => setFilter(null)}
-            className={cn("border px-3 py-1.5 transition-colors", filter === null ? "border-signal bg-signal text-signal-ink" : "border-line text-ink-muted hover:border-ink hover:text-ink")}
+            className={cn("tap-area border px-3 py-1.5 transition-colors", filter === null ? "border-signal bg-signal text-signal-ink" : "border-line text-ink-muted hover:border-ink hover:text-ink")}
           >
             Todo <span className="opacity-60">({projects.length})</span>
           </button>
@@ -91,7 +91,7 @@ export function WorkIndex({ projects, showFilters = false }: { projects: Project
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFilter(active ? null : cat)}
-                className={cn("border px-3 py-1.5 transition-colors", active ? "border-signal bg-signal text-signal-ink" : "border-line text-ink-muted hover:border-ink hover:text-ink")}
+                className={cn("tap-area border px-3 py-1.5 transition-colors", active ? "border-signal bg-signal text-signal-ink" : "border-line text-ink-muted hover:border-ink hover:text-ink")}
               >
                 {cat} <span className="opacity-60">({count})</span>
               </button>

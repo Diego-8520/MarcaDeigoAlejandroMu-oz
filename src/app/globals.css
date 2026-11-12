@@ -143,15 +143,32 @@ body {
   .display-xl {
     font-size: clamp(2.6rem, 11vw, 12rem);
   }
+  /* Mínimos calibrados para que palabras largas en mayúsculas
+     ("ADMINISTRATIVOS", "AUTOMATIZACIÓN") quepan en 360px. */
   .display-lg {
-    font-size: clamp(2.6rem, 8.5vw, 8.5rem);
+    font-size: clamp(2.25rem, 8.5vw, 8.5rem);
   }
   .display-md {
-    font-size: clamp(2rem, 5.4vw, 5rem);
+    font-size: clamp(1.75rem, 5.4vw, 5rem);
   }
   .display-sm {
     font-size: clamp(1.6rem, 3.4vw, 3rem);
     line-height: 0.92;
+  }
+  /* Pantallas de menos de 360px (p. ej. iPhone SE de 1.ª generación). */
+  @media (max-width: 359px) {
+    .display-xl {
+      font-size: 2.25rem;
+    }
+    .display-lg {
+      font-size: 2rem;
+    }
+    .display-md {
+      font-size: 1.5rem;
+    }
+    .display-sm {
+      font-size: 1.35rem;
+    }
   }
 
   /* Palabra de contraste en serif itálica dentro de un titular display. */
@@ -225,6 +242,31 @@ body {
 
 .rule {
   border-top: 1px solid var(--line);
+}
+
+/* Zonas táctiles de 44px sin cambiar el diseño.
+   .tap: enlaces de texto sin borde. El padding vertical agranda la caja
+   interactiva y el margen negativo lo compensa (en elementos inline el margen
+   vertical no afecta al layout y el padding no se ve).
+   .tap-area: chips y botones con borde, donde el padding sí se vería: un
+   pseudo-elemento transparente amplía el área hasta 44×44 alrededor. */
+.tap {
+  /* 1em y no 1lh: en elementos inline la caja mide el área del texto, no la línea. */
+  --tap-pad: max(0px, calc((44px - 1em) / 2));
+  padding-block: var(--tap-pad);
+  margin-block: calc(var(--tap-pad) * -1);
+}
+.tap-area {
+  position: relative;
+}
+.tap-area::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
 }
 
 /* Enlace con subrayado que se dibuja */

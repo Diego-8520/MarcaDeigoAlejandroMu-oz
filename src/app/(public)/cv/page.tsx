@@ -99,7 +99,7 @@ export default async function CvPage() {
                   href={primaryCv.downloadUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link-draw inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.08em] text-ink"
+                  className="link-draw tap inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.08em] text-ink"
                 >
                   Abrir PDF en pestaña nueva <ArrowUpRight aria-hidden="true" size={13} />
                 </a>

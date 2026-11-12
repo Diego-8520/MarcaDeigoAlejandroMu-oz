@@ -97,7 +97,7 @@ export function CapabilitiesPin({ items }: { items: Capability[] }) {
                 <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">{cap.stack.join(" · ")}</p>
                 <Link
                   href={`/contacto?motivo=servicio&servicio=${cap.id}`}
-                  className="group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink"
+                  className="tap group inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.08em] text-ink"
                 >
                   <span className="link-draw">Cotizar este servicio</span>
                   <ArrowRight aria-hidden="true" size={14} className="transition-transform duration-500 ease-expo group-hover:translate-x-1 text-signal" />

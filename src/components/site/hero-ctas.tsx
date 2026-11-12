@@ -33,7 +33,7 @@ export function HeroCtas() {
         {secondary.label}
       </Link>
       {mode !== "recruiter" && (
-        <Link href="/cv" className="link-draw ml-2 inline-flex items-center gap-2 py-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted hover:text-ink">
+        <Link href="/cv" className="link-draw tap ml-2 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted hover:text-ink">
           <FileText aria-hidden="true" size={14} />
           CV en PDF
         </Link>

@@ -75,7 +75,7 @@ export function SiteHeader() {
         )}
       >
         <div className="container-x flex h-[var(--header-h)] items-center justify-between gap-4">
-          <Link href="/" aria-label="Diego Alejandro Muñoz, ir al inicio" className="group flex items-baseline gap-2">
+          <Link href="/" aria-label="Diego Alejandro Muñoz, ir al inicio" className="tap-area group flex items-baseline gap-2">
             <span className="display stretch-hover text-xl text-ink">DAM</span>
             <span aria-hidden="true" className="h-2 w-2 bg-signal transition-transform duration-500 ease-expo group-hover:rotate-45" />
           </Link>
@@ -95,7 +95,7 @@ export function SiteHeader() {
               onClick={() => setMenuOpen(true)}
               aria-expanded={menuOpen}
               aria-controls="site-menu"
-              className="group flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink"
+              className="tap group flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink"
             >
               <span>Menú</span>
               <span aria-hidden="true" className="flex w-6 flex-col gap-[5px]">

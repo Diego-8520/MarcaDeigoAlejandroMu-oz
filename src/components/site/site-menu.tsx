@@ -99,7 +99,7 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
           type="button"
           onClick={onClose}
           data-menu-first
-          className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink hover:text-signal"
+          className="tap font-mono text-[11px] uppercase tracking-[0.08em] text-ink hover:text-signal"
         >
           Cerrar <span className="text-ink-subtle">[esc]</span>
         </button>
@@ -157,24 +157,24 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
               <p className="eyebrow mb-3">¿Qué buscas?</p>
               <AudienceSwitch size="lg" />
             </div>
-            <ul data-menu-meta className="grid grid-cols-2 gap-y-2 font-mono text-xs">
+            <ul data-menu-meta className="grid grid-cols-2 gap-y-7 font-mono text-xs sm:gap-y-2">
               <li>
-                <a href={`mailto:${CONTACT.email}`} className="link-draw text-ink">
+                <a href={`mailto:${CONTACT.email}`} className="link-draw tap inline-block min-w-11 text-ink">
                   Correo
                 </a>
               </li>
               <li>
-                <a href={CONTACT.whatsappUrl()} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1 text-ink">
+                <a href={CONTACT.whatsappUrl()} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1 text-ink">
                   WhatsApp <ArrowUpRight size={12} aria-hidden="true" />
                 </a>
               </li>
               <li>
-                <a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1 text-ink">
+                <a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1 text-ink">
                   LinkedIn <ArrowUpRight size={12} aria-hidden="true" />
                 </a>
               </li>
               <li>
-                <a href={CONTACT.github} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1 text-ink">
+                <a href={CONTACT.github} target="_blank" rel="noreferrer" className="link-draw tap inline-flex items-center gap-1 text-ink">
                   GitHub <ArrowUpRight size={12} aria-hidden="true" />
                 </a>
               </li>
@@ -182,7 +182,7 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
             <div data-menu-meta className="flex items-center justify-between border-t border-line pt-4 font-mono text-[10px] uppercase tracking-[0.08em] text-ink-subtle">
               <span>Atajos: / menú · G rejilla</span>
               {/* Carga completa (no <Link>): el documento del login no hereda GTM del sitio público. */}
-              <a href="/login" aria-label="Acceso administrativo privado" className="hover:text-ink">
+              <a href="/login" aria-label="Acceso administrativo privado" className="tap-area hover:text-ink">
                 <LogIn size={12} aria-hidden="true" />
               </a>
             </div>

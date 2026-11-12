@@ -103,7 +103,7 @@ export default async function SobreMiPage() {
                 href={link.url}
                 target="_blank"
                 rel="noreferrer"
-                className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.08em] text-ink-muted hover:text-ink"
+                className="tap group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.08em] text-ink-muted hover:text-ink"
               >
                 <ProfileLinkIcon name={link.icon} size={14} />
                 <span className="link-draw">{link.label}</span>
