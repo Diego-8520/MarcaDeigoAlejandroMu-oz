@@ -186,10 +186,10 @@ export default async function HomePage() {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="flex flex-col justify-between gap-10 bg-paper px-[var(--gutter)] py-10 sm:py-14"
+              className="flex min-w-0 flex-col justify-between gap-10 bg-paper px-[var(--gutter)] py-10 sm:py-14"
             >
               <dt className="eyebrow order-2">{stat.label}</dt>
-              <dd className="display order-1 text-[clamp(2.6rem,6vw,6rem)] text-ink">{stat.value}</dd>
+              <dd className="display order-1 text-[clamp(2rem,4.4vw,4.75rem)] text-ink">{stat.value}</dd>
             </div>
           ))}
         </dl>

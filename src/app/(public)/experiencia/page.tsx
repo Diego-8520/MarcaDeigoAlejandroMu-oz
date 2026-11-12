@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, FileText, ExternalLink, GraduationCap, Briefcase, Award } from "lucide-react";
-import { Section } from "@/components/ui/section";
+import { ArrowRight, ArrowUpRight, FileText } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { Reveal } from "@/components/motion/reveal";
+import { ScrollLine } from "@/components/motion/scroll-line";
+import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { getExperiences } from "@/lib/data/experiences-queries";
 import { getEducation, getCertifications } from "@/lib/data/education-queries";
 
@@ -14,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 function formatDate(value: string | null) {
-  if (!value) return "presente";
+  if (!value) return "Presente";
   const formatted = new Intl.DateTimeFormat("es-ES", {
     month: "short",
     year: "numeric",
@@ -24,195 +27,139 @@ function formatDate(value: string | null) {
 }
 
 export default async function ExperienciaPage() {
-  const [experiences, education, certifications] = await Promise.all([
-    getExperiences(),
-    getEducation(),
-    getCertifications(),
-  ]);
+  const [experiences, education, certifications] = await Promise.all([getExperiences(), getEducation(), getCertifications()]);
 
   return (
-    <div>
-      <Section className="max-w-4xl pt-16 pb-12 lg:pt-24">
-        <p className="font-mono text-xs text-ink-muted">trayectoria & credenciales</p>
-        <h1 className="mt-4 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">
-          Experiencia, formación y método
-        </h1>
-        <p className="mt-4 max-w-2xl font-body text-base leading-relaxed text-ink-muted">
-          Mi camino combina desarrollo web, soporte operativo de datos, gestión de procesos y formación en Ingeniería de Sistemas. La prioridad es mostrar experiencia real, proyectos verificables y aprendizajes conectados con tecnología.
-        </p>
+    <>
+      <PageHeader
+        index="04"
+        eyebrow="Trayectoria & credenciales"
+        title={
+          <>
+            Experiencia, formación <span className="font-serif">y método</span>
+          </>
+        }
+        lede="Mi camino combina desarrollo web, soporte operativo de datos, gestión de procesos y formación en Ingeniería de Sistemas. La prioridad es mostrar experiencia real, proyectos verificables y aprendizajes conectados con tecnología."
+        notes={[
+          { label: "Cargos", value: String(experiences.length).padStart(2, "0") },
+          { label: "Formación", value: String(education.length).padStart(2, "0") },
+          { label: "Credenciales", value: String(certifications.length).padStart(2, "0") },
+        ]}
+        actions={
+          <>
+            <Link href="/cv" className={buttonVariants({ variant: "signal", size: "lg" })}>
+              <FileText aria-hidden="true" size={15} />
+              <span>Descargar CV en PDF</span>
+            </Link>
+            <Link href="/contacto" className={buttonVariants({ variant: "outline", size: "lg" })}>
+              <span>Contactar</span>
+              <ArrowRight aria-hidden="true" size={15} />
+            </Link>
+          </>
+        }
+      />
 
-        <div className="mt-8 flex flex-wrap gap-4">
-          <Link
-            href="/cv"
-            className="inline-flex items-center gap-2 bg-ink px-5 py-2.5 font-mono text-sm text-paper hover:bg-signal transition-colors"
-          >
-            <FileText size={15} />
-            <span>descargar cv en pdf</span>
-          </Link>
-          <Link
-            href="/contacto"
-            className="inline-flex items-center gap-2 border border-line px-5 py-2.5 font-mono text-sm text-ink hover:border-signal hover:text-signal transition-colors"
-          >
-            <span>contactar</span>
-            <ArrowRight size={14} />
-          </Link>
-        </div>
-      </Section>
-
-      {/* 1. Experiencia Laboral */}
-      <Section className="border-t border-line">
-        <div className="flex items-center gap-2 font-mono text-xs text-signal font-semibold">
-          <Briefcase size={16} />
-          <span>01 / EXPERIENCIA LABORAL</span>
-        </div>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink">
-          Historial profesional
-        </h2>
-
-        <div className="mt-8 border-t border-line divide-y divide-line">
+      {/* 1. Experiencia: línea de tiempo */}
+      <section className="container-x border-t border-line py-24 sm:py-32">
+        <SectionHeading
+          index="01"
+          eyebrow="Experiencia laboral"
+          title={
+            <>
+              Historial <span className="font-serif">profesional</span>
+            </>
+          }
+        />
+        <ol className="relative mt-16 lg:ml-[25%]">
+          <ScrollLine />
           {experiences.map((exp) => (
-            <article key={exp.id} className="py-8">
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="font-mono text-xs text-ink-muted">
+            <li key={exp.id} className="relative pb-16 pl-8 last:pb-0 sm:pl-12">
+              <span aria-hidden="true" className="absolute left-0 top-2 h-2 w-2 -translate-x-[3.5px] bg-signal" />
+              <Reveal>
+                <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">
                   {formatDate(exp.startDate)} — {formatDate(exp.endDate)}
-                </span>
-                <span className="font-mono text-xs text-signal font-medium">
-                  {exp.company}
-                </span>
-              </div>
-
-              <h3 className="mt-2 font-display text-xl font-semibold text-ink">
-                {exp.position}
-              </h3>
-
-              {exp.description && (
-                <p className="mt-3 max-w-2xl font-body text-sm leading-relaxed text-ink-muted">
-                  {exp.description}
+                  <span className="text-signal"> · {exp.company}</span>
                 </p>
-              )}
-
-              {exp.achievements.length > 0 && (
-                <div className="mt-4 border-l-2 border-line pl-4">
-                  <p className="font-mono text-xs text-ink-muted font-medium mb-2">
-                    Responsabilidades clave y resultados:
-                  </p>
-                  <ul className="space-y-1.5 font-body text-xs leading-relaxed text-ink-muted">
+                <h3 className="display display-sm mt-4 text-ink">{exp.position}</h3>
+                {exp.description && <p className="mt-5 max-w-[62ch] leading-relaxed text-ink-muted">{exp.description}</p>}
+                {exp.achievements.length > 0 && (
+                  <ul className="mt-6 max-w-[62ch] space-y-2 border-t border-line pt-5">
                     {exp.achievements.map((ach) => (
-                      <li key={ach} className="flex gap-2">
-                        <span className="font-mono text-signal">+</span>
+                      <li key={ach} className="flex gap-3 text-sm leading-relaxed text-ink">
+                        <span aria-hidden="true" className="font-mono text-signal">
+                          +
+                        </span>
                         <span>{ach}</span>
                       </li>
                     ))}
                   </ul>
-                </div>
-              )}
-            </article>
-          ))}
-        </div>
-      </Section>
-
-      {/* 2. Formación Académica */}
-      <Section id="educacion" className="border-t border-line">
-        <div className="flex items-center gap-2 font-mono text-xs text-signal font-semibold">
-          <GraduationCap size={16} />
-          <span>02 / FORMACIÓN ACADÉMICA</span>
-        </div>
-        <h2 className="mt-2 font-display text-2xl font-semibold text-ink">
-          Educación técnica y universitaria
-        </h2>
-
-        <div className="mt-8 border-t border-line divide-y divide-line">
-          {education.map((item) => (
-            <article key={item.id} className="py-7">
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="font-mono text-xs text-ink-muted">
-                  {formatDate(item.startDate)} — {formatDate(item.endDate)}
-                </span>
-                {item.status && (
-                  <span className="font-mono text-xs text-signal px-2 py-0.5 border border-signal/30 bg-signal-dim/30">
-                    {item.status}
-                  </span>
                 )}
+              </Reveal>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* 2. Formación */}
+      <section id="educacion" className="container-x scroll-mt-20 border-t border-line py-24 sm:py-32">
+        <SectionHeading
+          index="02"
+          eyebrow="Formación académica"
+          title={
+            <>
+              Educación técnica <span className="font-serif">y universitaria</span>
+            </>
+          }
+        />
+        <div className="mt-16 border-t border-line lg:ml-[25%]">
+          {education.map((item) => (
+            <Reveal key={item.id} className="grid grid-cols-1 gap-4 border-b border-line py-8 sm:grid-cols-12 sm:gap-6">
+              <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted sm:col-span-3">
+                {formatDate(item.startDate)} — {formatDate(item.endDate)}
+                {item.status && <span className="mt-2 block text-signal">{item.status}</span>}
+              </p>
+              <div className="sm:col-span-9">
+                <h3 className="display text-[clamp(1.3rem,2.4vw,2.1rem)] leading-tight text-ink">{item.program}</h3>
+                <p className="mt-2 font-serif text-xl italic text-ink-muted">{item.institution}</p>
+                {item.description && <p className="mt-4 max-w-[62ch] text-sm leading-relaxed text-ink-muted">{item.description}</p>}
               </div>
-
-              <h3 className="mt-2 font-display text-lg font-semibold text-ink">
-                {item.program}
-              </h3>
-              <p className="font-display text-sm text-ink-muted">{item.institution}</p>
-
-              {item.description && (
-                <p className="mt-3 max-w-2xl font-body text-xs leading-relaxed text-ink-muted">
-                  {item.description}
-                </p>
-              )}
-            </article>
+            </Reveal>
           ))}
         </div>
-      </Section>
+      </section>
 
       {/* 3. Certificaciones */}
       {certifications.length > 0 && (
-        <Section className="border-t border-line">
-          <div className="flex items-center gap-2 font-mono text-xs text-signal font-semibold">
-            <Award size={16} />
-            <span>03 / CERTIFICACIONES & CREDENCIALES</span>
-          </div>
-          <h2 className="mt-2 font-display text-2xl font-semibold text-ink">
-            Validación de habilidades
-          </h2>
-
-          <div className="mt-6 border-y border-line divide-y divide-line">
+        <section className="container-x border-t border-line py-24 sm:py-32">
+          <SectionHeading
+            index="03"
+            eyebrow="Certificaciones & credenciales"
+            title={
+              <>
+                Validación <span className="font-serif">de habilidades</span>
+              </>
+            }
+          />
+          <ul className="mt-16 border-t border-line lg:ml-[25%]">
             {certifications.map((cert) => (
-              <div
-                key={cert.id}
-                className="flex flex-wrap items-center justify-between gap-4 py-4"
-              >
+              <li key={cert.id} className="flex flex-wrap items-baseline justify-between gap-4 border-b border-line py-5">
                 <div>
-                  <h3 className="font-display text-sm font-semibold text-ink">{cert.name}</h3>
-                  {cert.issuer && (
-                    <p className="font-body text-xs text-ink-muted">{cert.issuer}</p>
-                  )}
+                  <h3 className="font-medium text-ink">{cert.name}</h3>
+                  {cert.issuer && <p className="mt-1 text-sm text-ink-muted">{cert.issuer}</p>}
                 </div>
-                <div className="flex items-center gap-4 font-mono text-xs text-ink-muted">
+                <div className="flex items-center gap-5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">
                   {cert.issueDate && <span>{formatDate(cert.issueDate)}</span>}
                   {cert.credentialUrl && (
-                    <a
-                      href={cert.credentialUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-signal hover:underline"
-                    >
-                      <span>ver credencial</span>
-                      <ExternalLink size={12} />
+                    <a href={cert.credentialUrl} target="_blank" rel="noreferrer" className="link-draw inline-flex items-center gap-1 text-ink">
+                      Ver credencial <ArrowUpRight aria-hidden="true" size={12} />
                     </a>
                   )}
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
-        </Section>
+          </ul>
+        </section>
       )}
-
-      {/* CTA final */}
-      <Section className="border-t border-line pb-28">
-        <div className="bracket-frame border border-line bg-paper/90 p-8 sm:p-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div>
-            <h2 className="font-display text-2xl font-semibold text-ink">
-              ¿Quieres revisar la versión en documento?
-            </h2>
-            <p className="mt-2 font-body text-sm text-ink-muted max-w-md">
-              Descarga la hoja de vida actualizada con datos de contacto directo y resumen de tecnologías.
-            </p>
-          </div>
-          <Link
-            href="/cv"
-            className="inline-flex items-center gap-2 bg-ink px-5 py-2.5 font-mono text-xs text-paper hover:bg-signal transition-colors flex-none"
-          >
-            <FileText size={14} />
-            <span>ir a descarga de cv</span>
-          </Link>
-        </div>
-      </Section>
-    </div>
+    </>
   );
 }

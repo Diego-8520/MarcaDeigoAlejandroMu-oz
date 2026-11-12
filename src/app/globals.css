@@ -102,6 +102,7 @@ html.lenis body {
 }
 
 body {
+  overflow-x: clip;
   background-color: var(--paper);
   color: var(--ink);
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
@@ -137,7 +138,7 @@ body {
 }
 
 .display-xl {
-  font-size: clamp(3.1rem, 12.5vw, 13rem);
+  font-size: clamp(2.6rem, 11vw, 12rem);
 }
 .display-lg {
   font-size: clamp(2.6rem, 8.5vw, 8.5rem);
@@ -255,6 +256,23 @@ body {
   animation: marquee 38s linear infinite;
 }
 
+/* Líneas de flujo del diagrama de arquitectura */
+.flow-line {
+  fill: none;
+  stroke: var(--ink-muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 6;
+  animation: flow 1.2s linear infinite;
+}
+.flow-line--accent {
+  stroke: var(--signal);
+}
+@keyframes flow {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
 @keyframes pulse-dot {
   0%,
   100% {
@@ -290,11 +308,14 @@ body {
   animation: reveal-fallback 0s 2.5s forwards;
 }
 
-.split-line-mask {
+/* SplitText crea "<linesClass>-mask" por línea (el nombre no puede llevar guion:
+   su regex lo trata como separador). Se amplía
+   para no recortar tildes (Ñ, Á) ni descendentes. */
+.splitline-mask {
   display: block;
   overflow: clip;
-  padding-bottom: 0.06em;
-  margin-bottom: -0.06em;
+  padding-block: 0.28em 0.1em;
+  margin-block: -0.28em -0.1em;
 }
 
 /* ------------------------------------------------------------------ */

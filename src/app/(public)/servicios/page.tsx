@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, MessageSquare, Zap } from "lucide-react";
-import { Section, Tag } from "@/components/ui/section";
+import { ArrowRight, MessageSquare, Plus } from "lucide-react";
+import { Tag } from "@/components/ui/section";
+import { buttonVariants } from "@/components/ui/button";
+import { Reveal, SplitReveal } from "@/components/motion/reveal";
+import { PageHeader, SectionHeading } from "@/components/site/page-header";
+import { CONTACT } from "@/lib/site";
 
 export const revalidate = 3600;
 
@@ -34,10 +38,8 @@ const SERVICES = [
     slug: "landing-pages-conversion",
     name: "Landing Pages y Sitios Comerciales",
     badge: "Frontend & SEO",
-    summary:
-      "Páginas comerciales y sitios corporativos enfocados en velocidad, claridad de propuesta y captación de contactos.",
-    problem:
-      "Tu sitio web actual tarda en cargar, se ve mal en teléfonos móviles o recibe visitas pero nadie te contacta ni compra.",
+    summary: "Páginas comerciales y sitios corporativos enfocados en velocidad, claridad de propuesta y captación de contactos.",
+    problem: "Tu sitio web actual tarda en cargar, se ve mal en teléfonos móviles o recibe visitas pero nadie te contacta ni compra.",
     solution:
       "Diseño e implemento páginas de aterrizaje livianas y persuasivas con entrega estática (Next.js, Vite o Astro) que cargan al instante y facilitan el contacto directo por WhatsApp o formulario.",
     deliverables: [
@@ -52,10 +54,8 @@ const SERVICES = [
     slug: "automatizacion-integraciones",
     name: "Integración de APIs y Automatización de Procesos",
     badge: "Integraciones",
-    summary:
-      "Conecto servicios, formularios y bases de datos para reducir tareas manuales y mantener información más consistente.",
-    problem:
-      "Tu equipo pierde horas diarias copiando datos entre hojas de cálculo, sistemas de inventario, correos y plataformas externas.",
+    summary: "Conecto servicios, formularios y bases de datos para reducir tareas manuales y mantener información más consistente.",
+    problem: "Tu equipo pierde horas diarias copiando datos entre hojas de cálculo, sistemas de inventario, correos y plataformas externas.",
     solution:
       "Implemento integraciones con APIs REST, webhooks y scripts de apoyo para mover datos entre herramientas, registrar eventos y disparar notificaciones operativas.",
     deliverables: [
@@ -89,152 +89,137 @@ const FAQS = [
 
 export default function ServiciosPage() {
   return (
-    <div>
-      <Section className="max-w-4xl pt-16 pb-12 lg:pt-24">
-        <p className="font-mono text-xs text-ink-muted">servicios & soluciones</p>
-        <h1 className="mt-4 font-display text-3xl font-semibold text-ink sm:text-4xl lg:text-5xl">
-          Qué puedo construir para tu negocio
-        </h1>
-        <p className="mt-5 max-w-2xl font-body text-base leading-relaxed text-ink-muted">
-          Desarrollo soluciones digitales basadas en tecnologías que ya he aplicado en proyectos reales. Sin prometer capas innecesarias: trato directo, alcance claro y foco en resolver el problema operativo o comercial.
-        </p>
-
-        <div className="mt-8 flex flex-wrap items-center gap-4">
-          <Link
-            href="/contacto"
-            className="inline-flex items-center gap-2 bg-ink px-5 py-2.5 font-mono text-sm text-paper transition-colors hover:bg-signal"
-          >
-            solicitar propuesta o consulta
-            <ArrowRight size={15} />
-          </Link>
-          <a
-            href="https://wa.me/573215150904?text=Hola%20Diego,%20quiero%20consultar%20sobre%20un%20proyecto"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-2 border border-line px-5 py-2.5 font-mono text-sm text-ink transition-colors hover:border-signal hover:text-signal"
-          >
-            <MessageSquare size={15} />
-            <span>escribir al WhatsApp directo</span>
-          </a>
-        </div>
-      </Section>
-
-      {/* Servicios detallados */}
-      <Section className="border-t border-line">
-        <div className="space-y-12">
-          {SERVICES.map((s, idx) => (
-            <article
-              key={s.slug}
-              className="bracket-frame border border-line bg-paper/70 p-6 sm:p-8"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-mono text-xs text-signal font-medium">
-                  0{idx + 1} · {s.badge}
-                </span>
-                <span className="font-mono text-[11px] text-ink-muted">Cali, Colombia · Remoto</span>
-              </div>
-
-              <h2 className="mt-3 font-display text-2xl font-semibold text-ink">
-                {s.name}
-              </h2>
-              <p className="mt-3 font-body text-sm leading-relaxed text-ink-muted max-w-2xl">
-                {s.summary}
-              </p>
-
-              <div className="mt-6 grid gap-6 sm:grid-cols-2 border-t border-line pt-6">
-                <div>
-                  <h3 className="font-mono text-xs uppercase tracking-wider text-ink font-semibold">
-                    El problema habitual
-                  </h3>
-                  <p className="mt-2 font-body text-xs leading-relaxed text-ink-muted">
-                    {s.problem}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="font-mono text-xs uppercase tracking-wider text-ink font-semibold">
-                    La solución que entrego
-                  </h3>
-                  <p className="mt-2 font-body text-xs leading-relaxed text-ink-muted">
-                    {s.solution}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 border-t border-line pt-6">
-                <h3 className="font-mono text-xs uppercase tracking-wider text-ink font-semibold">
-                  Entregables concretos
-                </h3>
-                <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {s.deliverables.map((d) => (
-                    <li key={d} className="flex items-start gap-2 font-body text-xs text-ink-muted">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-signal flex-none mt-0.5" />
-                      <span>{d}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-6 border-t border-line pt-6 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-wrap gap-1.5">
-                  {s.technologies.map((t) => (
-                    <Tag key={t}>{t}</Tag>
-                  ))}
-                </div>
-
-                <Link
-                  href={`/contacto?motivo=servicio&servicio=${s.slug}`}
-                  className="inline-flex items-center gap-1.5 bg-ink px-4 py-2 font-mono text-xs text-paper transition-colors hover:bg-signal"
-                >
-                  <span>cotizar este servicio</span>
-                  <ArrowRight size={13} />
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      </Section>
-
-      {/* Preguntas frecuentes de clientes */}
-      <Section className="border-t border-line">
-        <p className="font-mono text-xs text-ink-muted">claridad</p>
-        <h2 className="mt-1 font-display text-2xl font-semibold text-ink sm:text-3xl">
-          Preguntas frecuentes
-        </h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2">
-          {FAQS.map((faq) => (
-            <div key={faq.q} className="border border-line p-5 bg-surface/70 rounded-sm">
-              <h3 className="font-display text-sm font-semibold text-ink">
-                {faq.q}
-              </h3>
-              <p className="mt-2 font-body text-xs leading-relaxed text-ink-muted">
-                {faq.a}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* CTA final */}
-      <Section className="border-t border-line pb-28">
-        <div className="border border-line bg-paper/90 p-8 sm:p-10 text-center max-w-2xl mx-auto">
-          <Zap className="h-6 w-6 text-signal mx-auto" />
-          <h2 className="mt-3 font-display text-2xl font-semibold text-ink">
-            ¿Tienes un requerimiento específico?
-          </h2>
-          <p className="mt-2 font-body text-sm text-ink-muted leading-relaxed">
-            Hablemos sobre tu idea o sistema. Te respondo personalmente en menos de 24 horas con una opinión técnica honesta y sin compromiso.
-          </p>
-          <div className="mt-6 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/contacto"
-              className="inline-flex items-center gap-2 bg-ink px-5 py-2.5 font-mono text-sm text-paper hover:bg-signal transition-colors"
-            >
-              iniciar conversación
-              <ArrowRight size={14} />
+    <>
+      <PageHeader
+        index="03"
+        eyebrow="Servicios & soluciones"
+        title={
+          <>
+            Qué puedo construir <span className="font-serif">para tu negocio</span>
+          </>
+        }
+        lede="Desarrollo soluciones digitales basadas en tecnologías que ya he aplicado en proyectos reales. Sin prometer capas innecesarias: trato directo, alcance claro y foco en resolver el problema operativo o comercial."
+        notes={[
+          { label: "Modalidad", value: "Remoto · Cali, Colombia" },
+          { label: "Respuesta", value: "Menos de 24 horas" },
+        ]}
+        actions={
+          <>
+            <Link href="/contacto?motivo=servicio" className={buttonVariants({ variant: "signal", size: "lg" })}>
+              <span>Solicitar propuesta</span>
+              <ArrowRight aria-hidden="true" size={15} />
             </Link>
+            <a
+              href={CONTACT.whatsappUrl("Hola Diego, quiero consultar sobre un proyecto")}
+              target="_blank"
+              rel="noreferrer"
+              className={buttonVariants({ variant: "outline", size: "lg" })}
+            >
+              <MessageSquare aria-hidden="true" size={15} />
+              <span>WhatsApp directo</span>
+            </a>
+          </>
+        }
+      />
+
+      {/* Servicios: filas numeradas gigantes */}
+      <section aria-label="Servicios" className="border-t border-line">
+        {SERVICES.map((s, i) => (
+          <article key={s.slug} id={s.slug} className="container-x scroll-mt-24 border-b border-line py-20 sm:py-28">
+            <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-6">
+              <div className="lg:col-span-3">
+                <div className="lg:sticky lg:top-[calc(var(--header-h)+2rem)]">
+                  <span className="display block text-[clamp(5rem,12vw,11rem)] leading-[0.8] text-signal">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <p className="eyebrow mt-4">{s.badge}</p>
+                </div>
+              </div>
+
+              <div className="lg:col-span-9">
+                <SplitReveal className="display display-md text-ink">{s.name}</SplitReveal>
+                <Reveal>
+                  <p className="lede mt-8 max-w-[60ch]">{s.summary}</p>
+                </Reveal>
+
+                <Reveal stagger className="mt-14 grid grid-cols-1 gap-px bg-line sm:grid-cols-2">
+                  <div className="bg-paper py-6 sm:pr-8">
+                    <h3 className="eyebrow">El problema habitual</h3>
+                    <p className="mt-3 leading-relaxed text-ink">{s.problem}</p>
+                  </div>
+                  <div className="bg-paper py-6 sm:pl-8">
+                    <h3 className="eyebrow text-signal">La solución que entrego</h3>
+                    <p className="mt-3 leading-relaxed text-ink">{s.solution}</p>
+                  </div>
+                </Reveal>
+
+                <div className="mt-12 grid grid-cols-1 gap-10 border-t border-line pt-8 lg:grid-cols-9">
+                  <div className="lg:col-span-5">
+                    <h3 className="eyebrow">Entregables concretos</h3>
+                    <ul className="mt-4 space-y-3">
+                      {s.deliverables.map((d) => (
+                        <li key={d} className="flex gap-3 text-ink">
+                          <span aria-hidden="true" className="font-mono text-signal">
+                            +
+                          </span>
+                          <span>{d}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="flex flex-col justify-between gap-8 lg:col-span-4">
+                    <div className="flex flex-wrap gap-1.5">
+                      {s.technologies.map((t) => (
+                        <Tag key={t}>{t}</Tag>
+                      ))}
+                    </div>
+                    <Link
+                      href={`/contacto?motivo=servicio&servicio=${s.slug}`}
+                      className={buttonVariants({ variant: "primary", size: "lg", className: "self-start" })}
+                    >
+                      <span>Cotizar este servicio</span>
+                      <ArrowRight aria-hidden="true" size={15} />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      {/* Preguntas frecuentes */}
+      <section className="container-x py-24 sm:py-32">
+        <SectionHeading
+          index="FAQ"
+          eyebrow="Claridad antes de empezar"
+          title={
+            <>
+              Preguntas <span className="font-serif">frecuentes</span>
+            </>
+          }
+        />
+        <div className="mt-14 grid grid-cols-1 lg:grid-cols-12">
+          <div className="border-t border-line lg:col-span-9 lg:col-start-4">
+            {FAQS.map((faq) => (
+              <details key={faq.q} className="group border-b border-line">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 [&::-webkit-details-marker]:hidden">
+                  <span className="display text-[clamp(1.15rem,2vw,1.7rem)] leading-tight text-ink transition-colors group-hover:text-signal">
+                    {faq.q}
+                  </span>
+                  <Plus
+                    aria-hidden="true"
+                    size={22}
+                    strokeWidth={1.5}
+                    className="flex-none text-ink-muted transition-transform duration-500 ease-expo group-open:rotate-45 group-open:text-signal"
+                  />
+                </summary>
+                <p className="max-w-[64ch] pb-8 leading-relaxed text-ink-muted">{faq.a}</p>
+              </details>
+            ))}
           </div>
         </div>
-      </Section>
-    </div>
+      </section>
+    </>
   );
 }

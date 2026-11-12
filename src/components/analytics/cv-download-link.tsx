@@ -1,8 +1,14 @@
 "use client";
 
-import { trackEvent } from "@/lib/analytics/track";
 import { Download } from "lucide-react";
+import { trackEvent } from "@/lib/analytics/track";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
+/**
+ * Enlace de descarga del CV que registra el evento `cv_download`.
+ * `hero` es la versión tipográfica gigante de la página /cv.
+ */
 export function CvDownloadLink({
   href,
   label = "descargar cv (pdf)",
@@ -13,17 +19,14 @@ export function CvDownloadLink({
   href: string;
   label?: string;
   cvId?: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "hero";
   className?: string;
 }) {
   const handleClick = () => {
-    trackEvent("cv_download", "/cv", {
-      cvId,
-      label,
-    });
+    trackEvent("cv_download", "/cv", { cvId, label });
   };
 
-  if (variant === "secondary") {
+  if (variant === "hero") {
     return (
       <a
         href={href}
@@ -31,10 +34,14 @@ export function CvDownloadLink({
         rel="noopener noreferrer"
         download
         onClick={handleClick}
-        className={`inline-flex items-center gap-2 border border-line px-4 py-2 font-mono text-xs text-ink transition-colors hover:border-signal hover:text-signal ${className}`}
+        className={cn("group flex items-end justify-between gap-6 border-b-2 border-ink pb-4 hover:border-signal", className)}
       >
-        <Download className="h-3.5 w-3.5" />
-        <span>{label}</span>
+        <span className="display text-[clamp(2.2rem,7vw,7rem)] text-ink transition-colors group-hover:text-signal">{label}</span>
+        <Download
+          aria-hidden="true"
+          strokeWidth={1.25}
+          className="h-10 w-10 flex-none text-ink transition-transform duration-500 ease-expo group-hover:translate-y-1 group-hover:text-signal sm:h-16 sm:w-16"
+        />
       </a>
     );
   }
@@ -46,9 +53,9 @@ export function CvDownloadLink({
       rel="noopener noreferrer"
       download
       onClick={handleClick}
-      className={`inline-flex items-center gap-2 bg-ink px-5 py-2.5 font-mono text-sm text-paper transition-colors hover:bg-signal ${className}`}
+      className={buttonVariants({ variant: variant === "secondary" ? "outline" : "primary", size: variant === "secondary" ? "sm" : "lg", className })}
     >
-      <Download className="h-4 w-4" />
+      <Download aria-hidden="true" className="h-3.5 w-3.5" />
       <span>{label}</span>
     </a>
   );

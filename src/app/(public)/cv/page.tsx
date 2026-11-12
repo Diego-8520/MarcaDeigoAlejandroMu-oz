@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileText, ArrowRight, ExternalLink, Mail, CheckCircle2 } from "lucide-react";
-import { Section } from "@/components/ui/section";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { ArrowRight, ArrowUpRight, Mail } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 import { CvDownloadLink } from "@/components/analytics/cv-download-link";
-import { getVisibleCvDocuments } from "@/lib/data/cv-queries";
 import { LinkedinIcon } from "@/components/ui/icons";
+import { Reveal } from "@/components/motion/reveal";
+import { PageHeader } from "@/components/site/page-header";
+import { getVisibleCvDocuments } from "@/lib/data/cv-queries";
+import { CONTACT } from "@/lib/site";
 
 export const revalidate = 60;
 
@@ -30,148 +31,138 @@ export default async function CvPage() {
   const secondaryCvs = visibleDocuments.slice(1);
 
   return (
-    <Section className="max-w-4xl pt-16 pb-24 lg:pt-24">
-      <div className="flex items-center gap-2 font-mono text-xs text-signal-light font-semibold">
-        <span className="h-1.5 w-1.5 rounded-full bg-signal" />
-        <span>DOCUMENTO VERIFICADO</span>
-      </div>
+    <>
+      <PageHeader
+        index="06"
+        eyebrow="Documento verificado"
+        title={
+          <>
+            Hoja de vida <span className="font-serif">&amp; credenciales</span>
+          </>
+        }
+        lede="Perfil profesional actualizado de Diego Alejandro Muñoz. Acceso a visualización directa en navegador y descarga de documento PDF para reclutadores y líderes técnicos."
+        notes={[
+          { label: "Ubicación", value: "Cali, Colombia" },
+          { label: "Correo", value: CONTACT.email },
+          { label: "Teléfono", value: CONTACT.phoneDisplay },
+          {
+            label: "Estado",
+            value: (
+              <span className="inline-flex items-center gap-2 text-emerald">
+                <span aria-hidden="true" className="pulse-dot h-1.5 w-1.5 rounded-full bg-emerald" />
+                Activo
+              </span>
+            ),
+          },
+        ]}
+      />
 
-      <h1 className="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-ink">
-        Hoja de vida & credenciales
-      </h1>
-      <p className="mt-4 max-w-xl font-body text-base text-ink-muted leading-relaxed">
-        Perfil profesional actualizado de Diego Alejandro Muñoz. Acceso a visualización directa en navegador y descarga de documento PDF para reclutadores y líderes técnicos.
-      </p>
-
-      {/* Resumen ejecutivo en pantalla (Accesible de inmediato sin descargar) */}
-      <div className="mt-10 border border-line bg-surface/70 p-6 sm:p-8 rounded-sm">
-        <div className="flex items-center justify-between pb-4 border-b border-line/60">
-          <div>
-            <h2 className="font-display text-lg font-semibold text-ink">
-              Resumen Ejecutivo para Reclutadores
-            </h2>
-            <p className="font-mono text-xs text-ink-subtle mt-0.5">
-              Cali, Colombia · diego_8520@outlook.com · +57 321 515 0904
-            </p>
+      {/* Documento: resumen ejecutivo como una hoja impresa */}
+      <section className="container-x border-t border-line py-20 sm:py-28">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-6">
+          <div className="lg:col-span-3">
+            <p className="eyebrow">Resumen ejecutivo para reclutadores</p>
           </div>
-          <Badge variant="live" dot>Activo</Badge>
+          <Reveal as="ol" stagger className="border-t border-line lg:col-span-9">
+            {EXECUTIVE_HIGHLIGHTS.map((h, i) => (
+              <li key={h} className="grid grid-cols-12 gap-4 border-b border-line py-6">
+                <span className="col-span-2 font-mono text-xs text-signal sm:col-span-1">{String(i + 1).padStart(2, "0")}</span>
+                <span className="col-span-10 text-lg leading-relaxed text-ink sm:col-span-11">{h}</span>
+              </li>
+            ))}
+          </Reveal>
         </div>
+      </section>
 
-        <ul className="mt-5 space-y-2.5 font-body text-xs sm:text-sm text-ink-muted">
-          {EXECUTIVE_HIGHLIGHTS.map((h) => (
-            <li key={h} className="flex items-start gap-2.5">
-              <CheckCircle2 size={15} className="text-signal-light flex-none mt-0.5" />
-              <span>{h}</span>
-            </li>
-          ))}
-        </ul>
-
-        {/* Acciones de descarga o fallback */}
-        <div className="mt-8 pt-6 border-t border-line/60 flex flex-wrap items-center gap-4">
+      {/* Descarga */}
+      <section className="border-t border-line bg-surface">
+        <div className="container-x py-16 sm:py-24">
           {primaryCv ? (
-            <>
-              <CvDownloadLink
-                href={primaryCv.downloadUrl}
-                label="Descargar CV en PDF"
-                cvId={primaryCv.id}
-                variant="primary"
-              />
-              <a
-                href={primaryCv.downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 font-mono text-xs text-ink-muted hover:text-signal transition-colors py-2 px-3 border border-line rounded-sm"
-              >
-                <ExternalLink size={13} />
-                <span>Abrir PDF en pestaña nueva</span>
-              </a>
-            </>
+            <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-12 lg:gap-6">
+              <div className="lg:col-span-8">
+                <p className="eyebrow">{primaryCv.label}</p>
+                <CvDownloadLink
+                  href={primaryCv.downloadUrl}
+                  label="Descargar CV en PDF"
+                  cvId={primaryCv.id}
+                  variant="hero"
+                  className="mt-6"
+                />
+              </div>
+              <div className="lg:col-span-4 lg:justify-self-end">
+                <a
+                  href={primaryCv.downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-draw inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.08em] text-ink"
+                >
+                  Abrir PDF en pestaña nueva <ArrowUpRight aria-hidden="true" size={13} />
+                </a>
+              </div>
+            </div>
           ) : (
-            <div className="flex flex-wrap items-center gap-3">
-              <a
-                href="mailto:diego_8520@outlook.com?subject=Solicitud%20de%20CV%20-%20Diego%20Mu%C3%B1oz"
-                className="inline-flex items-center gap-2 bg-ink text-paper px-4 py-2 font-mono text-xs hover:bg-signal transition-colors rounded-sm"
-              >
-                <Mail size={13} />
-                <span>Solicitar copia directa por correo</span>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/dalejandromunoz"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 border border-line text-ink px-4 py-2 font-mono text-xs hover:border-signal hover:text-signal transition-colors rounded-sm"
-              >
-                <LinkedinIcon className="w-3.5 h-3.5" />
-                <span>Ver perfil en LinkedIn</span>
-              </a>
+            <div className="flex flex-col gap-6">
+              <p className="eyebrow">El documento se está actualizando</p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={`mailto:${CONTACT.email}?subject=${encodeURIComponent("Solicitud de CV - Diego Muñoz")}`}
+                  className={buttonVariants({ variant: "signal", size: "lg" })}
+                >
+                  <Mail aria-hidden="true" size={15} />
+                  <span>Solicitar copia por correo</span>
+                </a>
+                <a href={CONTACT.linkedin} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", size: "lg" })}>
+                  <LinkedinIcon className="h-4 w-4" />
+                  <span>Ver perfil en LinkedIn</span>
+                </a>
+              </div>
+            </div>
+          )}
+
+          {secondaryCvs.length > 0 && (
+            <div className="mt-16 border-t border-line pt-8">
+              <p className="eyebrow">Otras versiones de documento</p>
+              <ul className="mt-6">
+                {secondaryCvs.map((cv) => (
+                  <li key={cv.id} className="flex flex-wrap items-center justify-between gap-4 border-b border-line py-4">
+                    <span className="text-ink">{cv.label}</span>
+                    <span className="flex items-center gap-5">
+                      <CvDownloadLink href={cv.downloadUrl} label="Descargar" cvId={cv.id} variant="secondary" />
+                      <a
+                        href={cv.downloadUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link-draw font-mono text-xs uppercase tracking-[0.08em] text-ink-muted hover:text-ink"
+                      >
+                        Ver
+                      </a>
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* Otras versiones disponibles si existen */}
-      {secondaryCvs.length > 0 && (
-        <div className="mt-10">
-          <h3 className="font-mono text-xs uppercase tracking-wider text-ink-muted font-semibold">
-            Otras versiones de documento
-          </h3>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {secondaryCvs.map((cv) => (
-              <div
-                key={cv.id}
-                className="flex flex-col justify-between border border-line bg-surface/50 p-5 rounded-sm"
-              >
-                <div>
-                  <div className="flex items-center gap-2 text-ink-muted">
-                    <FileText className="h-4 w-4 text-signal-light" />
-                    <span className="font-mono text-[11px]">PDF Oficial</span>
-                  </div>
-                  <h4 className="mt-2 font-display text-sm font-semibold text-ink">
-                    {cv.label}
-                  </h4>
-                </div>
-
-                <div className="mt-5 flex items-center gap-3 pt-3 border-t border-line/40">
-                  <CvDownloadLink
-                    href={cv.downloadUrl}
-                    label="Descargar"
-                    cvId={cv.id}
-                    variant="secondary"
-                  />
-                  <a
-                    href={cv.downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 font-mono text-xs text-ink-muted hover:text-signal"
-                  >
-                    <ExternalLink size={12} />
-                    <span>Ver</span>
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* CTA final para recruiter */}
-      <div className="mt-16 border-t border-line pt-10">
-        <div className="bracket-frame border border-line bg-surface/80 p-8 rounded-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div>
-            <h3 className="font-display text-xl font-bold text-ink">
-              ¿Listo para agendar una entrevista técnica?
-            </h3>
-            <p className="mt-1 font-body text-xs sm:text-sm text-ink-muted max-w-md leading-relaxed">
+      <section className="container-x py-16 sm:py-20">
+        <div className="grid grid-cols-1 items-end gap-8 lg:grid-cols-12">
+          <div className="lg:col-span-7 lg:col-start-4">
+            <h2 className="display display-sm text-ink">
+              ¿Listo para agendar una <span className="font-serif">entrevista técnica?</span>
+            </h2>
+            <p className="mt-4 max-w-[56ch] text-ink-muted">
               Escríbeme para coordinar una llamada o revisar requerimientos específicos de tu equipo.
             </p>
           </div>
-          <Link href="/contacto?motivo=empleo">
-            <Button variant="signal" size="md" rightIcon={<ArrowRight size={14} />}>
-              Agendar o Contactar
-            </Button>
-          </Link>
+          <div className="lg:col-span-2 lg:justify-self-end">
+            <Link href="/contacto?motivo=empleo" className={buttonVariants({ variant: "primary", size: "lg" })}>
+              <span>Agendar o contactar</span>
+              <ArrowRight aria-hidden="true" size={15} />
+            </Link>
+          </div>
         </div>
-      </div>
-    </Section>
+      </section>
+    </>
   );
 }

@@ -31,6 +31,7 @@ export function SplitReveal({ as: Tag = "h2", children, className, delay = 0, im
       const split = SplitText.create(el, {
         type: "lines",
         mask: "lines",
+        linesClass: "splitline",
         autoSplit: true,
         onSplit(self) {
           el.dataset.revealReady = "";

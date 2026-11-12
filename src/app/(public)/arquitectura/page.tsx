@@ -1,148 +1,160 @@
 import type { Metadata } from "next";
-import { Section, Tag } from "@/components/ui/section";
+import { Reveal } from "@/components/motion/reveal";
+import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { readTechStack } from "@/lib/data/tech-stack";
 
 export const metadata: Metadata = {
   title: "Arquitectura — Diego Alejandro Muñoz",
-  description:
-    "Cómo está construido diegoalejandromunoz.com: decisiones de arquitectura, datos, automatización y diseño.",
+  description: "Cómo está construido diegoalejandromunoz.com: decisiones de arquitectura, datos, automatización y diseño.",
 };
+
+/** Diagrama del flujo de datos. Las líneas discontinuas "fluyen" con una animación CSS. */
+function FlowDiagram() {
+  const nodes = [
+    { x: 20, label: "Visitante", sub: "navegador" },
+    { x: 270, label: "Next.js 16", sub: "App Router · RSC" },
+    { x: 520, label: "Supabase", sub: "Postgres · Auth · Storage" },
+  ];
+  return (
+    <figure className="overflow-x-auto border-y border-line py-10">
+      <svg viewBox="0 0 760 260" role="img" aria-labelledby="flow-title" className="min-w-[640px] w-full">
+        <title id="flow-title">Flujo: visitante hacia Next.js App Router hacia Supabase; el dashboard escribe mediante Server Actions.</title>
+        {nodes.map((n) => (
+          <g key={n.label}>
+            <rect x={n.x} y={40} width={220} height={80} fill="var(--surface)" stroke="var(--line-focus)" />
+            <text x={n.x + 16} y={74} fill="var(--ink)" fontFamily="var(--font-archivo)" fontWeight={800} fontSize={20} style={{ fontStretch: "125%" }}>
+              {n.label.toUpperCase()}
+            </text>
+            <text x={n.x + 16} y={100} fill="var(--ink-muted)" fontFamily="var(--font-jetbrains-mono)" fontSize={11}>
+              {n.sub}
+            </text>
+          </g>
+        ))}
+        <path d="M240 80 H270" className="flow-line" />
+        <path d="M490 80 H520" className="flow-line" />
+        {/* Ruta privada: dashboard → Server Actions → Supabase */}
+        <rect x={270} y={170} width={220} height={60} fill="none" stroke="var(--signal)" strokeDasharray="2 4" />
+        <text x={286} y={198} fill="var(--signal)" fontFamily="var(--font-jetbrains-mono)" fontSize={12}>
+          dashboard · Server Actions
+        </text>
+        <text x={286} y={216} fill="var(--ink-muted)" fontFamily="var(--font-jetbrains-mono)" fontSize={10}>
+          sesión verificada · cliente admin
+        </text>
+        <path d="M380 120 V170" className="flow-line" />
+        <path d="M490 200 H630 V120" className="flow-line flow-line--accent" />
+      </svg>
+    </figure>
+  );
+}
 
 export default function ArquitecturaPage() {
   const stack = readTechStack();
 
   return (
-    <div>
-      <Section className="max-w-4xl pt-16 pb-14 lg:pt-24">
-        <p className="font-mono text-xs text-ink-muted">arquitectura</p>
-        <h1 className="mt-4 max-w-3xl font-display text-3xl font-semibold leading-tight text-ink sm:text-5xl">
-          Cómo está construido este sitio
-        </h1>
-        <p className="mt-6 max-w-2xl font-body text-base leading-relaxed text-ink-muted">
-          Este portafolio también es un producto: tiene un dashboard privado,
-          contenido gestionable, analítica propia y automatizaciones para
-          reducir trabajo repetitivo. Aquí explico las decisiones que lo hacen
-          funcionar.
-        </p>
+    <>
+      <PageHeader
+        index="07"
+        eyebrow="Arquitectura"
+        title={
+          <>
+            Cómo está construido <span className="font-serif">este sitio</span>
+          </>
+        }
+        lede="Este portafolio también es un producto: tiene un dashboard privado, contenido gestionable, analítica propia y automatizaciones para reducir trabajo repetitivo. Aquí explico las decisiones que lo hacen funcionar."
+      />
 
-        <div className="bracket-frame mt-10 border border-line bg-surface/80 p-5 font-mono text-xs leading-loose text-ink-muted sm:p-6 rounded-sm">
-          <p>
-            <span className="text-signal">visitante</span> → Next.js App Router
-          </p>
-          <p className="pl-8">→ Supabase: Postgres · Auth · Storage</p>
-          <p className="pl-16">
-            → Server Actions · dashboard · analítica propia
-          </p>
-        </div>
-      </Section>
+      <section className="container-x pb-8">
+        <FlowDiagram />
+      </section>
 
-      <Section className="border-t border-line">
-        <p className="font-mono text-xs text-ink-muted">01 / stack</p>
-        <h2 className="mt-3 font-display text-2xl font-semibold text-ink">
-          Las piezas reales
-        </h2>
-        <p className="mt-4 max-w-2xl font-body text-sm leading-relaxed text-ink-muted">
-          Las versiones se leen directamente del package.json de este proyecto,
-          por lo que esta lista refleja la instalación actual en cada build.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-2">
+      <section className="container-x py-24 sm:py-32">
+        <SectionHeading
+          index="01"
+          eyebrow="Stack"
+          title={
+            <>
+              Las piezas <span className="font-serif">reales</span>
+            </>
+          }
+          aside={
+            <p className="lede max-w-[60ch]">
+              Las versiones se leen directamente del package.json de este proyecto, por lo que esta lista refleja la instalación actual en
+              cada build.
+            </p>
+          }
+        />
+        <Reveal as="ul" stagger className="mt-14 grid grid-cols-1 border-t border-line sm:grid-cols-2 lg:ml-[25%] lg:grid-cols-3">
           {stack.map((technology) => (
-            <span
-              key={technology.packageName}
-              className="inline-flex items-center gap-2 border border-line px-2.5 py-1 font-mono text-xs text-ink"
-            >
-              <Tag>{technology.name}</Tag>
-              <span className="text-ink-muted">{technology.version}</span>
-            </span>
+            <li key={technology.packageName} className="flex items-baseline justify-between gap-4 border-b border-line py-4 sm:pr-6">
+              <span className="text-ink">{technology.name}</span>
+              <span className="font-mono text-xs text-signal">{technology.version}</span>
+            </li>
           ))}
-        </div>
-      </Section>
+        </Reveal>
+      </section>
 
-      <Section className="border-t border-line">
-        <p className="font-mono text-xs text-ink-muted">
-          02 / arquitectura de datos
-        </p>
-        <h2 className="mt-3 font-display text-2xl font-semibold text-ink">
-          Contenido público, administración privada
-        </h2>
-        <div className="mt-5 max-w-2xl space-y-4 font-body text-sm leading-relaxed text-ink-muted">
-          <p>
-            Supabase concentra PostgreSQL, autenticación y Storage. Las tablas
-            de contenido público tienen políticas RLS de lectura; los datos que
-            no deben exponerse, como los contactos y los eventos de analítica,
-            solo se consultan desde el servidor administrativo.
-          </p>
-          <p>
-            Las escrituras del dashboard pasan por Server Actions que verifican
-            la sesión y usan el cliente de administración en el servidor. Así el
-            navegador nunca recibe credenciales privilegiadas y la interfaz
-            pública solo obtiene los datos que sus políticas permiten leer.
-          </p>
-        </div>
-      </Section>
-
-      <Section className="border-t border-line">
-        <p className="font-mono text-xs text-ink-muted">
-          03 / automatizaciones
-        </p>
-        <h2 className="mt-3 font-display text-2xl font-semibold text-ink">
-          Menos copiar y pegar
-        </h2>
-        <p className="mt-5 max-w-2xl font-body text-sm leading-relaxed text-ink-muted">
-          Al editar un proyecto, el dashboard puede consultar la metadata de su
-          repositorio de GitHub y de su sitio en vivo. El título, la
-          descripción, las tecnologías detectadas y la imagen Open Graph sirven
-          como punto de partida para el contenido del proyecto, sin sustituir la
-          revisión de Diego. Es una integración concreta de APIs para reducir
-          trabajo manual.
-        </p>
-      </Section>
-
-      <Section className="border-t border-line">
-        <p className="font-mono text-xs text-ink-muted">
-          04 / decisiones de diseño
-        </p>
-        <h2 className="mt-3 font-display text-2xl font-semibold text-ink">
-          Una interfaz con intención
-        </h2>
-        <div className="mt-5 max-w-2xl space-y-4 font-body text-sm leading-relaxed text-ink-muted">
-          <p>
-            La paleta ink/paper/signal y los bordes finos hacen que el contenido
-            sea el protagonista. Los bloques bracket-frame aparecen donde ayudan
-            a agrupar una idea, no como decoración repetida ni como una
-            colección de tarjetas genéricas.
-          </p>
-          <p>
-            La tipografía tiene funciones distintas: Space Grotesk construye la
-            jerarquía, IBM Plex Mono identifica datos, rutas y estados, y Work
-            Sans mantiene cómoda la lectura de párrafos largos. Esa separación
-            hace que un proyecto, un estado del dashboard y una explicación se
-            perciban como cosas diferentes.
-          </p>
-          <p>
-            Se evitó una plantilla de portafolio intercambiable. La interfaz
-            comparte el lenguaje de una herramienta de trabajo porque el sitio
-            demuestra el sistema que Diego también construiría para otra
-            persona: contenido editable, estados claros y decisiones visibles.
-          </p>
-        </div>
-      </Section>
-
-      <Section className="border-t border-line pb-28">
-        <p className="font-mono text-xs text-ink-muted">
-          05 / analítica propia
-        </p>
-        <h2 className="mt-3 font-display text-2xl font-semibold text-ink">
-          Medir sin entregar el dato principal
-        </h2>
-        <p className="mt-5 max-w-2xl font-body text-sm leading-relaxed text-ink-muted">
-          El dashboard registra page views, sesiones, proyectos vistos,
-          descargas de CV y contactos en Supabase, y los agrupa por página,
-          procedencia, país y dispositivo. El core del dato vive en el propio
-          proyecto, sin depender de Google Analytics; Vercel Web Analytics se
-          usa como complemento para Web Vitals y señales de rendimiento.
-        </p>
-      </Section>
-    </div>
+      {[
+        {
+          index: "02",
+          eyebrow: "Arquitectura de datos",
+          title: (
+            <>
+              Contenido público, <span className="font-serif">administración privada</span>
+            </>
+          ),
+          body: [
+            "Supabase concentra PostgreSQL, autenticación y Storage. Las tablas de contenido público tienen políticas RLS de lectura; los datos que no deben exponerse, como los contactos y los eventos de analítica, solo se consultan desde el servidor administrativo.",
+            "Las escrituras del dashboard pasan por Server Actions que verifican la sesión y usan el cliente de administración en el servidor. Así el navegador nunca recibe credenciales privilegiadas y la interfaz pública solo obtiene los datos que sus políticas permiten leer.",
+          ],
+        },
+        {
+          index: "03",
+          eyebrow: "Automatizaciones",
+          title: (
+            <>
+              Menos copiar <span className="font-serif">y pegar</span>
+            </>
+          ),
+          body: [
+            "Al editar un proyecto, el dashboard puede consultar la metadata de su repositorio de GitHub y de su sitio en vivo. El título, la descripción, las tecnologías detectadas y la imagen Open Graph sirven como punto de partida para el contenido del proyecto, sin sustituir la revisión de Diego. Es una integración concreta de APIs para reducir trabajo manual.",
+          ],
+        },
+        {
+          index: "04",
+          eyebrow: "Decisiones de diseño",
+          title: (
+            <>
+              Ingeniería <span className="font-serif">en tinta</span>
+            </>
+          ),
+          body: [
+            "La interfaz se plantea como una revista de diseño impresa por un ingeniero: la tipografía es la protagonista, las estructuras se marcan con reglas finas y la información técnica vive en notas al margen. No hay tarjetas genéricas ni gradientes decorativos.",
+            "Tres familias con funciones distintas: Archivo, con su eje de ancho variable, construye titulares expandidos que se ensanchan al interactuar; Instrument Serif en cursiva aporta el contraste editorial; JetBrains Mono identifica datos, índices y estados. El color de acento cambia según quién visita: lima para empresas, naranja para clientes.",
+            "El movimiento usa GSAP y Lenis para revelados y scroll horizontal, y las transiciones entre páginas usan la View Transitions API nativa. Todo respeta prefers-reduced-motion: sin animación, el contenido se muestra completo desde el servidor.",
+          ],
+        },
+        {
+          index: "05",
+          eyebrow: "Analítica propia",
+          title: (
+            <>
+              Medir sin entregar <span className="font-serif">el dato principal</span>
+            </>
+          ),
+          body: [
+            "El dashboard registra page views, sesiones, proyectos vistos, descargas de CV y contactos en Supabase, y los agrupa por página, procedencia, país y dispositivo. El core del dato vive en el propio proyecto, sin depender de Google Analytics; Vercel Web Analytics se usa como complemento para Web Vitals y señales de rendimiento.",
+          ],
+        },
+      ].map((block) => (
+        <section key={block.index} className="container-x border-t border-line py-24 sm:py-32">
+          <SectionHeading index={block.index} eyebrow={block.eyebrow} title={block.title} />
+          <Reveal className="prose-editorial mt-12 space-y-5 text-lg leading-relaxed text-ink-muted lg:ml-[25%]">
+            {block.body.map((p) => (
+              <p key={p.slice(0, 32)}>{p}</p>
+            ))}
+          </Reveal>
+        </section>
+      ))}
+    </>
   );
 }
