@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { GoogleTagManager } from "@next/third-parties/google";
 import {
   HOME_DESCRIPTION,
   HOME_OG_DESCRIPTION,
@@ -111,12 +110,8 @@ const jsonLd = {
   ],
 };
 
-// GA4 (G-2QBM904L7R) se configura dentro del contenedor de GTM: no se añade
-// gtag.js ni el ID de medición aquí para no duplicar page views.
-const GTM_ID = "GTM-TBMRZW9Z";
-// Solo producción de Vercel, para no mezclar tráfico de local y previews en GA4.
-// Para probar en local: GTM_ENABLED=true en .env.local.
-const gtmEnabled = process.env.VERCEL_ENV === "production" || process.env.GTM_ENABLED === "true";
+// Google Tag Manager se carga en src/app/(public)/layout.tsx, no aquí,
+// para que panel y login no envíen datos a GA4.
 
 export default function RootLayout({
   children,
@@ -133,7 +128,6 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: motionBootScript }} />
       </head>
-      {gtmEnabled && <GoogleTagManager gtmId={GTM_ID} />}
       <body className="min-h-full bg-paper text-ink">
         <script
           type="application/ld+json"

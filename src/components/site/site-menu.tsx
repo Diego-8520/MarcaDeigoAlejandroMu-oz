@@ -180,9 +180,10 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
             </ul>
             <div data-menu-meta className="flex items-center justify-between border-t border-line pt-4 font-mono text-[10px] uppercase tracking-[0.08em] text-ink-subtle">
               <span>Atajos: / menú · G rejilla</span>
-              <Link href="/login" onClick={onClose} aria-label="Acceso administrativo privado" className="hover:text-ink">
+              {/* Carga completa (no <Link>): el documento del login no hereda GTM del sitio público. */}
+              <a href="/login" aria-label="Acceso administrativo privado" className="hover:text-ink">
                 <LogIn size={12} aria-hidden="true" />
-              </Link>
+              </a>
             </div>
           </div>
         </aside>
