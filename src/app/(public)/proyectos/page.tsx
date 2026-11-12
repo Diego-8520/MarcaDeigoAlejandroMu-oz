@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getPublishedProjects } from "@/lib/data/projects-queries";
@@ -8,11 +9,12 @@ import { buttonVariants } from "@/components/ui/button";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Proyectos y Casos de Estudio",
   description:
     "Catálogo de aplicaciones web, e-commerce, herramientas interactivas e integraciones desarrolladas por Diego Alejandro Muñoz.",
-};
+  path: "/proyectos",
+});
 
 export default async function ProyectosPage() {
   const projects = await getPublishedProjects();

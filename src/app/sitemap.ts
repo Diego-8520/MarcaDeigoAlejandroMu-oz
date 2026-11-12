@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getPublishedProjects } from "@/lib/data/projects-queries";
+import { SITE_URL } from "@/lib/seo";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://diegoalejandromunoz.com";
+  const baseUrl = SITE_URL;
 
   let projectRoutes: MetadataRoute.Sitemap = [];
   try {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArrowRight, MessageSquare, Plus } from "lucide-react";
 import { Tag } from "@/components/ui/section";
@@ -9,11 +10,12 @@ import { CONTACT } from "@/lib/site";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Servicios de Desarrollo Web & Automatización",
   description:
     "Soluciones digitales prácticas: aplicaciones web, paneles administrativos, landing pages e integración de APIs para negocios y proyectos en crecimiento.",
-};
+  path: "/servicios",
+});
 
 const SERVICES = [
   {

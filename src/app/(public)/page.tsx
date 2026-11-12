@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { HOME_DESCRIPTION, HOME_OG_DESCRIPTION, HOME_OG_TITLE, HOME_TITLE, pageMetadata } from "@/lib/seo";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { getPublishedProjects } from "@/lib/data/projects-queries";
 import { getExperiences } from "@/lib/data/experiences-queries";
@@ -16,6 +18,14 @@ import { TestimonialCarousel } from "@/components/site/testimonial-carousel";
 import { CaliClock } from "@/components/site/cali-clock";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = pageMetadata({
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  path: "/",
+  absoluteTitle: true,
+  openGraph: { title: HOME_OG_TITLE, description: HOME_OG_DESCRIPTION },
+});
 
 const CAPABILITIES: Capability[] = [
   {

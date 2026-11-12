@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { ProfileLinkIcon } from "@/components/profile/profile-link-icon";
 import { Reveal, SplitReveal } from "@/components/motion/reveal";
@@ -8,10 +9,11 @@ import { getSkills } from "@/lib/data/skills-queries";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Sobre Diego Alejandro Muñoz — Historia, Enfoque & Principios",
   description: "De la gestión de procesos y datos operativos al desarrollo web con Next.js, React, TypeScript y Supabase.",
-};
+  path: "/sobre-mi",
+});
 
 const PILLARS = [
   {

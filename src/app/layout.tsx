@@ -2,6 +2,15 @@ import type { Metadata } from "next";
 import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
+import {
+  HOME_DESCRIPTION,
+  HOME_OG_DESCRIPTION,
+  HOME_OG_TITLE,
+  HOME_TITLE,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo";
 
 const archivo = Archivo({
   variable: "--font-archivo",
@@ -30,15 +39,12 @@ const jetbrainsMono = JetBrains_Mono({
 const motionBootScript = `(function(){var d=document.documentElement;d.classList.add('js');try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('js-motion')}var a=sessionStorage.getItem('audience_mode');if(a==='recruiter'||a==='client'){d.dataset.audience=a}}catch(e){}})();`;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://diegoalejandromunoz.com",
-  ),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Diego Alejandro Muñoz — Software Developer · Web & Automatización",
-    template: "%s | Diego Alejandro Muñoz",
+    default: HOME_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Software Developer en Cali, Colombia. Desarrollo aplicaciones web, paneles administrativos e integraciones con Next.js, React, TypeScript y Supabase/PostgreSQL.",
+  description: HOME_DESCRIPTION,
   keywords: [
     "Diego Alejandro Muñoz",
     "Software Developer",
@@ -50,23 +56,16 @@ export const metadata: Metadata = {
     "Automatización",
     "Cali Colombia",
   ],
-  authors: [{ name: "Diego Alejandro Muñoz", url: "https://diegoalejandromunoz.com" }],
-  creator: "Diego Alejandro Muñoz",
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  // Sin canonical ni og:url aquí: cada página declara los suyos (pageMetadata).
+  // Un canonical en el layout raíz lo heredarían todas las rutas.
   openGraph: {
     type: "website",
-    locale: "es_CO",
-    url: "https://diegoalejandromunoz.com",
-    title: "Diego Alejandro Muñoz — Software Developer · Next.js & TypeScript",
-    description:
-      "Desarrollador de software en Cali, Colombia. Aplicaciones web funcionales, paneles administrativos, datos consistentes e integraciones prácticas.",
-    siteName: "Diego Alejandro Muñoz",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  alternates: {
-    canonical: "/",
+    locale: SITE_LOCALE,
+    siteName: SITE_NAME,
+    title: HOME_OG_TITLE,
+    description: HOME_OG_DESCRIPTION,
   },
 };
 
@@ -75,7 +74,7 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Person",
-      "@id": "https://diegoalejandromunoz.com/#person",
+      "@id": `${SITE_URL}/#person`,
       "name": "Diego Alejandro Muñoz Arcos",
       "alternateName": "Diego Muñoz",
       "jobTitle": "Software Developer",
@@ -85,7 +84,7 @@ const jsonLd = {
         "addressRegion": "Valle del Cauca",
         "addressCountry": "CO",
       },
-      "url": "https://diegoalejandromunoz.com",
+      "url": SITE_URL,
       "sameAs": [
         "https://github.com/Diego-8520",
         "https://www.linkedin.com/in/dalejandromunoz",
@@ -102,11 +101,11 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      "@id": "https://diegoalejandromunoz.com/#website",
-      "url": "https://diegoalejandromunoz.com",
+      "@id": `${SITE_URL}/#website`,
+      "url": SITE_URL,
       "name": "Diego Alejandro Muñoz — Software Developer",
       "publisher": {
-        "@id": "https://diegoalejandromunoz.com/#person",
+        "@id": `${SITE_URL}/#person`,
       },
     },
   ],

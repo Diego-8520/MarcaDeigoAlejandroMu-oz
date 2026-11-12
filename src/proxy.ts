@@ -38,8 +38,14 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
+// Solo rutas que necesitan sesión. Las páginas públicas no pasan por aquí:
+// así no esperan una llamada a Supabase Auth y pueden servirse desde caché.
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/dashboard/:path*",
+    "/login",
+    "/callback",
+    "/api/dashboard/:path*",
+    "/api/integrations/:path*",
   ],
 };

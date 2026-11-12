@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export type Experience = {
   id: string;
@@ -37,7 +37,7 @@ function mapExperience(row: ExperienceRow): Experience {
 }
 
 export async function getExperiences(): Promise<Experience[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("experiences")
     .select(EXPERIENCE_COLUMNS)

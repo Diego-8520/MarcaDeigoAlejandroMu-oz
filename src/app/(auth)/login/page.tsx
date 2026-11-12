@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { NO_INDEX } from "@/lib/seo";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
   title: "Iniciar sesión",
+  robots: NO_INDEX,
 };
 
 export default function LoginPage() {

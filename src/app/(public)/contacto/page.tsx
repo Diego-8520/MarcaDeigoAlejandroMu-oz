@@ -1,16 +1,18 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { ArrowUpRight } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 import { PageHeader } from "@/components/site/page-header";
 import { CaliClock } from "@/components/site/cali-clock";
 import { CONTACT } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contacto Directo",
   description:
     "Escribe directamente a Diego Alejandro Muñoz para oportunidades laborales en desarrollo de software, cotización de proyectos web o consultas técnicas.",
-};
+  path: "/contacto",
+});
 
 const CHANNELS = [
   { label: "Correo electrónico", value: CONTACT.email, href: `mailto:${CONTACT.email}`, external: false },

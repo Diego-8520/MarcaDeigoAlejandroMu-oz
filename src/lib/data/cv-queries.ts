@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export const CV_BUCKET = "cv";
 
@@ -69,7 +69,7 @@ function isMissingTableError(error: { code?: string; message?: string } | null) 
  * Utiliza el cliente anónimo/SSR respetando la RLS.
  */
 export async function getVisibleCvDocuments(): Promise<CvDocument[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("cv_documents")
     .select(CV_COLUMNS)

@@ -1,17 +1,17 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://diegoalejandromunoz.com";
-
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/dashboard/", "/api/", "/callback", "/login"],
+        // /login no se bloquea: debe poder rastrearse para que Google lea su
+        // `noindex`. Bloquearlo dejaría la URL indexable sin contenido.
+        disallow: ["/dashboard/", "/api/", "/callback"],
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

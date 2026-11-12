@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Reveal } from "@/components/motion/reveal";
 import { PageHeader, SectionHeading } from "@/components/site/page-header";
 import { readTechStack } from "@/lib/data/tech-stack";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Arquitectura — Diego Alejandro Muñoz",
   description: "Cómo está construido diegoalejandromunoz.com: decisiones de arquitectura, datos, automatización y diseño.",
-};
+  path: "/arquitectura",
+});
 
 /** Diagrama del flujo de datos. Las líneas discontinuas "fluyen" con una animación CSS. */
 function FlowDiagram() {

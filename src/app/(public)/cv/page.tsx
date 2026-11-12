@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Mail } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
@@ -11,11 +12,12 @@ import { CONTACT } from "@/lib/site";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Hoja de Vida (CV) & Perfil Profesional",
   description:
     "Hoja de vida de Diego Alejandro Muñoz: Software Developer con foco en Next.js, React, TypeScript, Supabase y procesos de datos.",
-};
+  path: "/cv",
+});
 
 const EXECUTIVE_HIGHLIGHTS = [
   "Estudiante de Ingeniería de Sistemas (UNIAJC, Cali, Colombia).",

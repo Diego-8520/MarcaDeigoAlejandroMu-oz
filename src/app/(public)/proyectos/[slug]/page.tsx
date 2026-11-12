@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { NO_INDEX, pageMetadata } from "@/lib/seo";
 import { ViewTransition } from "react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const project = await getProjectBySlug(slug);
 
   if (!project) {
-    return { title: "Proyecto no encontrado" };
+    return { title: "Proyecto no encontrado", robots: NO_INDEX };
   }
 
   const title = `${project.title} — Caso de Estudio`;
@@ -34,17 +35,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       ? [{ url: project.images[0].publicUrl, width: 1200, height: 630, alt: project.title }]
       : [];
 
-  return {
+  return pageMetadata({
     title,
     description,
-    openGraph: {
-      title: `${project.title} | Diego Alejandro Muñoz`,
-      description,
-      type: "article",
-      images: ogImages,
-    },
-    alternates: { canonical: `/proyectos/${project.slug}` },
-  };
+    path: `/proyectos/${project.slug}`,
+    openGraph: { type: "article", images: ogImages },
+  });
+}
+
+/** Prerenderiza los casos publicados; los nuevos se generan bajo demanda (ISR). */
+export async function generateStaticParams() {
+  try {
+    const projects = await getPublishedProjects();
+    return projects.map((p) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
 }
 
 const STATUS_LABEL: Record<string, string> = {

@@ -5,7 +5,7 @@ import type {
   ProjectStatus,
 } from "@/types/project";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 type ProjectRow = {
   id: string;
@@ -117,7 +117,7 @@ export function mapProject(row: ProjectRow): Project {
 }
 
 export async function getPublishedProjects(): Promise<Project[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("projects")
     .select(PROJECT_WITH_IMAGES_COLUMNS)
@@ -130,7 +130,7 @@ export async function getPublishedProjects(): Promise<Project[]> {
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("projects")
     .select(PROJECT_WITH_IMAGES_COLUMNS)
@@ -145,7 +145,7 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
 export async function getProjectImages(
   projectId: string,
 ): Promise<ProjectImage[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("project_images")
     .select(PROJECT_IMAGE_COLUMNS)
