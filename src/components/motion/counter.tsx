@@ -24,7 +24,7 @@ export function Counter({ value, suffix = "", className }: { value: number; suff
     return () => {
       el.textContent = `${value}${suffix}`;
     };
-  }, [value, suffix]);
+  }, [value, suffix], { trigger: ref });
 
   return (
     <span ref={ref} className={className}>

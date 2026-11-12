@@ -42,7 +42,7 @@ export function Marquee({ items, separator = "/" }: { items: string[]; separator
       loop.kill();
       track.style.animation = "";
     };
-  }, []);
+  }, [], { media: "(pointer: fine)" }); // En táctil basta la animación CSS.
 
   const sequence = (copy: number) =>
     items.map((item) => (

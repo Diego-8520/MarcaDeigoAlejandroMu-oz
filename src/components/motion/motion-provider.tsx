@@ -3,7 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import type Lenis from "lenis";
-import { loadMotion, motionEnabled } from "./gsap";
+import { loadMotion, loadMotionIfStarted, motionEnabled } from "./gsap";
 
 // Lenis es un sistema externo a React: se expone con un store mínimo.
 let current: Lenis | null = null;
@@ -39,7 +39,8 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
   // Lenis y GSAP llegan después de la hidratación (import dinámico): el
   // scroll es nativo durante ese primer instante y luego se suaviza.
   useEffect(() => {
-    if (!motionEnabled()) return;
+    // En táctil Lenis no suaviza (usa el scroll nativo): no se carga.
+    if (!motionEnabled() || !window.matchMedia("(pointer: fine)").matches) return;
     let cancelled = false;
     let cleanup: (() => void) | undefined;
 
@@ -69,7 +70,8 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
     if (lenis && !window.location.hash) lenis.scrollTo(0, { immediate: true, force: true });
     if (!motionEnabled()) return;
     let id = 0;
-    loadMotion().then(({ ScrollTrigger }) => {
+    // Solo si GSAP ya se pidió en esta página; no fuerza su descarga.
+    loadMotionIfStarted().then(({ ScrollTrigger }) => {
       id = requestAnimationFrame(() => ScrollTrigger.refresh());
     });
     return () => cancelAnimationFrame(id);

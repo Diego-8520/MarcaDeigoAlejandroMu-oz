@@ -68,6 +68,7 @@ export function SplitReveal({ as: Tag = "h2", children, className, delay = 0, im
       };
     },
     [immediate, delay],
+    { trigger: ref },
   );
 
   if (immediate) {
@@ -123,6 +124,7 @@ export function Reveal({
       );
     },
     [immediate, stagger, y, delay],
+    { trigger: ref },
   );
 
   if (immediate) {

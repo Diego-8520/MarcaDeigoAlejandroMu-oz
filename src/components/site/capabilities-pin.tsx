@@ -51,7 +51,8 @@ export function CapabilitiesPin({ items }: { items: Capability[] }) {
       return () => mm.revert();
     },
     [],
-    { scope: sectionRef },
+    // El pin horizontal solo existe en escritorio.
+    { scope: sectionRef, trigger: sectionRef, media: "(min-width: 1024px)" },
   );
 
   return (

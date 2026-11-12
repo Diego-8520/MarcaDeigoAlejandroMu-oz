@@ -9,9 +9,10 @@ import {
   SITE_URL,
 } from "@/lib/seo";
 
-// Solo se precarga la fuente de los titulares (Archivo, variable con eje de
-// ancho): es la del texto más grande al cargar. Serif y mono se descargan
-// sin precarga, con fallback métrico ajustado para no mover el layout.
+// Las tres familias aparecen en la primera pantalla (titular, rol en serif,
+// datos en mono), así que las tres se precargan: medido con Lighthouse móvil,
+// quitar la precarga de serif y mono subía el FCP ~0,4 s y causaba CLS por el
+// cambio de fuente. Lo que sí se recorta son estilos y pesos sin uso.
 const archivo = Archivo({
   variable: "--font-archivo",
   subsets: ["latin"],
@@ -26,7 +27,6 @@ const instrumentSerif = Instrument_Serif({
   // En el sitio solo aparece en cursiva (acentos de titulares, citas, capitulares).
   style: "italic",
   display: "swap",
-  preload: false,
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -35,7 +35,6 @@ const jetbrainsMono = JetBrains_Mono({
   // Pesos realmente usados en etiquetas y datos.
   weight: ["400", "500"],
   display: "swap",
-  preload: false,
 });
 
 // Activa el modo de movimiento antes del primer pintado. Sin JS o con

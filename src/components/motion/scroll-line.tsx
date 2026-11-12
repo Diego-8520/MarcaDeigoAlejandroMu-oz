@@ -23,7 +23,7 @@ export function ScrollLine({ className }: { className?: string }) {
         scrollTrigger: { trigger: el.parentElement, start: "top 75%", end: "bottom 60%", scrub: true },
       },
     );
-  }, []);
+  }, [], { trigger: ref });
 
   return (
     <span aria-hidden="true" className={cn("pointer-events-none absolute inset-y-0 left-0 w-px bg-line", className)}>
