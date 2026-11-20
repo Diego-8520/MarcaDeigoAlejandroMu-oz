@@ -1,8 +1,8 @@
 "use server";
 
+import { requireDashboardUser } from "@/lib/integrations/auth";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 import { CONTACT_STATUSES } from "@/lib/data/contacts-queries";
 
 export type ContactActionState = {
@@ -12,12 +12,7 @@ export type ContactActionState = {
 type ContactStatus = (typeof CONTACT_STATUSES)[number];
 
 async function ensureAuthenticated() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  if (error || !user) throw new Error("No autorizado.");
+  await requireDashboardUser();
 }
 
 function isContactStatus(status: string): status is ContactStatus {

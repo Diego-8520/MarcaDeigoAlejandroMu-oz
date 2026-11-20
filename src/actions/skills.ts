@@ -1,8 +1,8 @@
 "use server";
 
+import { requireDashboardUser } from "@/lib/integrations/auth";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 import { skillSchema, type SkillInput } from "@/lib/validation/skill";
 import { linkSkillsToProject } from "@/lib/data/skills-queries";
 
@@ -12,12 +12,7 @@ export type SkillActionState = {
 };
 
 async function ensureAuthenticated() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  if (error || !user) throw new Error("No autorizado.");
+  await requireDashboardUser();
 }
 
 function formValue(formData: FormData, name: string) {

@@ -1,8 +1,8 @@
 "use server";
 
+import { requireDashboardUser } from "@/lib/integrations/auth";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 import { getProfileAdmin } from "@/lib/data/profile-queries";
 import { profileSchema, type ProfileInput } from "@/lib/validation/profile";
 
@@ -20,13 +20,7 @@ const ALLOWED_AVATAR_TYPES = new Map([
 ]);
 
 async function ensureAuthenticated() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) throw new Error("No autorizado.");
+  await requireDashboardUser();
 }
 
 function formValue(formData: FormData, name: string) {

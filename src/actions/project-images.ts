@@ -1,8 +1,8 @@
 "use server";
 
+import { requireDashboardUser } from "@/lib/integrations/auth";
 import { revalidateProjectPaths } from "@/lib/projects/revalidate";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 import {
   PROJECT_IMAGES_BUCKET as BUCKET,
   storageObjectPath,
@@ -22,15 +22,7 @@ const ALLOWED_TYPES = new Map([
 ]);
 
 async function ensureAuthenticated() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    throw new Error("No autorizado.");
-  }
+  await requireDashboardUser();
 }
 
 function revalidateProjectImagePaths() {

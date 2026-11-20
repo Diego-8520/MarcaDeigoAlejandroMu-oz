@@ -60,6 +60,7 @@ Ver `.env.example`. Nunca subir `.env.local` al repositorio.
 | `NEXT_PUBLIC_SUPABASE_URL`      | URL del proyecto Supabase                      |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anonima (uso en cliente)                 |
 | `SUPABASE_SERVICE_ROLE_KEY`     | Clave de servicio (solo servidor, bypassa RLS) |
+| `ADMIN_EMAILS`                  | **Obligatoria.** Emails con acceso al panel, separados por comas. Sin ella nadie entra a `/dashboard` |
 | `OPENAI_API_KEY`                | Fase 3 - AI Profile Assistant                  |
 | `N8N_WEBHOOK_URL`               | Fase 3 - notificaciones de leads               |
 | `GITHUB_CLIENT_ID`              | OAuth de GitHub, solo servidor                 |
