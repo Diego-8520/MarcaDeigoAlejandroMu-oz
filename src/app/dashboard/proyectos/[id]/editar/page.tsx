@@ -14,6 +14,8 @@ import {
 } from "@/lib/data/skills-queries";
 
 export const dynamic = "force-dynamic";
+// La captura del sitio corre en after() dentro de este límite.
+export const maxDuration = 60;
 
 export default async function EditarProyectoPage({
   params,
@@ -66,6 +68,10 @@ export default async function EditarProyectoPage({
         projectId={project.id}
         initialImages={images}
         suggestedImageUrl={project.featuredImageUrl}
+        captureUrl={project.demoUrl || project.vercelProductionUrl}
+        screenshotsStatus={project.screenshotsStatus}
+        screenshotsError={project.screenshotsError}
+        screenshotsCapturedAt={project.screenshotsCapturedAt}
       />
     </div>
   );

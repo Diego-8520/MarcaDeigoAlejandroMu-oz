@@ -2,7 +2,9 @@ import type {
   GithubMetadata,
   Project,
   ProjectImage,
+  ProjectImageKind,
   ProjectStatus,
+  ScreenshotsStatus,
 } from "@/types/project";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { withPublicClient } from "@/lib/supabase/public";
@@ -30,6 +32,9 @@ type ProjectRow = {
   vercel_deployment_status: string | null;
   technologies: string[] | null;
   categories: string[] | null;
+  screenshots_status: ScreenshotsStatus | null;
+  screenshots_error: string | null;
+  screenshots_captured_at: string | null;
   created_at: string;
   updated_at: string;
   project_images?: ProjectImageRow[];
@@ -41,11 +46,17 @@ type ProjectImageRow = {
   storage_path: string;
   alt_text: string | null;
   sort_order: number;
+  kind: ProjectImageKind | null;
+  source: "manual" | "auto" | null;
+  width: number | null;
+  height: number | null;
+  caption: string | null;
 };
 
 const PROJECT_COLUMNS =
-  "id,title,slug,short_description,description,problem,solution,results,status,featured,published,demo_url,repository_url,featured_image_url,technologies,categories,github_metadata,github_synced_at,vercel_project_url,vercel_production_url,vercel_custom_domain,vercel_deployment_status,created_at,updated_at";
-const PROJECT_IMAGE_COLUMNS = "id,project_id,storage_path,alt_text,sort_order";
+  "id,title,slug,short_description,description,problem,solution,results,status,featured,published,demo_url,repository_url,featured_image_url,technologies,categories,github_metadata,github_synced_at,vercel_project_url,vercel_production_url,vercel_custom_domain,vercel_deployment_status,screenshots_status,screenshots_error,screenshots_captured_at,created_at,updated_at";
+const PROJECT_IMAGE_COLUMNS =
+  "id,project_id,storage_path,alt_text,sort_order,kind,source,width,height,caption";
 const PROJECT_WITH_IMAGES_COLUMNS = `${PROJECT_COLUMNS},project_images(${PROJECT_IMAGE_COLUMNS})`;
 const PROJECT_IMAGES_BUCKET = "project-images";
 
@@ -81,6 +92,11 @@ export function mapProjectImage(row: ProjectImageRow): ProjectImage {
     publicUrl: imagePublicUrl(row.storage_path),
     altText: row.alt_text,
     sortOrder: row.sort_order,
+    kind: row.kind ?? "upload",
+    source: row.source ?? "manual",
+    width: row.width,
+    height: row.height,
+    caption: row.caption,
   };
 }
 
@@ -108,6 +124,9 @@ export function mapProject(row: ProjectRow): Project {
     vercelDeploymentStatus: row.vercel_deployment_status,
     technologies: row.technologies ?? [],
     categories: row.categories ?? [],
+    screenshotsStatus: row.screenshots_status,
+    screenshotsError: row.screenshots_error,
+    screenshotsCapturedAt: row.screenshots_captured_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     images: row.project_images

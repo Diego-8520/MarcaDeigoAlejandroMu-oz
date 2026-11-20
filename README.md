@@ -160,6 +160,27 @@ Estructura de paths del avatar:
 profile-media/profile/{uuid}.{ext}
 ```
 
+## Capturas automáticas de proyectos
+
+Al crear un proyecto con URL de demo (o de producción en Vercel), al cambiar
+esa URL o con el botón «Capturar de nuevo» del panel, el servidor abre el sitio
+con un Chromium propio y guarda en la galería:
+
+- `desktop`: hero a 1440×900.
+- `section`: hasta 4 secciones relevantes (con título y medios), con su título
+  como pie.
+- `mobile`: hero a 390×844 (DPR 2).
+
+Las capturas se guardan con `source = 'auto'` y se reemplazan en cada nueva
+captura; las imágenes manuales nunca se tocan. El estado queda en
+`projects.screenshots_status` (`pending | ready | failed`). Código en
+`src/lib/screenshots/` (motor, guarda SSRF y orquestación); la captura corre
+en `after()` dentro del `maxDuration = 60` de las rutas del panel.
+
+- **Vercel:** usa `@sparticuz/chromium` (incluido en el trazado con
+  `outputFileTracingIncludes` en `next.config.ts`).
+- **Local:** define `CHROME_EXECUTABLE_PATH` con la ruta de tu Chrome.
+
 ## Analitica propia
 
 El sitio registra eventos anonimos en `analytics_events` para entender uso real:
