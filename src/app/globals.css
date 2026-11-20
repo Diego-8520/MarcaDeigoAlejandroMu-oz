@@ -5,13 +5,6 @@
    Los nombres de token se conservan: el dashboard y los formularios los usan.
    ========================================================================== */
 
-/* El acento es una propiedad registrada para poder animar el cambio de audiencia. */
-@property --signal {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: #d4ff3a;
-}
-
 :root {
   /* Superficies — negro tinta cálido */
   --paper: #0b0b0a;
@@ -29,7 +22,7 @@
   --line: #2a2926;
   --line-focus: #45433e;
 
-  /* Acento (por audiencia) */
+  /* Acento */
   --signal: #d4ff3a;
   --signal-ink: #0b0b0a;
   --signal-hover: color-mix(in oklab, var(--signal) 82%, white);
@@ -48,10 +41,6 @@
   --header-h: 3.5rem;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
-}
-
-html[data-audience="client"] {
-  --signal: #ff5b1f;
 }
 
 @theme inline {
@@ -86,7 +75,6 @@ html[data-audience="client"] {
 
 html {
   color-scheme: dark;
-  transition: --signal 600ms var(--ease-out-expo);
   -webkit-text-size-adjust: 100%;
 }
 

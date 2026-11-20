@@ -41,7 +41,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 // Activa el modo de movimiento antes del primer pintado. Sin JS o con
 // prefers-reduced-motion el contenido queda visible y estático.
-const motionBootScript = `(function(){var d=document.documentElement;d.classList.add('js');try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('js-motion')}var a=sessionStorage.getItem('audience_mode');if(a==='recruiter'||a==='client'){d.dataset.audience=a}}catch(e){}})();`;
+const motionBootScript = `(function(){var d=document.documentElement;d.classList.add('js');try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('js-motion')}}catch(e){}})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -79,7 +79,6 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${archivo.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} h-full antialiased`}
-      data-audience="all"
       suppressHydrationWarning
     >
       <head>

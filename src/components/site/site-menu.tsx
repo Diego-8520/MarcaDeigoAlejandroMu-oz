@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { ArrowUpRight, LogIn } from "lucide-react";
 import { useMotion } from "@/components/motion/gsap";
 import { useLenis } from "@/components/motion/motion-provider";
-import { AudienceSwitch } from "./audience-switch";
 import { CONTACT, NAV_ITEMS, isActivePath } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
@@ -153,10 +152,6 @@ export function SiteMenu({ open, onClose }: { open: boolean; onClose: () => void
           </div>
 
           <div className="space-y-8">
-            <div data-menu-meta>
-              <p className="eyebrow mb-3">¿Qué buscas?</p>
-              <AudienceSwitch size="lg" />
-            </div>
             <ul data-menu-meta className="grid grid-cols-2 gap-y-7 font-mono text-xs sm:gap-y-2">
               <li>
                 <a href={`mailto:${CONTACT.email}`} className="link-draw tap inline-block min-w-11 text-ink">

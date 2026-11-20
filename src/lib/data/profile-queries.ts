@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createPublicClient } from "@/lib/supabase/public";
+import { withPublicClient } from "@/lib/supabase/public";
 
 export type Profile = {
   id: string;
@@ -97,31 +97,33 @@ function mapProfileLink(row: ProfileLinkRow): ProfileLink {
 }
 
 export async function getProfile(): Promise<Profile | null> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("profiles")
-    .select(PROFILE_COLUMNS)
-    .limit(1)
-    .maybeSingle();
+  return withPublicClient(null, async (supabase) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select(PROFILE_COLUMNS)
+      .limit(1)
+      .maybeSingle();
 
-  if (error) throw error;
-  return data ? mapProfile(data as ProfileRow) : null;
+    if (error) throw error;
+    return data ? mapProfile(data as ProfileRow) : null;
+  });
 }
 
 export async function getProfileLinks(): Promise<ProfileLink[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("profile_links")
-    .select(PROFILE_LINK_COLUMNS)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: true });
+  return withPublicClient([], async (supabase) => {
+    const { data, error } = await supabase
+      .from("profile_links")
+      .select(PROFILE_LINK_COLUMNS)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
 
-  if (error) {
-    if (isMissingTableError(error)) return [];
-    throw error;
-  }
+    if (error) {
+      if (isMissingTableError(error)) return [];
+      throw error;
+    }
 
-  return ((data ?? []) as ProfileLinkRow[]).map(mapProfileLink);
+    return ((data ?? []) as ProfileLinkRow[]).map(mapProfileLink);
+  });
 }
 
 export async function getProfileAdmin(): Promise<Profile | null> {

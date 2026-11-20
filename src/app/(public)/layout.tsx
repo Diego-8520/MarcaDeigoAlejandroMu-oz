@@ -1,5 +1,4 @@
 import { GoogleTagManager } from "@next/third-parties/google";
-import { AudienceProvider } from "@/components/layout/audience-context";
 import { MotionProvider } from "@/components/motion/motion-provider";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
@@ -15,7 +14,7 @@ const gtmEnabled = process.env.VERCEL_ENV === "production" || process.env.GTM_EN
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
-    <AudienceProvider>
+    <>
       {gtmEnabled && <GoogleTagManager gtmId={GTM_ID} />}
       <MotionProvider>
         <div className="flex min-h-[100dvh] flex-col bg-paper text-ink">
@@ -28,6 +27,6 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div aria-hidden="true" className="grain" />
         <GridOverlay />
       </MotionProvider>
-    </AudienceProvider>
+    </>
   );
 }
