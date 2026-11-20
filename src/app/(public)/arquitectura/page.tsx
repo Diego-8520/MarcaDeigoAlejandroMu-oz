@@ -136,7 +136,7 @@ export default function ArquitecturaPage() {
           ),
           body: [
             "La interfaz se plantea como una revista de diseño impresa por un ingeniero: la tipografía es la protagonista, las estructuras se marcan con reglas finas y la información técnica vive en notas al margen. No hay tarjetas genéricas ni gradientes decorativos.",
-            "Tres familias con funciones distintas: Archivo, con su eje de ancho variable, construye titulares expandidos que se ensanchan al interactuar; Instrument Serif en cursiva aporta el contraste editorial; JetBrains Mono identifica datos, índices y estados. El color de acento cambia según quién visita: lima para empresas, naranja para clientes.",
+            "Tres familias con funciones distintas: Archivo, con su eje de ancho variable, construye titulares expandidos que se ensanchan al interactuar; Instrument Serif en cursiva aporta el contraste editorial; JetBrains Mono identifica datos, índices y estados. Un único color de acento, lima eléctrico, marca lo accionable y el estado activo sobre el negro tinta.",
             "El movimiento usa GSAP y Lenis para revelados y scroll horizontal, y las transiciones entre páginas usan la View Transitions API nativa. Todo respeta prefers-reduced-motion: sin animación, el contenido se muestra completo desde el servidor.",
           ],
         },

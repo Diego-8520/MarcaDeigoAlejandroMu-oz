@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { AudienceSwitch } from "./audience-switch";
 import { CaliClock } from "./cali-clock";
 import { SiteMenu } from "./site-menu";
 import { cn } from "@/lib/utils";
@@ -89,7 +88,6 @@ export function SiteHeader() {
           </div>
 
           <div className="flex items-center gap-4 sm:gap-6">
-            <AudienceSwitch className="hidden sm:flex" />
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
