@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { NO_INDEX } from "@/lib/seo";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
@@ -15,9 +16,9 @@ export default function LoginPage() {
     <div className="grid min-h-[100dvh] grid-cols-1 bg-paper lg:grid-cols-2">
       {/* Panel editorial (solo escritorio) */}
       <div className="relative hidden flex-col justify-between border-r border-line p-12 lg:flex">
-        <Link href="/" className="group flex items-baseline gap-2" aria-label="DAM: volver al sitio público">
+        <Link href="/" className="group flex items-baseline gap-2.5" aria-label="DAM: volver al sitio público">
+          <BrandMark className="h-[22px] w-[22px] text-ink" />
           <span className="display text-xl text-ink">DAM</span>
-          <span aria-hidden="true" className="h-2 w-2 bg-signal" />
         </Link>
         <p className="display text-[clamp(3rem,6vw,6.5rem)] text-ink">
           Panel <span className="font-serif">privado</span>

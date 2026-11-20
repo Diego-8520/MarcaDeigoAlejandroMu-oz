@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CaliClock } from "./cali-clock";
 import { SiteMenu } from "./site-menu";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { cn } from "@/lib/utils";
 
 function isTypingTarget(target: EventTarget | null) {
@@ -74,9 +75,9 @@ export function SiteHeader() {
         )}
       >
         <div className="container-x flex h-[var(--header-h)] items-center justify-between gap-4">
-          <Link href="/" aria-label="DAM, Diego Alejandro Muñoz: ir al inicio" className="tap-area group flex items-baseline gap-2">
+          <Link href="/" aria-label="DAM, Diego Alejandro Muñoz: ir al inicio" className="tap-area group flex items-baseline gap-2.5">
+            <BrandMark className="h-[22px] w-[22px] text-ink" />
             <span className="display stretch-hover text-xl text-ink">DAM</span>
-            <span aria-hidden="true" className="h-2 w-2 bg-signal transition-transform duration-500 ease-expo group-hover:rotate-45" />
           </Link>
 
           <div className="hidden items-center gap-5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink md:flex">
