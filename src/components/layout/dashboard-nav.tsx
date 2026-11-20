@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BrandMark } from "@/components/brand/brand-mark";
 
 const DASHBOARD_ITEMS = [
   { href: "/dashboard", label: "General" },
@@ -23,8 +24,8 @@ const DASHBOARD_ITEMS = [
 function Brand() {
   return (
     <Link href="/" className="group flex items-baseline gap-2" aria-label="DAM: ir a la web pública">
+      <BrandMark className="h-5 w-5 text-ink" />
       <span className="display text-lg text-ink">DAM</span>
-      <span aria-hidden="true" className="h-1.5 w-1.5 bg-signal transition-transform duration-500 group-hover:rotate-45" />
     </Link>
   );
 }
