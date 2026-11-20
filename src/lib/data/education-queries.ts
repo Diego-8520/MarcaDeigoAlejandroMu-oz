@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createPublicClient } from "@/lib/supabase/public";
+import { withPublicClient } from "@/lib/supabase/public";
 
 export type Education = {
   id: string;
@@ -64,25 +64,27 @@ function mapCertification(row: CertificationRow): Certification {
 }
 
 export async function getEducation(): Promise<Education[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("education")
-    .select(EDUCATION_COLUMNS)
-    .order("start_date", { ascending: false });
+  return withPublicClient([], async (supabase) => {
+    const { data, error } = await supabase
+      .from("education")
+      .select(EDUCATION_COLUMNS)
+      .order("start_date", { ascending: false });
 
-  if (error) throw error;
-  return ((data ?? []) as EducationRow[]).map(mapEducation);
+    if (error) throw error;
+    return ((data ?? []) as EducationRow[]).map(mapEducation);
+  });
 }
 
 export async function getCertifications(): Promise<Certification[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("certifications")
-    .select(CERTIFICATION_COLUMNS)
-    .order("issue_date", { ascending: false });
+  return withPublicClient([], async (supabase) => {
+    const { data, error } = await supabase
+      .from("certifications")
+      .select(CERTIFICATION_COLUMNS)
+      .order("issue_date", { ascending: false });
 
-  if (error) throw error;
-  return ((data ?? []) as CertificationRow[]).map(mapCertification);
+    if (error) throw error;
+    return ((data ?? []) as CertificationRow[]).map(mapCertification);
+  });
 }
 
 export async function getEducationAdmin(): Promise<Education[]> {

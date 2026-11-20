@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getPublishedProjects } from "@/lib/data/projects-queries";
-import { createPublicClient } from "@/lib/supabase/public";
+import { withPublicClient } from "@/lib/supabase/public";
 import { SITE_URL } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -10,11 +10,13 @@ type Entry = MetadataRoute.Sitemap[number];
 /** Fecha más reciente de una columna en filas públicas; undefined si no hay datos. */
 async function latest(table: string, column: string, filter?: [string, boolean]): Promise<Date | undefined> {
   try {
-    let query = createPublicClient().from(table).select(column).order(column, { ascending: false }).limit(1);
-    if (filter) query = query.eq(filter[0], filter[1]);
-    const { data, error } = await query;
-    const value = !error && data?.[0] ? (data[0] as unknown as Record<string, string | null>)[column] : null;
-    return value ? new Date(value) : undefined;
+    return await withPublicClient<Date | undefined>(undefined, async (supabase) => {
+      let query = supabase.from(table).select(column).order(column, { ascending: false }).limit(1);
+      if (filter) query = query.eq(filter[0], filter[1]);
+      const { data, error } = await query;
+      const value = !error && data?.[0] ? (data[0] as unknown as Record<string, string | null>)[column] : null;
+      return value ? new Date(value) : undefined;
+    });
   } catch {
     return undefined;
   }

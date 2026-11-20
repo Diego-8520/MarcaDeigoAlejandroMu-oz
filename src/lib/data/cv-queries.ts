@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createPublicClient } from "@/lib/supabase/public";
+import { withPublicClient } from "@/lib/supabase/public";
 
 export const CV_BUCKET = "cv";
 
@@ -69,22 +69,23 @@ function isMissingTableError(error: { code?: string; message?: string } | null) 
  * Utiliza el cliente anónimo/SSR respetando la RLS.
  */
 export async function getVisibleCvDocuments(): Promise<CvDocument[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("cv_documents")
-    .select(CV_COLUMNS)
-    .eq("is_visible", true)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false });
+  return withPublicClient([], async (supabase) => {
+    const { data, error } = await supabase
+      .from("cv_documents")
+      .select(CV_COLUMNS)
+      .eq("is_visible", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    if (isMissingTableError(error)) return [];
-    throw error;
-  }
+    if (error) {
+      if (isMissingTableError(error)) return [];
+      throw error;
+    }
 
-  return ((data ?? []) as CvDocumentRow[]).map((row) =>
-    mapCvDocument(row, supabase)
-  );
+    return ((data ?? []) as CvDocumentRow[]).map((row) =>
+      mapCvDocument(row, supabase)
+    );
+  });
 }
 
 /**

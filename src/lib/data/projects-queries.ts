@@ -5,7 +5,7 @@ import type {
   ProjectStatus,
 } from "@/types/project";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createPublicClient } from "@/lib/supabase/public";
+import { withPublicClient } from "@/lib/supabase/public";
 
 type ProjectRow = {
   id: string;
@@ -117,43 +117,46 @@ export function mapProject(row: ProjectRow): Project {
 }
 
 export async function getPublishedProjects(): Promise<Project[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("projects")
-    .select(PROJECT_WITH_IMAGES_COLUMNS)
-    .eq("published", true)
-    .order("featured", { ascending: false })
-    .order("created_at", { ascending: false });
+  return withPublicClient([], async (supabase) => {
+    const { data, error } = await supabase
+      .from("projects")
+      .select(PROJECT_WITH_IMAGES_COLUMNS)
+      .eq("published", true)
+      .order("featured", { ascending: false })
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return ((data ?? []) as ProjectRow[]).map(mapProject);
+    if (error) throw error;
+    return ((data ?? []) as ProjectRow[]).map(mapProject);
+  });
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("projects")
-    .select(PROJECT_WITH_IMAGES_COLUMNS)
-    .eq("published", true)
-    .eq("slug", slug)
-    .maybeSingle();
+  return withPublicClient(null, async (supabase) => {
+    const { data, error } = await supabase
+      .from("projects")
+      .select(PROJECT_WITH_IMAGES_COLUMNS)
+      .eq("published", true)
+      .eq("slug", slug)
+      .maybeSingle();
 
-  if (error) throw error;
-  return data ? mapProject(data as ProjectRow) : null;
+    if (error) throw error;
+    return data ? mapProject(data as ProjectRow) : null;
+  });
 }
 
 export async function getProjectImages(
   projectId: string,
 ): Promise<ProjectImage[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("project_images")
-    .select(PROJECT_IMAGE_COLUMNS)
-    .eq("project_id", projectId)
-    .order("sort_order", { ascending: true });
+  return withPublicClient([], async (supabase) => {
+    const { data, error } = await supabase
+      .from("project_images")
+      .select(PROJECT_IMAGE_COLUMNS)
+      .eq("project_id", projectId)
+      .order("sort_order", { ascending: true });
 
-  if (error) throw error;
-  return ((data ?? []) as ProjectImageRow[]).map(mapProjectImage);
+    if (error) throw error;
+    return ((data ?? []) as ProjectImageRow[]).map(mapProjectImage);
+  });
 }
 
 export async function getProjectImagesAdmin(

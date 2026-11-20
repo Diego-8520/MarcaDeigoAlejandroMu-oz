@@ -1,5 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createPublicClient } from "@/lib/supabase/public";
+import { withPublicClient } from "@/lib/supabase/public";
 
 export type Testimonial = {
   id: string;
@@ -55,33 +55,35 @@ function normalizedLimit(limit: number) {
 export async function getPublishedTestimonials(
   limit = 6,
 ): Promise<Testimonial[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("testimonials")
-    .select(TESTIMONIAL_COLUMNS)
-    .eq("published", true)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false })
-    .limit(normalizedLimit(limit));
+  return withPublicClient([], async (supabase) => {
+    const { data, error } = await supabase
+      .from("testimonials")
+      .select(TESTIMONIAL_COLUMNS)
+      .eq("published", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false })
+      .limit(normalizedLimit(limit));
 
-  if (error) throw error;
-  return ((data ?? []) as TestimonialRow[]).map(mapTestimonial);
+    if (error) throw error;
+    return ((data ?? []) as TestimonialRow[]).map(mapTestimonial);
+  });
 }
 
 export async function getTestimonialsByProject(
   projectId: string,
 ): Promise<Testimonial[]> {
-  const supabase = createPublicClient();
-  const { data, error } = await supabase
-    .from("testimonials")
-    .select(TESTIMONIAL_COLUMNS)
-    .eq("project_id", projectId)
-    .eq("published", true)
-    .order("sort_order", { ascending: true })
-    .order("created_at", { ascending: false });
+  return withPublicClient([], async (supabase) => {
+    const { data, error } = await supabase
+      .from("testimonials")
+      .select(TESTIMONIAL_COLUMNS)
+      .eq("project_id", projectId)
+      .eq("published", true)
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-  return ((data ?? []) as TestimonialRow[]).map(mapTestimonial);
+    if (error) throw error;
+    return ((data ?? []) as TestimonialRow[]).map(mapTestimonial);
+  });
 }
 
 export async function getAllTestimonialsAdmin(): Promise<Testimonial[]> {
