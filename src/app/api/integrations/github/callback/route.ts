@@ -5,6 +5,10 @@ import {
   saveGithubToken,
   consumeGithubOauthState,
 } from "@/lib/integrations/github-token";
+import {
+  describeGithubOauthError,
+  githubRedirectUri,
+} from "@/lib/integrations/github-oauth";
 
 export async function GET(request: NextRequest) {
   const redirect = (params: Record<string, string>) => {
@@ -17,6 +21,17 @@ export async function GET(request: NextRequest) {
 
   try {
     await requireDashboardUser();
+    const params = request.nextUrl.searchParams;
+    const oauthError = params.get("error");
+    if (oauthError) {
+      return redirect({
+        error: describeGithubOauthError(
+          oauthError,
+          params.get("error_description"),
+        ),
+      });
+    }
+
     const code = request.nextUrl.searchParams.get("code");
     const state = request.nextUrl.searchParams.get("state");
     if (!code || !state || !(await consumeGithubOauthState(state))) {
@@ -43,6 +58,7 @@ export async function GET(request: NextRequest) {
           client_id: clientId,
           client_secret: clientSecret,
           code,
+          redirect_uri: githubRedirectUri(request).toString(),
         }),
         cache: "no-store",
       },
@@ -50,9 +66,14 @@ export async function GET(request: NextRequest) {
     const tokenJson = (await tokenResponse.json()) as {
       access_token?: string;
       error?: string;
+      error_description?: string;
     };
     if (!tokenResponse.ok || !tokenJson.access_token) {
-      throw new Error(tokenJson.error ?? "GitHub no devolvió un token válido.");
+      throw new Error(
+        tokenJson.error
+          ? describeGithubOauthError(tokenJson.error, tokenJson.error_description)
+          : "GitHub no devolvió un token válido.",
+      );
     }
 
     await saveGithubToken(tokenJson.access_token);
@@ -64,6 +85,11 @@ export async function GET(request: NextRequest) {
       },
       cache: "no-store",
     });
+    if (!profileResponse.ok) {
+      throw new Error(
+        `GitHub rechazó el token recién emitido (estado ${profileResponse.status}).`,
+      );
+    }
     const profile = (await profileResponse.json()) as {
       login?: string;
       name?: string | null;

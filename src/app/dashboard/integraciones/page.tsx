@@ -70,12 +70,21 @@ export default async function IntegracionesPage({
                   {provider}
                 </h2>
                 <span className="font-mono text-[11px] text-ink-muted">
-                  {isConfigured ? "conectado" : "pendiente"}
+                  {isConfigured
+                    ? "conectado"
+                    : connection?.status === "error"
+                      ? "requiere reconexión"
+                      : "pendiente"}
                 </span>
               </div>
               <p className="mt-3 min-h-10 font-mono text-xs text-ink-muted">
                 {connection?.account_label ?? "Sin cuenta sincronizada."}
               </p>
+              {connection?.sync_error && (
+                <p className="mt-2 font-mono text-[11px] text-red-600">
+                  {connection.sync_error}
+                </p>
+              )}
               <div className="mt-5 flex flex-wrap gap-3">
                 {isGithub ? (
                   <Link
