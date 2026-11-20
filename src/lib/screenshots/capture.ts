@@ -46,7 +46,8 @@ async function launchBrowser(): Promise<Browser> {
     });
   }
 
-  chromium.setGraphicsMode = false;
+  // Con gráficos (SwiftShader): mapas y visualizaciones WebGL se dibujan.
+  chromium.setGraphicsMode = true;
   return puppeteer.launch({
     executablePath: await chromium.executablePath(),
     args: await puppeteer.defaultArgs({ args: chromium.args, headless: "shell" }),
@@ -54,35 +55,56 @@ async function launchBrowser(): Promise<Browser> {
   });
 }
 
-/** Bloquea navegaciones del frame principal hacia hosts privados (redirecciones). */
-async function guardNavigation(page: Page) {
-  await page.setRequestInterception(true);
-  page.on("request", (request) => {
-    if (request.isInterceptResolutionHandled()) return;
-    const url = request.url();
-    if (!/^https?:|^data:|^blob:/i.test(url)) {
-      void request.abort("blockedbyclient");
-      return;
-    }
-    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
-      assertPublicUrl(url)
-        .then(() => request.continue())
-        .catch(() => request.abort("blockedbyclient"));
-      return;
-    }
-    void request.continue();
-  });
+/** Error de navegación: el sitio no se pudo abrir o devolvió un error. */
+export class SiteLoadError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SiteLoadError";
+  }
 }
 
+/**
+ * Carga la URL y verifica que lo cargado sea el sitio y no una página de
+ * error de Chromium (chrome-error://) ni una redirección a un host privado.
+ */
 async function load(page: Page, url: string) {
+  let mainFailure: string | null = null;
+  const onFailed = (request: import("puppeteer-core").HTTPRequest) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+      mainFailure = request.failure()?.errorText ?? "error de red";
+    }
+  };
+  page.on("requestfailed", onFailed);
+
+  let response: import("puppeteer-core").HTTPResponse | null = null;
+  let gotoError: unknown = null;
   try {
-    await page.goto(url, { waitUntil: "networkidle2", timeout: 25_000 });
+    response = await page.goto(url, { waitUntil: "networkidle2", timeout: 25_000 });
   } catch (error) {
+    gotoError = error;
+  } finally {
+    page.off("requestfailed", onFailed);
+  }
+
+  const finalUrl = page.url();
+  if (finalUrl.startsWith("chrome-error://") || mainFailure) {
+    throw new SiteLoadError(`El navegador no pudo abrir el sitio (${mainFailure ?? "página de error"}).`);
+  }
+  if (gotoError) {
     // Sitios con conexiones abiertas (analytics, websockets) nunca llegan a
     // networkidle: si el documento cargó, seguimos con lo que hay.
     const hasBody = await page.evaluate(() => document.body?.innerText.length ?? 0).catch(() => 0);
-    if (!hasBody) throw error;
+    if (!hasBody) {
+      const reason = gotoError instanceof Error ? gotoError.message : "tiempo agotado";
+      throw new SiteLoadError(`El sitio no terminó de cargar (${reason}).`);
+    }
   }
+  if (response && response.status() >= 400) {
+    throw new SiteLoadError(`El sitio respondió con HTTP ${response.status()}.`);
+  }
+  // Redirecciones: el destino final también debe ser público.
+  await assertPublicUrl(finalUrl);
+
   await page.addStyleTag({ content: HIDE_OVERLAYS_CSS }).catch(() => undefined);
   await sleep(800);
 }
@@ -172,7 +194,6 @@ export async function captureSite(rawUrl: string): Promise<Shot[]> {
 
   try {
     const page = await browser.newPage();
-    await guardNavigation(page);
     await page.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
 
     // 1. Hero de escritorio
