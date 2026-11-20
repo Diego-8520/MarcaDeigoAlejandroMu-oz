@@ -235,12 +235,14 @@ export function buildTips({ title, cv, keywords, requirements, cvYears }: TipsIn
 
 /** Resumen profesional sugerido, armado solo con datos reales de tu HV. */
 export function buildSuggestedSummary({ title, company, cv, keywords, cvYears }: TipsInput): string {
+  // Solo términos que ya están literalmente en tu HV: una variante («Excel» vs
+  // «Excel avanzado») podría exagerar tu nivel.
   const matched = keywords
-    .filter((k) => k.status !== "falta" && ["tecnica", "herramienta", "metodologia"].includes(k.category))
+    .filter((k) => k.status === "presente" && ["tecnica", "herramienta", "metodologia"].includes(k.category))
     .slice(0, 5)
     .map((k) => k.term);
   const soft = keywords
-    .filter((k) => k.status !== "falta" && k.category === "blanda")
+    .filter((k) => k.status === "presente" && k.category === "blanda")
     .slice(0, 2)
     .map((k) => k.term.toLowerCase());
   const base = cv.headline?.split("|")[0]?.trim() || "Profesional";

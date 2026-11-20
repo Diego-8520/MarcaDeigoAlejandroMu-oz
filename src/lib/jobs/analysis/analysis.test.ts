@@ -124,6 +124,8 @@ describe("analyzeJob", () => {
   it("sugiere resumen y orden de skills con datos reales", () => {
     expect(analysis.suggestedSummary).toContain("Analista de Procesos Administrativos");
     expect(analysis.suggestedSummary).not.toContain("SAP");
+    // «Excel avanzado» es solo una variante en la HV: no debe afirmarse.
+    expect(analysis.suggestedSummary).not.toContain("Excel avanzado");
     expect(analysis.suggestedSkillOrder[0]).toBe("Excel");
   });
 

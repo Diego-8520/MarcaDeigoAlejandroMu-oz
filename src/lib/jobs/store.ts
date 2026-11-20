@@ -65,3 +65,20 @@ export async function saveJob(job: NormalizedJob, cv: MasterCv): Promise<string>
   await storeAnalysis(id, job, cv);
   return id;
 }
+
+/** Guarda un resultado ya validado del agente. */
+export async function storeAgentOutput(
+  jobId: string,
+  kind: "hv" | "evaluacion",
+  content: unknown,
+  cv: MasterCv,
+): Promise<string> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("job_agent_outputs")
+    .insert({ job_id: jobId, kind, content, cv_fingerprint: cvFingerprint(cv) })
+    .select("id")
+    .single();
+  if (error) throw error;
+  return (data as { id: string }).id;
+}

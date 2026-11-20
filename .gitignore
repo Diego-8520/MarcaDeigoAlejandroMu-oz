@@ -57,7 +57,9 @@ graphify-out/
 
 # IDE & Editor local settings
 .vscode/
-.claude/
+# Claude Code: solo se versionan las skills del proyecto.
+.claude/*
+!.claude/skills/
 .agents/me/
 
 # respaldos locales de datos internos (no subir)

@@ -108,3 +108,32 @@ export async function getSavedJobKeysAdmin(): Promise<Map<string, string>> {
     ]),
   );
 }
+
+export type AgentOutputRow = {
+  id: string;
+  kind: "hv" | "evaluacion";
+  content: unknown;
+  cvFingerprint: string;
+  createdAt: string;
+};
+
+/** Último resultado del agente de cada tipo para una vacante. */
+export async function getLatestAgentOutputsAdmin(
+  jobId: string,
+): Promise<{ hv: AgentOutputRow | null; evaluacion: AgentOutputRow | null }> {
+  const supabase = createAdminClient();
+  const { data, error } = await supabase
+    .from("job_agent_outputs")
+    .select("id,kind,content,cv_fingerprint,created_at")
+    .eq("job_id", jobId)
+    .order("created_at", { ascending: false })
+    .limit(20);
+  if (error) throw error;
+  const rows = ((data ?? []) as { id: string; kind: "hv" | "evaluacion"; content: unknown; cv_fingerprint: string; created_at: string }[]).map(
+    (r) => ({ id: r.id, kind: r.kind, content: r.content, cvFingerprint: r.cv_fingerprint, createdAt: r.created_at }),
+  );
+  return {
+    hv: rows.find((r) => r.kind === "hv") ?? null,
+    evaluacion: rows.find((r) => r.kind === "evaluacion") ?? null,
+  };
+}
