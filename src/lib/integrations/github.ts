@@ -119,11 +119,26 @@ function mapRepository(
   };
 }
 
-export async function getGithubRepositories() {
+/** El token no existe en este navegador o GitHub lo rechazó: hay que reconectar. */
+export class GithubAuthError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "GithubAuthError";
+  }
+}
+
+async function requireGithubToken() {
   const token = await getGithubToken();
   if (!token) {
-    throw new Error("Conecta GitHub antes de sincronizar repositorios.");
+    throw new GithubAuthError(
+      "No hay una sesión de GitHub activa en este navegador. Pulsa «reconectar».",
+    );
   }
+  return token;
+}
+
+export async function getGithubRepositories() {
+  const token = await requireGithubToken();
 
   const repositories: ExternalGithubRepository[] = [];
   for (let page = 1; ; page += 1) {
@@ -135,19 +150,25 @@ export async function getGithubRepositories() {
       batch.map(async (repository) => {
         const base = mapRepository(repository);
         const [languages, readme] = await Promise.all([
+          // Un repo inaccesible (403/404/451) no debe abortar todo el inventario.
           githubFetch<Record<string, number>>(
             `/repos/${repository.owner.login}/${repository.name}/languages`,
             token,
-          ),
+          ).catch((error: unknown) => {
+            if (error instanceof GithubRequestError && error.status === 401) {
+              throw error;
+            }
+            return {} as Record<string, number>;
+          }),
           fetch(
             `${GITHUB_API}/repos/${repository.owner.login}/${repository.name}/readme`,
             { headers: headers(token), cache: "no-store" },
-          ),
+          ).catch(() => null),
         ]);
         return {
           ...base,
           languages,
-          readmeAvailable: readme.ok,
+          readmeAvailable: Boolean(readme?.ok),
         };
       }),
     );
@@ -159,8 +180,7 @@ export async function getGithubRepositories() {
 }
 
 export async function getGithubAccount() {
-  const token = await getGithubToken();
-  if (!token) return null;
+  const token = await requireGithubToken();
   return githubFetch<{ login: string; name: string | null }>("/user", token);
 }
 

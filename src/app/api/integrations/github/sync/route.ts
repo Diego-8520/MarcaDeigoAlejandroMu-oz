@@ -4,6 +4,8 @@ import { requireDashboardUser } from "@/lib/integrations/auth";
 import {
   getGithubAccount,
   getGithubRepositories,
+  GithubAuthError,
+  GithubRequestError,
 } from "@/lib/integrations/github";
 
 export async function POST(request: Request) {
@@ -85,8 +87,21 @@ export async function POST(request: Request) {
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "No se pudo sincronizar GitHub.";
+    const supabase = createAdminClient();
+    // Sin token válido la conexión ya no está operativa: reflejarlo en el
+    // panel para que ofrezca reconectar en lugar de seguir marcando «conectado».
+    const needsReconnect =
+      error instanceof GithubAuthError ||
+      (error instanceof GithubRequestError && error.status === 401);
+    await supabase
+      .from("integration_connections")
+      .update({
+        ...(needsReconnect ? { status: "error" } : {}),
+        sync_error: message,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("provider", "github");
     if (runId) {
-      const supabase = createAdminClient();
       await supabase
         .from("sync_runs")
         .update({

@@ -64,6 +64,7 @@ Ver `.env.example`. Nunca subir `.env.local` al repositorio.
 | `N8N_WEBHOOK_URL`               | Fase 3 - notificaciones de leads               |
 | `GITHUB_CLIENT_ID`              | OAuth de GitHub, solo servidor                 |
 | `GITHUB_CLIENT_SECRET`          | Secreto OAuth de GitHub, solo servidor         |
+| `GITHUB_OAUTH_REDIRECT_URI`     | Callback OAuth exacta registrada en GitHub     |
 | `INTEGRATIONS_ENCRYPTION_KEY`   | Clave base64 de 32 bytes para token GitHub     |
 | `VERCEL_API_TOKEN`              | Token de lectura de Vercel, solo servidor      |
 | `VERCEL_TEAM_ID`                | Equipo Vercel opcional                         |
@@ -73,6 +74,12 @@ Las variables de integraciones nunca deben tener prefijo `NEXT_PUBLIC_` ni
 aparecer en el navegador. `INTEGRATIONS_ENCRYPTION_KEY` debe generarse como
 una clave aleatoria de 32 bytes codificada en base64. Los tokens expuestos
 accidentalmente deben revocarse y reemplazarse antes de usarlos.
+
+`GITHUB_OAUTH_REDIRECT_URI` debe ser idéntica a la «Authorization callback URL»
+de la OAuth App de GitHub. En producción:
+`https://www.diegoalejandromunoz.com/api/integrations/github/callback`
+(el dominio raíz redirige a www). Si no se define, se usa el host de la
+petición, lo que solo sirve en local con una OAuth App propia.
 
 La conexión OAuth actual de GitHub solicita lectura de identidad y `public_repo`
 para mantener el alcance limitado. Para descubrir repositorios privados con
