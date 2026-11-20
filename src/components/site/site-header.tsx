@@ -75,9 +75,14 @@ export function SiteHeader() {
         )}
       >
         <div className="container-x flex h-[var(--header-h)] items-center justify-between gap-4">
-          <Link href="/" aria-label="DAM, Diego Alejandro Muñoz: ir al inicio" className="tap-area group flex items-baseline gap-2.5">
-            <BrandMark className="h-[22px] w-[22px] text-ink" />
-            <span className="display stretch-hover text-xl text-ink">DAM</span>
+          <Link href="/" aria-label="DAM, Diego Alejandro Muñoz: ir al inicio" className="tap-area group flex items-center gap-3">
+            <BrandMark className="h-[30px] w-[30px] text-ink" />
+            {/* Lockup horizontal del kit en miniatura: regla de 1 px + nombre en mono */}
+            <span aria-hidden="true" className="hidden h-7 w-px bg-line-focus sm:block" />
+            <span className="hidden flex-col font-mono text-[10px] uppercase leading-[1.4] tracking-[0.08em] sm:flex">
+              <span className="text-ink">Diego Alejandro Muñoz</span>
+              <span className="text-ink-subtle">Software Developer</span>
+            </span>
           </Link>
 
           <div className="hidden items-center gap-5 font-mono text-[11px] uppercase tracking-[0.08em] text-ink md:flex">

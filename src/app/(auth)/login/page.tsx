@@ -16,9 +16,13 @@ export default function LoginPage() {
     <div className="grid min-h-[100dvh] grid-cols-1 bg-paper lg:grid-cols-2">
       {/* Panel editorial (solo escritorio) */}
       <div className="relative hidden flex-col justify-between border-r border-line p-12 lg:flex">
-        <Link href="/" className="group flex items-baseline gap-2.5" aria-label="DAM: volver al sitio público">
-          <BrandMark className="h-[22px] w-[22px] text-ink" />
-          <span className="display text-xl text-ink">DAM</span>
+        <Link href="/" className="group flex items-center gap-3" aria-label="DAM: volver al sitio público">
+          <BrandMark className="h-[30px] w-[30px] text-ink" />
+          <span aria-hidden="true" className="h-7 w-px bg-line-focus" />
+          <span className="flex flex-col font-mono text-[10px] uppercase leading-[1.4] tracking-[0.08em]">
+            <span className="text-ink">Diego Alejandro Muñoz</span>
+            <span className="text-ink-subtle">Volver al sitio</span>
+          </span>
         </Link>
         <p className="display text-[clamp(3rem,6vw,6.5rem)] text-ink">
           Panel <span className="font-serif">privado</span>
