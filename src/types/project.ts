@@ -49,10 +49,19 @@ export interface Project {
   vercelProductionUrl: string | null;
   vercelCustomDomain: string | null;
   vercelDeploymentStatus: string | null;
+  screenshotsStatus: ScreenshotsStatus | null;
+  screenshotsError: string | null;
+  screenshotsCapturedAt: string | null;
   createdAt: string;
   updatedAt: string;
   images?: ProjectImage[];
 }
+
+/** Estado de la captura automática del sitio del proyecto. */
+export type ScreenshotsStatus = "pending" | "ready" | "failed";
+
+/** upload = subida o importada a mano; desktop/mobile/section = captura automática. */
+export type ProjectImageKind = "upload" | "desktop" | "mobile" | "section";
 
 export interface ProjectImage {
   id: string;
@@ -61,6 +70,11 @@ export interface ProjectImage {
   publicUrl: string;
   altText: string | null;
   sortOrder: number;
+  kind: ProjectImageKind;
+  source: "manual" | "auto";
+  width: number | null;
+  height: number | null;
+  caption: string | null;
 }
 
 export interface Service {

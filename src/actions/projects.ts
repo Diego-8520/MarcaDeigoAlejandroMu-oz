@@ -1,10 +1,16 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { redirect } from "next/navigation";
 import { projectSchema, type ProjectInput } from "@/lib/validation/project";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { setProjectSkills } from "@/actions/skills";
+import { revalidateProjectPaths } from "@/lib/projects/revalidate";
+import {
+  captureProjectScreenshots,
+  markScreenshotsPending,
+} from "@/lib/screenshots/run";
 
 export type ProjectActionState = {
   status: "idle" | "success" | "error";
@@ -165,18 +171,25 @@ async function assertUniqueSlug(slug: string, currentId?: string) {
   }
 }
 
-function revalidateProjectPaths() {
-  revalidatePath("/");
-  revalidatePath("/proyectos");
-  revalidatePath("/proyectos/[slug]", "page");
-  revalidatePath("/dashboard/proyectos");
-  revalidatePath("/dashboard/proyectos/[id]/editar", "page");
+/** URL que se captura: la demo o, si no hay, la de producción en Vercel. */
+function captureUrl(row: { demo_url?: string | null; vercel_production_url?: string | null }) {
+  return row.demo_url || row.vercel_production_url || null;
+}
+
+/**
+ * Marca el proyecto como «capturando» y agenda la captura tras responder.
+ * Corre dentro del maxDuration de la ruta del panel (60 s).
+ */
+async function scheduleScreenshots(projectId: string, url: string) {
+  await markScreenshotsPending(projectId);
+  after(() => captureProjectScreenshots(projectId, url));
 }
 
 export async function createProject(
   _prevState: ProjectActionState,
   formData: FormData,
 ): Promise<ProjectActionState> {
+  let createdId: string;
   try {
     await ensureAuthenticated();
 
@@ -205,14 +218,19 @@ export async function createProject(
     );
     if (skillsResult.status === "error") throw new Error(skillsResult.message);
 
+    const url = captureUrl(payload);
+    if (url) await scheduleScreenshots(project.id, url);
+
     revalidateProjectPaths();
-    return { status: "success", message: "Proyecto creado." };
+    createdId = project.id;
   } catch (error) {
     return {
       status: "error",
       message: getErrorMessage(error, "No se pudo crear el proyecto."),
     };
   }
+  // A la edición: ahí está la galería y el estado de la captura.
+  redirect(`/dashboard/proyectos/${createdId}/editar`);
 }
 
 export async function updateProject(
@@ -236,6 +254,13 @@ export async function updateProject(
     await assertUniqueSlug(payload.slug, id);
 
     const supabase = createAdminClient();
+    const { data: previous, error: previousError } = await supabase
+      .from("projects")
+      .select("demo_url,vercel_production_url")
+      .eq("id", id)
+      .single();
+    if (previousError) throw previousError;
+
     const { error } = await supabase
       .from("projects")
       .update(payload)
@@ -244,8 +269,18 @@ export async function updateProject(
     const skillsResult = await setProjectSkills(id, skillIdsFromForm(formData));
     if (skillsResult.status === "error") throw new Error(skillsResult.message);
 
+    // Nueva URL de demo: se vuelve a capturar el sitio.
+    const url = captureUrl(payload);
+    const urlChanged = url !== null && url !== captureUrl(previous);
+    if (urlChanged) await scheduleScreenshots(id, url);
+
     revalidateProjectPaths();
-    return { status: "success", message: "Proyecto actualizado." };
+    return {
+      status: "success",
+      message: urlChanged
+        ? "Proyecto actualizado. Capturando el sitio nuevo…"
+        : "Proyecto actualizado.",
+    };
   } catch (error) {
     return {
       status: "error",
@@ -268,6 +303,37 @@ export async function deleteProject(id: string): Promise<ProjectActionState> {
     return {
       status: "error",
       message: getErrorMessage(error, "No se pudo eliminar el proyecto."),
+    };
+  }
+}
+
+/** Botón «Capturar de nuevo» del panel. Reemplaza solo las imágenes automáticas. */
+export async function recaptureProjectScreenshots(
+  projectId: string,
+): Promise<ProjectActionState> {
+  try {
+    await ensureAuthenticated();
+
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("projects")
+      .select("demo_url,vercel_production_url")
+      .eq("id", projectId)
+      .single();
+    if (error) throw error;
+
+    const url = captureUrl(data);
+    if (!url) {
+      return { status: "error", message: "El proyecto no tiene URL de demo para capturar." };
+    }
+
+    await scheduleScreenshots(projectId, url);
+    revalidateProjectPaths();
+    return { status: "success", message: "Capturando el sitio…" };
+  } catch (error) {
+    return {
+      status: "error",
+      message: getErrorMessage(error, "No se pudo iniciar la captura."),
     };
   }
 }

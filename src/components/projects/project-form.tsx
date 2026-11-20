@@ -7,6 +7,8 @@ import { importImageFromUrl } from "@/actions/project-images";
 import type { ProjectActionState } from "@/actions/projects";
 import type { GithubMetadata, Project } from "@/types/project";
 import type { Skill } from "@/lib/data/skills-queries";
+import type { ReadmeSuggestions } from "@/lib/projects/readme-parser";
+import { ReadmeSuggestionsPanel } from "@/components/projects/readme-suggestions-panel";
 
 type ProjectFormProps = {
   action: (
@@ -150,6 +152,30 @@ export function ProjectForm({
   const [imageImportMessage, setImageImportMessage] = useState<string | null>(
     null,
   );
+  const [readmeSuggestions, setReadmeSuggestions] =
+    useState<ReadmeSuggestions | null>(null);
+  const [readmeStatus, setReadmeStatus] = useState<{
+    loading: boolean;
+    error: string | null;
+  }>({ loading: false, error: null });
+
+  async function loadReadmeSuggestion() {
+    if (!repositoryUrl || !isGithubUrl(repositoryUrl)) {
+      setReadmeStatus({
+        loading: false,
+        error: "La URL debe ser de GitHub, con formato github.com/owner/repo.",
+      });
+      return;
+    }
+
+    setReadmeStatus({ loading: true, error: null });
+    const { data, error } = await fetchSuggestion<ReadmeSuggestions>(
+      "/api/dashboard/github-readme",
+      { repositoryUrl },
+    );
+    setReadmeSuggestions(data);
+    setReadmeStatus({ loading: false, error });
+  }
 
   async function loadGithubSuggestion() {
     if (!repositoryUrl) {
@@ -496,6 +522,10 @@ export function ProjectForm({
                 setGithubSuggestion(null);
                 setGithubSyncedAt("");
               }
+              if (readmeSuggestions) {
+                setReadmeSuggestions(null);
+                setReadmeStatus({ loading: false, error: null });
+              }
             }}
             onBlur={loadGithubSuggestion}
             className="mt-1.5 w-full border border-line bg-transparent px-3 py-2 font-body text-sm text-ink outline-none focus:border-signal"
@@ -510,16 +540,81 @@ export function ProjectForm({
               {githubStatus.error}
             </p>
           )}
-          <button
-            type="button"
-            onClick={loadGithubSuggestion}
-            disabled={githubStatus.loading || !repositoryUrl}
-            className="mt-2 border border-line px-3 py-1.5 font-mono text-xs text-ink transition-colors hover:border-signal hover:text-signal disabled:opacity-50"
-          >
-            {githubStatus.loading ? "sincronizando..." : "sincronizar github"}
-          </button>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={loadGithubSuggestion}
+              disabled={githubStatus.loading || !repositoryUrl}
+              className="border border-line px-3 py-1.5 font-mono text-xs text-ink transition-colors hover:border-signal hover:text-signal disabled:opacity-50"
+            >
+              {githubStatus.loading ? "sincronizando..." : "sincronizar github"}
+            </button>
+            <button
+              type="button"
+              onClick={loadReadmeSuggestion}
+              disabled={readmeStatus.loading || !repositoryUrl}
+              className="border border-line px-3 py-1.5 font-mono text-xs text-ink transition-colors hover:border-signal hover:text-signal disabled:opacity-50"
+            >
+              {readmeStatus.loading ? "leyendo readme..." : "sugerir desde readme"}
+            </button>
+          </div>
+          {readmeStatus.error && (
+            <p className="mt-1.5 font-mono text-xs text-red-600">
+              {readmeStatus.error}
+            </p>
+          )}
         </div>
       </div>
+
+      {readmeSuggestions && (
+        <ReadmeSuggestionsPanel
+          suggestions={readmeSuggestions}
+          fields={{
+            shortDescription: {
+              label: "descripción corta",
+              value: shortDescription,
+              setValue: setShortDescription,
+              appendSeparator: " ",
+            },
+            description: {
+              label: "descripción",
+              value: description,
+              setValue: setDescription,
+              appendSeparator: "\n\n",
+            },
+            problem: {
+              label: "problema",
+              value: problem,
+              setValue: setProblem,
+              appendSeparator: "\n\n",
+            },
+            solution: {
+              label: "solución",
+              value: solution,
+              setValue: setSolution,
+              appendSeparator: "\n\n",
+            },
+            results: {
+              label: "resultados",
+              value: results,
+              setValue: setResults,
+              appendSeparator: "\n\n",
+            },
+            demoUrl: {
+              label: "demo url",
+              value: demoUrl,
+              setValue: setDemoUrl,
+              appendSeparator: null,
+            },
+          }}
+          technologies={technologies}
+          setTechnologies={setTechnologies}
+          projectId={project?.id}
+          imageAltFallback={title}
+          onImageImported={() => router.refresh()}
+          onClose={() => setReadmeSuggestions(null)}
+        />
+      )}
 
       {githubSuggestion && (
         <div className="border border-line p-4">

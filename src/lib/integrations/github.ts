@@ -49,29 +49,47 @@ export type ExternalGithubRepository = {
   readmeAvailable: boolean;
 };
 
-function headers(token: string) {
-  return {
-    Accept: "application/vnd.github+json",
-    Authorization: `Bearer ${token}`,
+function headers(token: string | null, accept = "application/vnd.github+json") {
+  const result: Record<string, string> = {
+    Accept: accept,
     "X-GitHub-Api-Version": "2022-11-28",
   };
+  if (token) result.Authorization = `Bearer ${token}`;
+  return result;
 }
 
-async function githubFetch<T>(path: string, token: string): Promise<T> {
+export class GithubRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = "GithubRequestError";
+  }
+}
+
+async function githubFetch<T>(
+  path: string,
+  token: string | null,
+  options: { accept?: string; as?: "json" | "text" } = {},
+): Promise<T> {
   const response = await fetch(`${GITHUB_API}${path}`, {
-    headers: headers(token),
+    headers: headers(token, options.accept),
     cache: "no-store",
   });
 
   if (!response.ok) {
-    throw new Error(
+    throw new GithubRequestError(
       response.status === 401
         ? "La conexión de GitHub expiró o fue revocada."
         : `GitHub respondió con estado ${response.status}.`,
+      response.status,
     );
   }
 
-  return (await response.json()) as T;
+  return (options.as === "text"
+    ? await response.text()
+    : await response.json()) as T;
 }
 
 function mapRepository(
@@ -144,4 +162,80 @@ export async function getGithubAccount() {
   const token = await getGithubToken();
   if (!token) return null;
   return githubFetch<{ login: string; name: string | null }>("/user", token);
+}
+
+export type RepositoryReadme = {
+  owner: string;
+  name: string;
+  markdown: string | null;
+  homepage: string | null;
+  topics: string[];
+  languages: Record<string, number>;
+  defaultBranch: string;
+};
+
+/** Extrae `{ owner, name }` de una URL de GitHub (https, ssh o `owner/name`). */
+export function parseRepositoryUrl(url: string) {
+  const value = url.trim();
+  const ssh = value.match(/^git@github\.com:([^/]+)\/([^/]+?)(?:\.git)?\/?$/i);
+  if (ssh) return { owner: ssh[1], name: ssh[2] };
+
+  try {
+    const parsed = new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`);
+    if (parsed.hostname.replace(/^www\./, "").toLowerCase() !== "github.com") {
+      return null;
+    }
+    const [owner, rawName] = parsed.pathname.split("/").filter(Boolean);
+    const name = rawName?.replace(/\.git$/, "");
+    if (!owner || !name) return null;
+    return { owner, name };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Lee el README crudo del repo y los datos del repo útiles para la ficha.
+ * Usa el token de GitHub conectado si existe; si no, consulta anónima
+ * (solo repos públicos). `markdown` es null cuando el repo no tiene README.
+ */
+export async function getRepositoryReadme(
+  owner: string,
+  name: string,
+): Promise<RepositoryReadme> {
+  const token = await getGithubToken();
+  const base = `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`;
+
+  const repository = await githubFetch<{
+    homepage: string | null;
+    topics?: string[];
+    default_branch: string | null;
+    owner: { login: string };
+    name: string;
+  }>(base, token);
+
+  const [languages, markdown] = await Promise.all([
+    githubFetch<Record<string, number>>(`${base}/languages`, token).catch(
+      () => ({}) as Record<string, number>,
+    ),
+    githubFetch<string>(`${base}/readme`, token, {
+      accept: "application/vnd.github.raw+json",
+      as: "text",
+    }).catch((error: unknown) => {
+      if (error instanceof GithubRequestError && error.status === 404) {
+        return null;
+      }
+      throw error;
+    }),
+  ]);
+
+  return {
+    owner: repository.owner.login,
+    name: repository.name,
+    markdown,
+    homepage: repository.homepage?.trim() || null,
+    topics: repository.topics ?? [],
+    languages,
+    defaultBranch: repository.default_branch ?? "main",
+  };
 }

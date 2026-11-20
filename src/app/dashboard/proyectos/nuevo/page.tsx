@@ -4,6 +4,8 @@ import { ProjectForm } from "@/components/projects/project-form";
 import { getSkillsAdmin } from "@/lib/data/skills-queries";
 
 export const dynamic = "force-dynamic";
+// La captura del sitio corre en after() dentro de este límite.
+export const maxDuration = 60;
 
 export default async function NuevoProyectoPage() {
   const skills = await getSkillsAdmin();

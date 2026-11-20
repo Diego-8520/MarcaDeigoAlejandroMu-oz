@@ -11,7 +11,23 @@ import {
   uploadProjectImage,
   type ProjectImageActionState,
 } from "@/actions/project-images";
-import type { ProjectImage } from "@/types/project";
+import { recaptureProjectScreenshots } from "@/actions/projects";
+import type { ProjectImage, ScreenshotsStatus } from "@/types/project";
+
+const KIND_LABEL: Record<ProjectImage["kind"], string> = {
+  upload: "imagen",
+  desktop: "escritorio",
+  mobile: "móvil",
+  section: "sección",
+};
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("es-CO", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "America/Bogota",
+  }).format(new Date(value));
+}
 
 const initialState: ProjectImageActionState = { status: "idle" };
 
@@ -19,10 +35,18 @@ export function ProjectImagesManager({
   projectId,
   initialImages,
   suggestedImageUrl,
+  captureUrl,
+  screenshotsStatus,
+  screenshotsError,
+  screenshotsCapturedAt,
 }: {
   projectId: string;
   initialImages: ProjectImage[];
   suggestedImageUrl?: string | null;
+  captureUrl?: string | null;
+  screenshotsStatus?: ScreenshotsStatus | null;
+  screenshotsError?: string | null;
+  screenshotsCapturedAt?: string | null;
 }) {
   const router = useRouter();
   const uploadAction = uploadProjectImage.bind(null, projectId);
@@ -39,6 +63,22 @@ export function ProjectImagesManager({
       router.refresh();
     }
   }, [router, uploadState.status]);
+
+  // Mientras la captura corre en segundo plano, se refresca cada 4 s.
+  const capturing = screenshotsStatus === "pending";
+  useEffect(() => {
+    if (!capturing) return;
+    const timer = window.setInterval(() => router.refresh(), 4000);
+    return () => window.clearInterval(timer);
+  }, [capturing, router]);
+
+  function recapture() {
+    startTransition(async () => {
+      const result = await recaptureProjectScreenshots(projectId);
+      setMessage(result.message ?? null);
+      router.refresh();
+    });
+  }
 
   function moveImage(index: number, direction: -1 | 1) {
     const targetIndex = index + direction;
@@ -99,6 +139,33 @@ export function ProjectImagesManager({
         <h2 className="mt-2 font-display text-xl font-semibold text-ink">
           Galería
         </h2>
+      </div>
+
+      {/* Captura automática del sitio */}
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border border-line p-4">
+        <div className="min-w-0 space-y-1">
+          <p className="font-mono text-xs text-ink-muted">captura automática del sitio</p>
+          <p role="status" aria-live="polite" className="font-mono text-xs text-ink">
+            {!captureUrl
+              ? "Añade una URL de demo para capturar el sitio."
+              : capturing
+                ? "Capturando… escritorio, secciones clave y móvil (hasta 1 min)."
+                : screenshotsStatus === "failed"
+                  ? `Falló: ${screenshotsError ?? "error desconocido"}`
+                  : screenshotsStatus === "ready" && screenshotsCapturedAt
+                    ? `Capturas listas · ${formatDate(screenshotsCapturedAt)}`
+                    : "Sin capturas todavía."}
+          </p>
+          {captureUrl && <p className="truncate font-mono text-[11px] text-ink-subtle">{captureUrl}</p>}
+        </div>
+        <button
+          type="button"
+          onClick={recapture}
+          disabled={!captureUrl || capturing || isPending}
+          className="border border-line px-3 py-1.5 font-mono text-xs text-ink transition-colors hover:border-signal hover:text-signal disabled:opacity-40"
+        >
+          {capturing ? "capturando…" : "capturar de nuevo"}
+        </button>
       </div>
 
       {suggestedImageUrl && images.length === 0 && (
@@ -181,6 +248,13 @@ export function ProjectImagesManager({
               />
             </div>
             <div className="space-y-3">
+              <p className="flex flex-wrap gap-2 font-mono text-[11px] uppercase tracking-[0.06em]">
+                <span className={image.source === "auto" ? "text-signal" : "text-ink-muted"}>
+                  {image.source === "auto" ? "auto" : "manual"}
+                </span>
+                <span className="text-ink-subtle">· {KIND_LABEL[image.kind]}</span>
+                {image.caption && <span className="text-ink-subtle">· {image.caption}</span>}
+              </p>
               <div>
                 <label
                   htmlFor={`alt-${image.id}`}

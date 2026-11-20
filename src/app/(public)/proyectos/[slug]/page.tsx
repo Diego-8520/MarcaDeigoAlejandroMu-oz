@@ -1,22 +1,58 @@
 import type { Metadata } from "next";
-import type { Project } from "@/types/project";
+import type { Project, ProjectImage } from "@/types/project";
 import { NO_INDEX, pageMetadata } from "@/lib/seo";
 import { SERVICE_NAMES, servicesForProject } from "@/lib/site";
 import { ViewTransition } from "react";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Globe } from "lucide-react";
 import { Tag } from "@/components/ui/section";
 import { GithubIcon } from "@/components/ui/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { Reveal, SplitReveal } from "@/components/motion/reveal";
+import { Badge } from "@/components/ui/badge";
+import { Counter } from "@/components/motion/counter";
+import { BrowserFrame, domainOf, type FrameImage } from "@/components/project/frames";
+import { ProjectHero } from "@/components/project/project-hero";
+import { ProjectTour, type TourItem } from "@/components/project/project-tour";
 import { getProjectBySlug, getPublishedProjects } from "@/lib/data/projects-queries";
 import { getTestimonialsByProject } from "@/lib/data/testimonials-queries";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbNode, creativeWorkNode, graph, personRef } from "@/lib/schema";
 
 export const revalidate = 60;
+
+function toFrame(image: ProjectImage, title: string): FrameImage {
+  return { src: image.publicUrl, alt: image.altText ?? title, width: image.width, height: image.height };
+}
+
+/**
+ * Reparte las imágenes: hero de escritorio (captura `desktop`, si no la
+ * portada o la primera imagen), vista móvil y el resto para el recorrido.
+ */
+function projectMedia(project: Project) {
+  const images = project.images ?? [];
+  const desktopShot = images.find((img) => img.kind === "desktop");
+  const mobileShot = images.find((img) => img.kind === "mobile");
+
+  let hero: FrameImage | null = null;
+  let heroId: string | null = null;
+  if (desktopShot) {
+    hero = toFrame(desktopShot, project.title);
+    heroId = desktopShot.id;
+  } else if (project.featuredImageUrl) {
+    hero = { src: project.featuredImageUrl, alt: project.title };
+  } else if (images[0]) {
+    hero = toFrame(images[0], project.title);
+    heroId = images[0].id;
+  }
+
+  const tour: TourItem[] = images
+    .filter((img) => img.id !== heroId && img.kind !== "mobile" && img.publicUrl !== project.featuredImageUrl)
+    .map((img) => ({ ...toFrame(img, project.title), id: img.id, caption: img.caption }));
+
+  return { hero, mobile: mobileShot ? toFrame(mobileShot, project.title) : null, tour };
+}
 
 /** Descripción corta del caso: la misma para metadata y datos estructurados. */
 function projectDescription(project: Project): string {
@@ -38,11 +74,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const title = `${project.title} — Caso de Estudio`;
   const description = projectDescription(project);
 
-  const ogImages = project.featuredImageUrl
-    ? [{ url: project.featuredImageUrl, width: 1200, height: 630, alt: project.title }]
-    : project.images?.[0]
-      ? [{ url: project.images[0].publicUrl, width: 1200, height: 630, alt: project.title }]
-      : [];
+  const { hero } = projectMedia(project);
+  const ogImages = hero
+    ? [{ url: hero.src, width: hero.width ?? 1200, height: hero.height ?? 630, alt: hero.alt }]
+    : [];
 
   return pageMetadata({
     title,
@@ -62,6 +97,12 @@ export async function generateStaticParams() {
   }
 }
 
+const STATUS_BADGE: Record<string, "live" | "en-desarrollo" | "tech"> = {
+  live: "live",
+  "en-desarrollo": "en-desarrollo",
+  archivado: "tech",
+};
+
 const STATUS_LABEL: Record<string, string> = {
   live: "En vivo",
   "en-desarrollo": "En desarrollo",
@@ -77,12 +118,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const testimonials = await getTestimonialsByProject(project.id);
   const primaryRepoUrl = project.repositoryUrl ?? project.githubMetadata?.repositoryUrl;
 
-  const heroUrl = project.featuredImageUrl || project.images?.[0]?.publicUrl || null;
-  const heroAlt = project.images?.[0]?.altText ?? project.title;
-  const gallery = (project.images ?? []).filter((img) => img.publicUrl !== heroUrl);
+  const { hero, mobile, tour } = projectMedia(project);
+  const domain = domainOf(project.demoUrl ?? project.vercelProductionUrl);
+  const year = new Date(project.createdAt).getFullYear();
 
   const position = allProjects.findIndex((p) => p.slug === project.slug);
   const next = allProjects.length > 1 ? allProjects[(position + 1) % allProjects.length] : null;
+  const nextCover = next ? projectMedia(next).hero : null;
 
   const chapters = [
     {
@@ -129,28 +171,47 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         <div className="mt-10 flex flex-wrap items-center gap-4 font-mono text-[11px] uppercase tracking-[0.08em]">
           <span className="text-signal">{project.categories.join(" · ") || "Desarrollo de Software"}</span>
           <span aria-hidden="true" className="h-px w-10 bg-line-focus" />
-          <span className={project.status === "live" ? "text-emerald" : "text-ink-muted"}>{STATUS_LABEL[project.status] ?? project.status}</span>
+          <span className="text-ink-muted">{year}</span>
+          <Badge variant={STATUS_BADGE[project.status] ?? "tech"}>{STATUS_LABEL[project.status] ?? project.status}</Badge>
         </div>
 
         <ViewTransition name={`project-title-${project.slug}`} share="project-morph">
-          <h1 className="display display-lg mt-6 text-ink">{project.title}</h1>
+          <SplitReveal as="h1" immediate className="display display-lg mt-6 text-ink">
+            {project.title}
+          </SplitReveal>
         </ViewTransition>
 
         <div className="mt-10 grid grid-cols-1 gap-8 border-t border-line pt-8 lg:grid-cols-12 lg:gap-6">
-          <p className="lede lg:col-span-7 lg:col-start-5">{project.shortDescription ?? project.description}</p>
+          <p className="eyebrow lg:col-span-3">Caso de estudio</p>
+          <Reveal immediate delay={0.2} className="lg:col-span-7 lg:col-start-5">
+            <p className="lede">{project.shortDescription ?? project.description}</p>
+          </Reveal>
         </div>
       </header>
 
       {/* Imagen principal a sangre (se transforma desde la vista previa del índice) */}
-      {heroUrl && (
+      {hero && (
         <div className="container-x">
-          <ViewTransition name={`project-media-${project.slug}`} share="project-morph">
-            <div className="relative aspect-[16/10] max-h-[86vh] w-full overflow-hidden border border-line bg-surface sm:aspect-[16/9]">
-              <Image src={heroUrl} alt={heroAlt} fill priority sizes="(min-width: 1600px) 1600px, 100vw" className="object-cover" />
-            </div>
-          </ViewTransition>
+          <ProjectHero slug={project.slug} desktop={hero} mobile={mobile} domain={domain} />
         </div>
       )}
+
+      {/* Datos clave */}
+      <dl className="container-x mt-16 grid grid-cols-2 border-y border-line font-mono text-xs sm:mt-20 lg:grid-cols-4">
+        {[
+          { label: "Estado", value: STATUS_LABEL[project.status] ?? project.status },
+          { label: "Año", value: String(year) },
+          { label: "Stack", value: <><Counter value={project.technologies.length} /> tecnologías</> },
+          project.githubMetadata
+            ? { label: "GitHub", value: <><Counter value={project.githubMetadata.stars} /> stars · {project.githubMetadata.primaryLanguage ?? "—"}</> }
+            : { label: "Entrega", value: domain ?? "Repositorio privado" },
+        ].map((fact, i) => (
+          <div key={fact.label} className={`py-6 pr-4 ${i % 2 === 1 ? "border-l border-line pl-4 lg:pl-6" : ""} ${i === 2 ? "border-t border-line lg:border-l lg:border-t-0 lg:pl-6" : ""} ${i === 3 ? "border-t border-line lg:border-t-0" : ""}`}>
+            <dt className="eyebrow">{fact.label}</dt>
+            <dd className="mt-2 text-sm uppercase tracking-[0.04em] text-ink">{fact.value}</dd>
+          </div>
+        ))}
+      </dl>
 
       {/* Cuerpo: ficha técnica pegada al margen + capítulos */}
       <div className="container-x grid grid-cols-1 gap-16 py-20 sm:py-28 lg:grid-cols-12 lg:gap-6">
@@ -246,7 +307,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
                     {chapter.title}
                   </SplitReveal>
                   <Reveal>
-                    <p className="mt-6 max-w-[62ch] text-lg leading-relaxed text-ink-muted">{chapter.body}</p>
+                    <p className={`mt-6 max-w-[62ch] whitespace-pre-line text-lg leading-relaxed text-ink-muted ${i === 0 ? "dropcap" : ""}`}>
+                      {chapter.body}
+                    </p>
                   </Reveal>
                 </div>
               </div>
@@ -255,25 +318,18 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         </div>
       </div>
 
-      {/* Galería */}
-      {gallery.length > 0 && (
-        <section aria-label="Galería del proyecto" className="container-x grid grid-cols-1 gap-6 pb-24 sm:grid-cols-12">
-          {gallery.map((image, i) => (
-            <Reveal
-              key={image.id}
-              className={`relative overflow-hidden border border-line bg-surface ${
-                i % 3 === 0 ? "aspect-[16/9] sm:col-span-12" : "aspect-[4/3] sm:col-span-6"
-              }`}
-            >
-              <Image
-                src={image.publicUrl}
-                alt={image.altText ?? project.title}
-                fill
-                sizes={i % 3 === 0 ? "(min-width: 1600px) 1600px, 100vw" : "(min-width: 640px) 50vw, 100vw"}
-                className="object-cover"
-              />
-            </Reveal>
-          ))}
+      {/* Recorrido por las secciones clave */}
+      {tour.length > 0 && (
+        <section aria-labelledby="recorrido" className="container-x border-t border-line py-20 sm:py-28">
+          <div className="mb-14 grid grid-cols-1 gap-6 lg:grid-cols-12">
+            <p className="eyebrow lg:col-span-3">
+              <span className="text-signal">{String(chapters.length + 1).padStart(2, "0")} —</span> Recorrido
+            </p>
+            <SplitReveal id="recorrido" className="display display-md text-ink lg:col-span-9">
+              El producto, <span className="font-serif">sección</span> por sección
+            </SplitReveal>
+          </div>
+          <ProjectTour items={tour} domain={domain} />
         </section>
       )}
 
@@ -319,24 +375,28 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      {/* Siguiente proyecto */}
+      {/* Siguiente proyecto: a pantalla completa, la portada se revela en hover */}
       {next && (
-        <Link
-          href={`/proyectos/${next.slug}`}
-          className="group block border-t border-line bg-surface transition-colors duration-500 hover:bg-signal"
-        >
-          <div className="container-x flex flex-col gap-6 py-16 sm:py-24">
-            <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted group-hover:text-signal-ink">
-              Siguiente proyecto
-            </span>
-            <span className="flex items-end justify-between gap-6">
-              <span className="display display-lg text-ink transition-colors group-hover:text-signal-ink">{next.title}</span>
+        <Link href={`/proyectos/${next.slug}`} className="group block border-t border-line bg-surface">
+          <div className="container-x grid min-h-[80svh] grid-cols-1 content-center gap-10 py-20 lg:grid-cols-12 lg:items-center">
+            <div className="lg:col-span-6">
+              <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-muted">
+                <span className="text-signal">→</span> Siguiente proyecto
+              </span>
+              <span className="display display-lg stretch-hover mt-6 block text-ink transition-colors duration-500 group-hover:text-signal">
+                {next.title}
+              </span>
               <ArrowRight
                 aria-hidden="true"
                 strokeWidth={1.25}
-                className="h-12 w-12 flex-none text-ink transition-transform duration-700 ease-expo group-hover:translate-x-2 group-hover:text-signal-ink sm:h-20 sm:w-20"
+                className="mt-8 h-12 w-12 text-ink transition-transform duration-700 ease-expo group-hover:translate-x-3 group-hover:text-signal sm:h-16 sm:w-16"
               />
-            </span>
+            </div>
+            {nextCover && (
+              <div className="transition-[clip-path] duration-[900ms] ease-expo lg:col-span-6 lg:[clip-path:inset(0_0_100%_0)] lg:group-hover:[clip-path:inset(0_0_0_0)] lg:group-focus-visible:[clip-path:inset(0_0_0_0)]">
+                <BrowserFrame image={nextCover} domain={domainOf(next.demoUrl)} sizes="(min-width: 1024px) 50vw, 100vw" />
+              </div>
+            )}
           </div>
         </Link>
       )}

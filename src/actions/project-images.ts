@@ -1,15 +1,19 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateProjectPaths } from "@/lib/projects/revalidate";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import {
+  PROJECT_IMAGES_BUCKET as BUCKET,
+  storageObjectPath,
+  storeImage,
+} from "@/lib/projects/store-image";
 
 export type ProjectImageActionState = {
   status: "idle" | "success" | "error";
   message?: string;
 };
 
-const BUCKET = "project-images";
 const MAX_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = new Map([
   ["image/jpeg", "jpg"],
@@ -29,19 +33,10 @@ async function ensureAuthenticated() {
   }
 }
 
-function storageObjectPath(storagePath: string) {
-  return storagePath.startsWith(`${BUCKET}/`)
-    ? storagePath.slice(BUCKET.length + 1)
-    : storagePath;
+function revalidateProjectImagePaths() {
+  revalidateProjectPaths();
 }
 
-function revalidateProjectImagePaths() {
-  revalidatePath("/");
-  revalidatePath("/proyectos");
-  revalidatePath("/proyectos/[slug]", "page");
-  revalidatePath("/dashboard/proyectos");
-  revalidatePath("/dashboard/proyectos/[id]/editar", "page");
-}
 
 function validateFile(file: File) {
   const extension = ALLOWED_TYPES.get(file.type);
@@ -55,60 +50,6 @@ function validateFile(file: File) {
   }
 
   return extension;
-}
-
-async function nextSortOrder(projectId: string) {
-  const supabase = createAdminClient();
-  const { data, error } = await supabase
-    .from("project_images")
-    .select("sort_order")
-    .eq("project_id", projectId)
-    .order("sort_order", { ascending: false })
-    .limit(1);
-
-  if (error) throw error;
-  return data?.[0]?.sort_order != null ? data[0].sort_order + 1 : 0;
-}
-
-async function storeImage({
-  projectId,
-  bytes,
-  contentType,
-  extension,
-  altText,
-}: {
-  projectId: string;
-  bytes: ArrayBuffer;
-  contentType: string;
-  extension: string;
-  altText?: string;
-}) {
-  const supabase = createAdminClient();
-  const id = crypto.randomUUID();
-  const objectPath = `${projectId}/${id}.${extension}`;
-  const storagePath = `${BUCKET}/${objectPath}`;
-  const sortOrder = await nextSortOrder(projectId);
-
-  const { error: uploadError } = await supabase.storage
-    .from(BUCKET)
-    .upload(objectPath, bytes, {
-      contentType,
-      upsert: false,
-    });
-
-  if (uploadError) throw uploadError;
-
-  const { error: insertError } = await supabase.from("project_images").insert({
-    project_id: projectId,
-    storage_path: storagePath,
-    alt_text: altText?.trim() || null,
-    sort_order: sortOrder,
-  });
-
-  if (insertError) {
-    await supabase.storage.from(BUCKET).remove([objectPath]);
-    throw insertError;
-  }
 }
 
 export async function uploadProjectImage(
