@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { CONTACT, NAV_ITEMS } from "@/lib/site";
+import { BrandMark } from "@/components/brand/brand-mark";
 
 /** Pie editorial global: CTA a todo el ancho y colofón técnico. */
 export function SiteFooter() {
@@ -84,6 +85,20 @@ export function SiteFooter() {
             </Link>
           </p>
         </div>
+      </div>
+
+      {/* Sello de cierre: el símbolo como firma final de cada página. */}
+      <div className="container-x flex items-end justify-between gap-6 border-t border-line py-10 sm:py-14">
+        <Link href="/" aria-label="DAM, Diego Alejandro Muñoz: volver al inicio" className="group tap-area">
+          <BrandMark className="h-[clamp(4.5rem,11vw,9rem)] w-[clamp(4.5rem,11vw,9rem)] text-ink" />
+        </Link>
+        <p className="text-right font-mono text-[10px] uppercase leading-[1.7] tracking-[0.08em] text-ink-subtle sm:text-[11px]">
+          <span className="text-ink">DAM</span>
+          <br />
+          Diego Alejandro Muñoz
+          <br />
+          Software Developer · Cali
+        </p>
       </div>
 
       <div className="container-x flex flex-wrap items-center justify-between gap-3 border-t border-line py-5 font-mono text-[10px] uppercase tracking-[0.08em] text-ink-subtle">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import {
+  DEFAULT_OG_IMAGE,
   HOME_DESCRIPTION,
   HOME_TITLE,
   SITE_LOCALE,
@@ -60,6 +61,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

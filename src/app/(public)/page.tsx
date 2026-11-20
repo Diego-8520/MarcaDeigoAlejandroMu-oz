@@ -137,7 +137,9 @@ export default async function HomePage() {
                 <span className="block">Diego</span>{" "}
                 <span className="block">Alejandro</span>{" "}
                 <span className="block">
-                  Muñoz<span className="text-signal">.</span>
+                  Muñoz
+                  {/* El punto final es el cursor del logo D·Cursor: parpadea al cargar. */}
+                  <span aria-hidden="true" className="brand-cursor" />
                 </span>
               </SplitReveal>{" "}
               <span className="mt-10 block border-t border-line pt-8 lg:col-span-12 lg:grid lg:grid-cols-subgrid">

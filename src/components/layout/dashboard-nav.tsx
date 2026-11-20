@@ -23,9 +23,9 @@ const DASHBOARD_ITEMS = [
 
 function Brand() {
   return (
-    <Link href="/" className="group flex items-baseline gap-2" aria-label="DAM: ir a la web pública">
-      <BrandMark className="h-5 w-5 text-ink" />
-      <span className="display text-lg text-ink">DAM</span>
+    <Link href="/" className="group flex items-center gap-2.5" aria-label="DAM: ir a la web pública">
+      <BrandMark className="h-6 w-6 text-ink" />
+      <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-ink-subtle">Panel</span>
     </Link>
   );
 }

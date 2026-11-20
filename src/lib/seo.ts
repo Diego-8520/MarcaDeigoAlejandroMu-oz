@@ -35,6 +35,14 @@ export function absoluteUrl(path = "/"): string {
   return path === "/" ? SITE_URL : `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
+/** Imagen social por defecto: logo D·Cursor + nombre (public/og-image.png). */
+export const DEFAULT_OG_IMAGE = {
+  url: "/og-image.png",
+  width: 1200,
+  height: 630,
+  alt: "Logo D·Cursor de Diego Alejandro Muñoz, desarrollador de software en Cali",
+};
+
 type PageMetadataInput = {
   title: string;
   description: string;
@@ -62,12 +70,14 @@ export function pageMetadata({ title, description, path, absoluteTitle, openGrap
       url: path,
       title: absoluteTitle ? title : `${title} | ${SITE_NAME}`,
       description,
+      images: [DEFAULT_OG_IMAGE],
       ...openGraph,
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: absoluteTitle ? title : `${title} | ${SITE_NAME}`,
       description,
+      images: [DEFAULT_OG_IMAGE.url],
     },
   };
 }

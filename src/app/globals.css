@@ -464,3 +464,26 @@ body {
     animation: none;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* Cursor de marca (logo D·Cursor): punto final de la firma del nombre  */
+/* ------------------------------------------------------------------ */
+.brand-cursor {
+  display: inline-block;
+  width: 0.15em;
+  height: 0.15em;
+  margin-left: 0.05em;
+  background: var(--signal);
+}
+
+@keyframes brand-cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Cuatro parpadeos tras el revelado del nombre; luego queda fijo (WCAG 2.2.2). */
+@media (prefers-reduced-motion: no-preference) {
+  .brand-cursor {
+    animation: brand-cursor-blink 1s steps(1, end) 1.6s 4;
+  }
+}
