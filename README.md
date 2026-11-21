@@ -60,6 +60,7 @@ Ver `.env.example`. Nunca subir `.env.local` al repositorio.
 | `NEXT_PUBLIC_SUPABASE_URL`      | URL del proyecto Supabase                      |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clave anonima (uso en cliente)                 |
 | `SUPABASE_SERVICE_ROLE_KEY`     | Clave de servicio (solo servidor, bypassa RLS) |
+| `ADMIN_EMAILS`                  | **Obligatoria.** Emails con acceso al panel, separados por comas. Sin ella nadie entra a `/dashboard` |
 | `OPENAI_API_KEY`                | Fase 3 - AI Profile Assistant                  |
 | `N8N_WEBHOOK_URL`               | Fase 3 - notificaciones de leads               |
 | `GITHUB_CLIENT_ID`              | OAuth de GitHub, solo servidor                 |
@@ -195,6 +196,41 @@ vistas de pagina, vistas de proyecto, descargas de CV y envios de contacto. No
 usa Google Analytics ni servicios de terceros, no guarda IP completa y no usa
 cookies persistentes. El identificador de sesion se guarda en `sessionStorage`,
 por lo que dura solo la pestana/sesion activa del navegador.
+
+## Buscador de empleo (privado)
+
+En `/dashboard/empleo`. Busca vacantes, mide qué tan bien encaja tu HV y entrega
+las palabras clave y tips para ajustarla. Hay dos capas:
+
+1. **Análisis por reglas (sin IA, $0)**, en `src/lib/jobs/analysis`. Usa tus
+   datos del panel (perfil, experiencia, skills, educación, certificaciones,
+   proyectos) y entrega:
+   - puntaje de compatibilidad con desglose;
+   - palabras clave ✓ (presente), ≈ (con otra forma) y ✗ (falta);
+   - tips, resumen sugerido y orden de skills.
+
+   Fuentes de vacantes:
+   - Get on Board y Remotive: sin API key.
+   - Adzuna (México y Brasil): `ADZUNA_APP_ID` y `ADZUNA_APP_KEY`, gratuitas.
+   - Jooble: `JOOBLE_API_KEY`, gratuita.
+   - Vacantes pegadas a mano, como texto o URL.
+2. **Agente en Claude Code (con tu suscripción, sin API)**. Desde la raíz del
+   repo, con `.env.local` configurado:
+   - `/evaluar-oferta <id>`: veredicto, brechas, riesgos y preguntas para la
+     entrevista.
+   - `/adaptar-hv <id>`: HV adaptada a la vacante. Se ve e imprime en PDF desde
+     `/dashboard/empleo/<id>/hv`.
+
+   Las skills están en `.claude/skills/` y usan estos comandos:
+   - `npm run empleo:contexto [-- <id>]`
+   - `npm run empleo:guardar -- <id> <hv|evaluacion> <archivo.json>`
+
+   Antes de guardar, `src/lib/jobs/agent/validate.ts` rechaza cualquier
+   invención: experiencias o fuentes que no existen, cifras sin respaldo y
+   skills sin evidencia.
+
+Migraciones: `0016_job_search.sql` y `0017_job_agent_outputs.sql`. Tablas con
+RLS y sin políticas públicas. Pruebas: `npm test`.
 
 ## Estructura del proyecto
 

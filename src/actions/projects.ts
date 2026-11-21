@@ -1,10 +1,10 @@
 "use server";
 
+import { requireDashboardUser } from "@/lib/integrations/auth";
 import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { projectSchema, type ProjectInput } from "@/lib/validation/project";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
 import { setProjectSkills } from "@/actions/skills";
 import { revalidateProjectPaths } from "@/lib/projects/revalidate";
 import {
@@ -97,15 +97,7 @@ function projectFromFormData(formData: FormData) {
 }
 
 async function ensureAuthenticated() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    throw new Error("No autorizado.");
-  }
+  await requireDashboardUser();
 }
 
 function getErrorMessage(error: unknown, fallback: string): string {

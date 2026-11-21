@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { isAdminEmail } from "@/lib/auth/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
@@ -11,11 +12,18 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
     return NextResponse.redirect(
       new URL("/login?error=auth_failed", request.url),
+    );
+  }
+
+  if (!isAdminEmail(data.user?.email)) {
+    await supabase.auth.signOut();
+    return NextResponse.redirect(
+      new URL("/login?error=unauthorized", request.url),
     );
   }
 

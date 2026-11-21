@@ -7,11 +7,12 @@ import { createClient } from "@/lib/supabase/client";
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [error, setError] = useState<string | null>(() =>
-    searchParams.get("error") === "auth_failed"
-      ? "No se pudo iniciar sesión con Google."
-      : null,
-  );
+  const [error, setError] = useState<string | null>(() => {
+    const code = searchParams.get("error");
+    if (code === "auth_failed") return "No se pudo iniciar sesión con Google.";
+    if (code === "unauthorized") return "Esta cuenta no tiene acceso al panel.";
+    return null;
+  });
   const [isPending, setIsPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
 
@@ -32,7 +33,13 @@ export function LoginForm() {
       return;
     }
 
-    router.push(searchParams.get("redirectTo") ?? "/dashboard");
+    // Solo rutas internas: evita redirecciones abiertas (?redirectTo=//otro-sitio).
+    const redirectTo = searchParams.get("redirectTo");
+    const safeRedirect =
+      redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+        ? redirectTo
+        : "/dashboard";
+    router.push(safeRedirect);
     router.refresh();
   }
 

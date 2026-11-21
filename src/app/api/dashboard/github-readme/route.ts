@@ -1,3 +1,4 @@
+import { isAdminEmail } from "@/lib/auth/admin";
 import { NextResponse } from "next/server";
 import {
   GithubRequestError,
@@ -13,7 +14,7 @@ async function requireUser() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return { supabase, user };
+  return { supabase, user: isAdminEmail(user?.email) ? user : null };
 }
 
 export async function POST(request: Request) {

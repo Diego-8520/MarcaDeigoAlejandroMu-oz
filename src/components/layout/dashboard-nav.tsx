@@ -19,6 +19,7 @@ const DASHBOARD_ITEMS = [
   { href: "/dashboard/perfil", label: "Perfil" },
   { href: "/dashboard/testimonios", label: "Testimonios" },
   { href: "/dashboard/contactos", label: "Contactos" },
+  { href: "/dashboard/empleo", label: "Empleo" },
 ];
 
 function Brand() {
