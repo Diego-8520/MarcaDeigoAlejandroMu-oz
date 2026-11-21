@@ -10,45 +10,117 @@ import { NextSteps } from "@/components/site/next-steps";
 export const metadata: Metadata = pageMetadata({
   title: "Arquitectura de este sitio",
   description:
-    "Cómo está construido diegoalejandromunoz.com: Next.js, Supabase, páginas estáticas con revalidación, panel administrativo y despliegue en Vercel.",
+    "Cómo está construido diegoalejandromunoz.com: Next.js 16, Supabase con RLS, panel administrativo privado, capturas automáticas de proyectos, integraciones con GitHub y Vercel, y despliegue en Vercel.",
   path: "/arquitectura",
 });
 
+type DiagramNode = { x: number; y: number; label: string; sub: string[]; tone?: "signal" | "muted"; small?: boolean };
+
+const COL = [40, 290, 540, 790];
+const W = 200;
+
+/** Nodos del diagrama: fila pública, fila privada y servicios que solo llama el servidor. */
+const NODES: DiagramNode[] = [
+  { x: COL[0], y: 52, label: "Visitante", sub: ["navegador"] },
+  { x: COL[1], y: 52, label: "Proxy", sub: ["sesión Supabase", "allowlist ADMIN_EMAILS"] },
+  { x: COL[2], y: 52, label: "Next.js 16", sub: ["App Router · RSC", "ISR cada 60 s"] },
+  { x: COL[3], y: 52, label: "Supabase", sub: ["Postgres · RLS · Auth", "Storage de imágenes"] },
+  { x: COL[0], y: 252, label: "Diego", sub: ["email o Google", "único administrador"] },
+  { x: COL[2], y: 252, label: "Dashboard", sub: ["Server Actions", "cliente admin en servidor"], tone: "signal" },
+  { x: COL[0], y: 452, label: "GTM · GA4", sub: ["desde el navegador", "solo sitio público"], tone: "muted", small: true },
+  { x: COL[1], y: 452, label: "GitHub · Vercel", sub: ["OAuth · token cifrado", "metadata · README"], tone: "muted", small: true },
+  { x: COL[2], y: 452, label: "Chromium", sub: ["capturas automáticas", "escritorio · móvil"], tone: "muted", small: true },
+  { x: COL[3], y: 452, label: "Empleo", sub: ["4 bolsas de vacantes", "agente en Claude Code"], tone: "muted", small: true },
+];
+
+const LANES = [
+  { y: 30, label: "01 · sitio público" },
+  { y: 230, label: "02 · panel privado" },
+  { y: 430, label: "03 · servicios externos" },
+];
+
 /** Diagrama del flujo de datos. Las líneas discontinuas "fluyen" con una animación CSS. */
 function FlowDiagram() {
-  const nodes = [
-    { x: 20, label: "Visitante", sub: "navegador" },
-    { x: 270, label: "Next.js 16", sub: "App Router · RSC" },
-    { x: 520, label: "Supabase", sub: "Postgres · Auth · Storage" },
-  ];
   return (
     <figure className="overflow-x-auto border-y border-line py-10">
-      <svg viewBox="0 0 760 260" role="img" aria-labelledby="flow-title" className="min-w-[640px] w-full">
-        <title id="flow-title">Flujo: visitante hacia Next.js App Router hacia Supabase; el dashboard escribe mediante Server Actions.</title>
-        {nodes.map((n) => (
-          <g key={n.label}>
-            <rect x={n.x} y={40} width={220} height={80} fill="var(--surface)" stroke="var(--line-focus)" />
-            <text x={n.x + 16} y={74} fill="var(--ink)" fontFamily="var(--font-archivo)" fontWeight={800} fontSize={20} style={{ fontStretch: "125%" }}>
-              {n.label.toUpperCase()}
+      <svg viewBox="0 0 1010 560" role="img" aria-labelledby="flow-title flow-desc" className="w-full min-w-[760px]">
+        <title id="flow-title">Arquitectura de diegoalejandromunoz.com</title>
+        <desc id="flow-desc">
+          El visitante pasa por el proxy de Next.js, que refresca la sesión, y recibe páginas renderizadas en el servidor que leen
+          Supabase con políticas RLS. Diego inicia sesión; el proxy solo deja pasar los correos de ADMIN_EMAILS al dashboard, cuyas
+          Server Actions escriben en Supabase con el cliente de administración. Desde el servidor se llaman GitHub y Vercel, un
+          Chromium que toma capturas de los proyectos y las fuentes del buscador de empleo. GA4 mide solo el sitio público.
+        </desc>
+
+        {LANES.map((lane) => (
+          <g key={lane.label}>
+            <text x={COL[0]} y={lane.y} fill="var(--ink-subtle)" fontFamily="var(--font-jetbrains-mono)" fontSize={10} letterSpacing="0.08em">
+              {lane.label.toUpperCase()}
             </text>
-            <text x={n.x + 16} y={100} fill="var(--ink-muted)" fontFamily="var(--font-jetbrains-mono)" fontSize={11}>
-              {n.sub}
-            </text>
+            <line x1={COL[0] + 8 + lane.label.length * 6.6} y1={lane.y - 3} x2={COL[3] + W} y2={lane.y - 3} stroke="var(--line)" />
           </g>
         ))}
-        <path d="M240 80 H270" className="flow-line" />
-        <path d="M490 80 H520" className="flow-line" />
-        {/* Ruta privada: dashboard → Server Actions → Supabase */}
-        <rect x={270} y={170} width={220} height={60} fill="none" stroke="var(--signal)" strokeDasharray="2 4" />
-        <text x={286} y={198} fill="var(--signal)" fontFamily="var(--font-jetbrains-mono)" fontSize={12}>
-          dashboard · Server Actions
-        </text>
-        <text x={286} y={216} fill="var(--ink-muted)" fontFamily="var(--font-jetbrains-mono)" fontSize={10}>
-          sesión verificada · cliente admin
-        </text>
-        <path d="M380 120 V170" className="flow-line" />
-        <path d="M490 200 H630 V120" className="flow-line flow-line--accent" />
+
+        {NODES.map((n) => {
+          const signal = n.tone === "signal";
+          const muted = n.tone === "muted";
+          return (
+            <g key={n.label}>
+              <rect
+                x={n.x}
+                y={n.y}
+                width={W}
+                height={92}
+                fill={signal || muted ? "none" : "var(--surface)"}
+                stroke={signal ? "var(--signal)" : muted ? "var(--line)" : "var(--line-focus)"}
+                strokeDasharray={signal ? "2 4" : undefined}
+              />
+              <text
+                x={n.x + 16}
+                y={n.y + 32}
+                fill={signal ? "var(--signal)" : "var(--ink)"}
+                fontFamily="var(--font-archivo)"
+                fontWeight={800}
+                fontSize={n.small ? 16 : 19}
+                style={{ fontStretch: "125%" }}
+              >
+                {n.label.toUpperCase()}
+              </text>
+              {n.sub.map((line, i) => (
+                <text key={line} x={n.x + 16} y={n.y + 56 + i * 16} fill="var(--ink-muted)" fontFamily="var(--font-jetbrains-mono)" fontSize={10.5}>
+                  {line}
+                </text>
+              ))}
+            </g>
+          );
+        })}
+
+        {/* Fila pública: visitante → proxy → Next.js → Supabase (lectura con RLS). */}
+        <path d="M240 98 H290" className="flow-line" />
+        <path d="M490 98 H540" className="flow-line" />
+        <path d="M740 98 H790" className="flow-line" />
+        {/* Visitante → GA4 por el margen izquierdo. */}
+        <path d="M40 98 H20 V498 H40" className="flow-line" />
+        {/* Diego → proxy (login) → dashboard. */}
+        <path d="M240 298 H390 V144" className="flow-line" />
+        <path d="M640 144 V252" className="flow-line" />
+        {/* Dashboard → Supabase: escrituras con el cliente de administración. */}
+        <path d="M740 298 H890 V144" className="flow-line flow-line--accent" />
+        {/* Dashboard → servicios del servidor. */}
+        <path d="M640 344 V398 H390 V452" className="flow-line" />
+        <path d="M640 344 V452" className="flow-line" />
+        <path d="M640 398 H890 V452" className="flow-line" />
       </svg>
+      <figcaption className="mt-6 flex flex-wrap gap-x-8 gap-y-2 font-mono text-[11px] text-ink-muted">
+        <span className="flex items-center gap-2">
+          <svg width="28" height="6" aria-hidden="true"><path d="M0 3 H28" className="flow-line" /></svg>
+          petición o lectura
+        </span>
+        <span className="flex items-center gap-2">
+          <svg width="28" height="6" aria-hidden="true"><path d="M0 3 H28" className="flow-line flow-line--accent" /></svg>
+          escritura con el cliente de administración (solo servidor)
+        </span>
+      </figcaption>
     </figure>
   );
 }
@@ -67,7 +139,7 @@ export default function ArquitecturaPage() {
             Cómo está construido <span className="font-serif">este sitio</span>
           </>
         }
-        lede="Este portafolio también es un producto: tiene un dashboard privado, contenido gestionable, analítica propia y automatizaciones para reducir trabajo repetitivo. Aquí explico las decisiones que lo hacen funcionar."
+        lede="Este portafolio también es un producto: detrás de las páginas públicas hay un panel privado desde el que administro todo el contenido, integraciones con GitHub y Vercel, capturas automáticas de cada proyecto y un buscador de empleo propio. Aquí explico cómo encajan las piezas y por qué las elegí."
       />
 
       <section className="container-x pb-8">
@@ -110,8 +182,9 @@ export default function ArquitecturaPage() {
             </>
           ),
           body: [
-            "Supabase concentra PostgreSQL, autenticación y Storage. Las tablas de contenido público tienen políticas RLS de lectura; los datos que no deben exponerse, como los contactos y los eventos de analítica, solo se consultan desde el servidor administrativo.",
-            "Las escrituras del dashboard pasan por Server Actions que verifican la sesión y usan el cliente de administración en el servidor. Así el navegador nunca recibe credenciales privilegiadas y la interfaz pública solo obtiene los datos que sus políticas permiten leer.",
+            "Supabase concentra PostgreSQL, autenticación y Storage. Las tablas de contenido público solo permiten leer lo que está publicado (RLS); los contactos, las integraciones y el buscador de empleo no tienen políticas públicas y únicamente se consultan desde el servidor.",
+            "El acceso al panel tiene dos capas. El proxy de Next.js refresca la sesión en cada petición y solo deja pasar a /dashboard los correos incluidos en ADMIN_EMAILS: si alguien entra con otra cuenta, incluso de Google, cierra su sesión y lo devuelve al login. Después, cada Server Action vuelve a verificar la sesión antes de escribir con el cliente de administración, que vive solo en el servidor. El navegador nunca recibe credenciales privilegiadas.",
+            "Las páginas públicas se renderizan en el servidor y se regeneran cada 60 segundos, así que un cambio hecho en el panel aparece en el sitio en menos de un minuto sin volver a desplegar.",
           ],
         },
         {
@@ -123,11 +196,26 @@ export default function ArquitecturaPage() {
             </>
           ),
           body: [
-            "Al editar un proyecto, el dashboard puede consultar la metadata de su repositorio de GitHub y de su sitio en vivo. El título, la descripción, las tecnologías detectadas y la imagen Open Graph sirven como punto de partida para el contenido del proyecto, sin sustituir la revisión de Diego. Es una integración concreta de APIs para reducir trabajo manual.",
+            "Al crear o editar un proyecto, el panel consulta su repositorio de GitHub (lenguajes, temas, estrellas, README) y su sitio en vivo. Con eso propone título, descripción, tecnologías y textos de problema y solución como punto de partida; la redacción final siempre la reviso yo.",
+            "Cuando un proyecto tiene URL pública, el servidor abre el sitio con un Chromium propio (Puppeteer y @sparticuz/chromium en Vercel) y guarda en Storage una captura de escritorio, hasta cuatro secciones con su título y una vista móvil. Una guarda contra SSRF impide apuntarlo a direcciones internas, y las imágenes que subo a mano nunca se reemplazan.",
+            "La conexión con GitHub usa OAuth con alcance mínimo y el token se guarda cifrado con AES-256-GCM. Junto con las APIs de Vercel y de gestión de Supabase alimenta un inventario de recursos externos: repositorios, despliegues y bases de datos, para saber qué está publicado y qué falta documentar.",
           ],
         },
         {
           index: "04",
+          eyebrow: "Herramienta interna",
+          title: (
+            <>
+              Un buscador de empleo <span className="font-serif">sin inventar nada</span>
+            </>
+          ),
+          body: [
+            "El panel incluye un buscador que reúne vacantes de Get on Board, Remotive, Adzuna y Jooble, o de ofertas pegadas a mano, y mide qué tan bien encajan con mi perfil usando reglas, sin IA y sin costo: puntaje con desglose, palabras clave presentes o faltantes y sugerencias para ajustar la hoja de vida.",
+            "Para un análisis más profundo uso un agente en Claude Code que lee los datos reales del panel, evalúa la oferta y adapta la hoja de vida. Antes de guardar, un validador rechaza cualquier experiencia, cifra o habilidad que no tenga respaldo en los datos.",
+          ],
+        },
+        {
+          index: "05",
           eyebrow: "Decisiones de diseño",
           title: (
             <>
@@ -141,7 +229,7 @@ export default function ArquitecturaPage() {
           ],
         },
         {
-          index: "05",
+          index: "06",
           eyebrow: "Medición",
           title: (
             <>
@@ -149,7 +237,8 @@ export default function ArquitecturaPage() {
             </>
           ),
           body: [
-            "La medición se centraliza en Google Analytics 4 a través de Google Tag Manager: page views, descargas de CV y envíos del formulario de contacto llegan como eventos al dataLayer y se gestionan desde el contenedor, sin scripts duplicados en el código. Supabase conserva lo operativo: contactos, proyectos y contenido del sitio.",
+            "El tráfico se mide en Google Analytics 4 a través de Google Tag Manager: visitas, descargas del CV y envíos del formulario de contacto llegan como eventos al dataLayer y se gestionan desde el contenedor, sin scripts duplicados en el código. GTM solo se carga en el sitio público; el panel y el login quedan fuera de la medición.",
+            "Supabase conserva lo operativo: contactos, proyectos y contenido. El resumen del panel muestra esos conteos y enlaza a GA4 para el tráfico.",
           ],
         },
       ].map((block) => (
