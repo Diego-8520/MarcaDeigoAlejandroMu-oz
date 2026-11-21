@@ -10,7 +10,6 @@ import { BrandMark } from "@/components/brand/brand-mark";
 const DASHBOARD_ITEMS = [
   { href: "/dashboard", label: "General" },
   { href: "/dashboard/proyectos", label: "Proyectos" },
-  { href: "/dashboard/recursos-externos", label: "Recursos externos" },
   { href: "/dashboard/integraciones", label: "Integraciones" },
   { href: "/dashboard/experiencia", label: "Experiencia" },
   { href: "/dashboard/educacion", label: "Educación" },

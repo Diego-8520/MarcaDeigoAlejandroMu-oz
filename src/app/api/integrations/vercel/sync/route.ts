@@ -129,7 +129,7 @@ export async function POST(request: Request) {
     if (runError) throw runError;
     return NextResponse.redirect(
       new URL(
-        `/dashboard/recursos-externos?provider=vercel&synced=${resources.length}`,
+        `/dashboard/integraciones?provider=vercel&synced=${resources.length}`,
         request.url,
       ),
     );
@@ -147,7 +147,7 @@ export async function POST(request: Request) {
         .eq("id", runId);
     return NextResponse.redirect(
       new URL(
-        `/dashboard/integraciones?error=${encodeURIComponent(message)}`,
+        `/dashboard/integraciones?provider=vercel&error=${encodeURIComponent(message)}`,
         request.url,
       ),
     );

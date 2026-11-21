@@ -12,8 +12,13 @@ const DISPLAY_NAMES: Record<string, string> = {
   typescript: "TypeScript",
   tailwindcss: "Tailwind CSS",
   "@supabase/supabase-js": "Supabase",
+  "@supabase/ssr": "Supabase SSR",
   zod: "Zod",
-  "framer-motion": "Framer Motion",
+  "react-hook-form": "React Hook Form",
+  gsap: "GSAP",
+  lenis: "Lenis",
+  "puppeteer-core": "Puppeteer",
+  vitest: "Vitest",
 };
 
 const CURATED_PACKAGES = [
@@ -22,8 +27,13 @@ const CURATED_PACKAGES = [
   "typescript",
   "tailwindcss",
   "@supabase/supabase-js",
+  "@supabase/ssr",
   "zod",
-  "framer-motion",
+  "react-hook-form",
+  "gsap",
+  "lenis",
+  "puppeteer-core",
+  "vitest",
 ] as const;
 
 function cleanVersion(version: string) {

@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
     return NextResponse.redirect(
       new URL(
-        `/dashboard/recursos-externos?synced=${repositories.length}`,
+        `/dashboard/integraciones?synced=${repositories.length}`,
         request.url,
       ),
     );
