@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       .eq("provider", "github");
     if (error) throw error;
     return NextResponse.redirect(
-      new URL("/dashboard/recursos-externos", request.url),
+      new URL("/dashboard/integraciones", request.url),
     );
   } catch (error) {
     const message =
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
         : "No se pudo ignorar el repositorio.";
     return NextResponse.redirect(
       new URL(
-        `/dashboard/recursos-externos?error=${encodeURIComponent(message)}`,
+        `/dashboard/integraciones?error=${encodeURIComponent(message)}`,
         request.url,
       ),
     );

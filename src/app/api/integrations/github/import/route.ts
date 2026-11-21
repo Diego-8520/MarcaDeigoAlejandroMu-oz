@@ -111,7 +111,7 @@ export async function POST(request: Request) {
         : "No se pudo importar el repositorio.";
     return NextResponse.redirect(
       new URL(
-        `/dashboard/recursos-externos?error=${encodeURIComponent(message)}`,
+        `/dashboard/integraciones?error=${encodeURIComponent(message)}`,
         request.url,
       ),
     );

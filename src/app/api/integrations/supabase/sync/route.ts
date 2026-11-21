@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     if (runError) throw runError;
     return NextResponse.redirect(
       new URL(
-        `/dashboard/recursos-externos?provider=supabase&synced=${projects.length}`,
+        `/dashboard/integraciones?provider=supabase&synced=${projects.length}`,
         request.url,
       ),
     );
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
         .eq("id", runId);
     return NextResponse.redirect(
       new URL(
-        `/dashboard/integraciones?error=${encodeURIComponent(message)}`,
+        `/dashboard/integraciones?provider=supabase&error=${encodeURIComponent(message)}`,
         request.url,
       ),
     );
