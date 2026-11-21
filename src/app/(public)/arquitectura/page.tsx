@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { pageMetadata } from "@/lib/seo";
 import { Reveal } from "@/components/motion/reveal";
 import { PageHeader, SectionHeading } from "@/components/site/page-header";
@@ -125,6 +126,47 @@ function FlowDiagram() {
   );
 }
 
+/** Capturas del panel privado (datos de terceros enmascarados en Contactos). */
+const PANEL_SHOTS = [
+  { file: "resumen", title: "Resumen", caption: "Conteos de contactos, proyectos y testimonios; el tráfico se consulta en GA4." },
+  { file: "proyectos", title: "Proyectos", caption: "Listado con estado, publicación y destacados, con acceso al editor." },
+  { file: "editor-proyecto", title: "Editor de proyecto", caption: "Metadata de GitHub y del sitio en vivo como punto de partida para los textos." },
+  { file: "galeria-proyecto", title: "Galería", caption: "Capturas automáticas y manuales, con texto alternativo y orden editable." },
+  { file: "integraciones", title: "Integraciones", caption: "Conexiones con GitHub, Vercel y Supabase, y sincronización sobre cada listado de recursos." },
+  { file: "empleo", title: "Buscador de empleo", caption: "Vacantes de varias bolsas con puntaje de compatibilidad calculado por reglas." },
+  { file: "contactos", title: "Contactos", caption: "Seguimiento de mensajes del formulario con estado y notas internas (datos ocultos)." },
+];
+
+function PanelGallery() {
+  return (
+    <Reveal as="ul" stagger className="mt-14 grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2">
+      {PANEL_SHOTS.map((shot, index) => (
+        <li key={shot.file}>
+          <figure>
+            <div className="overflow-hidden border border-line bg-surface">
+              <Image
+                src={`/arquitectura/panel/${shot.file}.webp`}
+                alt={`Panel privado: ${shot.title.toLowerCase()}. ${shot.caption}`}
+                width={1920}
+                height={1200}
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="h-auto w-full"
+              />
+            </div>
+            <figcaption className="mt-4 flex gap-4">
+              <span className="font-mono text-xs text-signal">{String(index + 1).padStart(2, "0")}</span>
+              <span>
+                <span className="block text-ink">{shot.title}</span>
+                <span className="mt-1 block text-sm text-ink-muted">{shot.caption}</span>
+              </span>
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </Reveal>
+  );
+}
+
 export default function ArquitecturaPage() {
   const stack = readTechStack();
 
@@ -172,9 +214,27 @@ export default function ArquitecturaPage() {
         </Reveal>
       </section>
 
+      <section className="container-x border-t border-line py-24 sm:py-32">
+        <SectionHeading
+          index="02"
+          eyebrow="Panel privado"
+          title={
+            <>
+              El panel <span className="font-serif">por dentro</span>
+            </>
+          }
+          aside={
+            <p className="lede max-w-[60ch]">
+              Todo lo que ves en el sitio se administra desde aquí, sin tocar código. Solo entra la cuenta incluida en ADMIN_EMAILS.
+            </p>
+          }
+        />
+        <PanelGallery />
+      </section>
+
       {[
         {
-          index: "02",
+          index: "03",
           eyebrow: "Arquitectura de datos",
           title: (
             <>
@@ -188,7 +248,7 @@ export default function ArquitecturaPage() {
           ],
         },
         {
-          index: "03",
+          index: "04",
           eyebrow: "Automatizaciones",
           title: (
             <>
@@ -202,7 +262,7 @@ export default function ArquitecturaPage() {
           ],
         },
         {
-          index: "04",
+          index: "05",
           eyebrow: "Herramienta interna",
           title: (
             <>
@@ -215,7 +275,7 @@ export default function ArquitecturaPage() {
           ],
         },
         {
-          index: "05",
+          index: "06",
           eyebrow: "Decisiones de diseño",
           title: (
             <>
@@ -229,7 +289,7 @@ export default function ArquitecturaPage() {
           ],
         },
         {
-          index: "06",
+          index: "07",
           eyebrow: "Medición",
           title: (
             <>
