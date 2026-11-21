@@ -5,7 +5,7 @@
 
 update projects
 set
-  title = 'PROMOVER · Gestión de lista de espera para call center',
+  title = 'PROMOVER Call Center',
   short_description = 'Plataforma de gestión del call center de una IPS de rehabilitación: lista de espera con colas por operador, chatbot de WhatsApp que recibe solicitudes de cita y lector OCR de órdenes médicas.',
   description = 'Sistema interno para el área de atención al usuario de PROMOVER S.A.S. (sede Cali), una IPS de rehabilitación y terapias. No es solo un chatbot: es el espacio de trabajo diario del call center. Reúne en un mismo panel la recepción de solicitudes por WhatsApp, la revisión de documentos, la distribución del trabajo entre operadores y los indicadores de la sede.
 
